@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verhaeltnisformel-Trainer</title></title>
+    <title>Verhaeltnisformel-Trainer</title>
     <style>
         body { 
             font: 1em sans-serif; 
@@ -28,8 +28,8 @@
             margin: 0 0 10px 0;
             display: flex;
             justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 6px;
+            width: 100%;
         }
         .header-row {
             display: flex;
@@ -233,14 +233,19 @@
         #anionen button:hover { background-color: #AAAAFF; }
         
         .big-btn {
-            height: 40px;
-            width: 115px;
+            height: 42px;
+            flex: 1 1 0;
+            max-width: 120px;
+            min-width: 0;
             background-color: #efefef;
             color: black;
             border: 1px solid #767676;
-            border-radius: 2px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 0.85em;
+            padding: 2px 1px;
+            line-height: 1.15;
+            box-sizing: border-box;
         }
         .big-btn:hover {
             background-color: #e5e5e5;
@@ -272,6 +277,8 @@
         }
 
         @media (max-width: 600px) {
+            .menu-row { gap: 4px; }
+            .big-btn { font-size: 0.72em; padding: 2px 1px; height: 38px; }
             .block-display-row {
                 grid-template-columns: 40px 1fr 40px;
                 gap: 5px;
@@ -282,7 +289,6 @@
             .ion-count-box { font-size: 1.8em; }
             .buttons-wrapper { gap: 8px; }
             #kationen, #anionen { padding: 4px; gap: 3px; }
-            .big-btn { width: 31%; font-size: 0.8em; padding: 2px; }
             #tippFeld { font-size: 1.4em; min-height: 40px; }
             .formula-wrapper { max-width: 100%; }
             .small-next-btn { width: 70px; font-size: 0.85em; height: 36px; }
@@ -311,7 +317,6 @@
             { name: "Aluminium", formel: "Al<sup>3+</sup>", ladung: 3, molekuel: false },
             { name: "Eisen(II)-", formel: "Fe<sup>2+</sup>", ladung: 2, molekuel: false },
             { name: "Eisen(III)-", formel: "Fe<sup>3+</sup>", ladung: 3, molekuel: false },
-            /* KORREKTUR: "Silber" zu "Silber(I)-" geändert */
             { name: "Silber(I)-", formel: "Ag<sup>+</sup>", ladung: 1, molekuel: false }
         ];
 
@@ -343,6 +348,7 @@
         
         var automatik = true;
         var istExperte = false;
+        var istRealschule = false;
         var pkte = 0;
         var zielPunkte = 1000;
         var nr = 0;
@@ -427,6 +433,29 @@
             }
         }
 
+        function zumStartbildschirm() {
+            gameStarted = false;
+            document.getElementById("gameplay-area").style.display = "none";
+            document.getElementById("welcome-area").style.display = "block";
+        }
+
+        function wechselSchulform() {
+            istRealschule = !istRealschule;
+            var text = "Schulform:<br><b>" + (istRealschule ? "Realschule" : "Gymnasium") + "</b>";
+            document.getElementById("schulformBtn").innerHTML = text;
+            document.getElementById("schulformBtnWelcome").innerHTML = text;
+            if (gameStarted) {
+                if (automatik) {
+                    autoFormel();
+                } else {
+                    var hi = document.getElementById("hiddenInput");
+                    if (hi) {
+                        mobileInputAuswerten({ target: { value: hi.value } });
+                    }
+                }
+            }
+        }
+
         function wechselLevel() {
             istExperte = !istExperte;
             var text = "Level:<br><b>" + (istExperte ? "Fortgeschritten" : "Basis") + "</b>";
@@ -435,9 +464,7 @@
             poolsAktualisieren();
             if (gameStarted) {
                 if (confirm("Fortschritt zurücksetzen und Level wechseln?")) {
-                    gameStarted = false;
-                    document.getElementById("gameplay-area").style.display = "none";
-                    document.getElementById("welcome-area").style.display = "block";
+                    zumStartbildschirm();
                 } else {
                     istExperte = !istExperte;
                     poolsAktualisieren();
@@ -467,14 +494,113 @@
             }
         }
 
+        function formatiereIonInhalt(inner) {
+            if (!inner) return "";
+            var clean = inner.replace(/\s+/g, '');
+
+            // Rule 1: Polyatomare Ionen mit Stöchiometrie-Index UND Ladungszahl (z.B. CO32, CO32-, PO43, PO43-, SO42, SO42-, SO32, SO32-)
+            var mDouble = clean.match(/^([A-Za-z]+)([234])([23])([+-]?)$/);
+            if (mDouble) {
+                var base = mDouble[1];
+                var subIdx = mDouble[2];
+                var chargeNum = mDouble[3];
+                var chargeSign = mDouble[4];
+                return base + "<sub>" + subIdx + "</sub><sup>" + chargeNum + chargeSign + "</sup>";
+            }
+
+            // Rule 2: Einfache Ionen mit Mehrfachladung (z.B. Ca2, Ca2+, Mg2, Mg2+, Al3, Al3+, Fe2, Fe2+, Fe3, Fe3+, O2, O2-, S2, S2-, N3, N3-, P3, P3-)
+            var mMono = clean.match(/^(Ca|Mg|Al|Fe|O|S|N|P)([23])([+-]?)$/i);
+            if (mMono) {
+                var elem = mMono[1];
+                elem = elem.charAt(0).toUpperCase() + elem.slice(1).toLowerCase();
+                var chargeNum = mMono[2];
+                var chargeSign = mMono[3];
+                return elem + "<sup>" + chargeNum + chargeSign + "</sup>";
+            }
+
+            // Rule 3: Polyatomare Ionen mit Einfachladung oder Stöchiometrie (z.B. NH4, NH4+, HCO3, HCO3-, NO3, NO3-, NO2, NO2-, MnO4, MnO4-)
+            var mPoly = clean.match(/^([A-Za-z]+)([234])([+-]?)$/);
+            if (mPoly) {
+                var elemGroup = mPoly[1];
+                var subIdx = mPoly[2];
+                var chargeSign = mPoly[3];
+                var supText = chargeSign ? "<sup>" + chargeSign + "</sup>" : "";
+                return elemGroup + "<sub>" + subIdx + "</sub>" + supText;
+            }
+
+            // Rule 4: Einfache Ionen ohne Stöchiometrie-Index (z.B. Li+, Na+, K+, Ag+, F-, Cl-, Br-, I-, OH-)
+            var mSingle = clean.match(/^([A-Za-z]+)([+-]?)$/);
+            if (mSingle) {
+                var elemGroup = mSingle[1];
+                var chargeSign = mSingle[2];
+                var supText = chargeSign ? "<sup>" + chargeSign + "</sup>" : "";
+                return elemGroup + supText;
+            }
+
+            // Fallback: Explizite Ladung am Ende erkennen
+            var chargeMatch = clean.match(/(2\+|3\+|2-|3-|\+|-)\s*$/);
+            if (chargeMatch) {
+                var charge = chargeMatch[1];
+                var rest = clean.slice(0, chargeMatch.index);
+                var restFormatiert = rest.replace(/\d+/g, function(d) {
+                    return "<sub>" + d + "</sub>";
+                });
+                return restFormatiert + "<sup>" + charge + "</sup>";
+            }
+
+            // Standard-Fallback
+            return clean.replace(/\d+/g, function(d) {
+                return "<sub>" + d + "</sub>";
+            });
+        }
+
+        function formatierteFormelRealschule(val) {
+            if (!val) return "";
+            val = val.replace(/[–—−]/g, '-');
+
+            var result = "";
+            var lastIdx = 0;
+            var bracketRegex = /\(([^)]*)\)/g;
+            var match;
+
+            while ((match = bracketRegex.exec(val)) !== null) {
+                var prefix = val.substring(lastIdx, match.index);
+                result += prefix.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
+
+                var inner = match[1];
+                result += "(" + formatiereIonInhalt(inner) + ")";
+
+                lastIdx = bracketRegex.lastIndex;
+            }
+
+            var remainder = val.substring(lastIdx);
+            var unclosedMatch = remainder.match(/^(\s*)\((.*)$/);
+            if (unclosedMatch) {
+                var leadingSpace = unclosedMatch[1];
+                var unclosedInner = unclosedMatch[2];
+                result += leadingSpace + "(" + formatiereIonInhalt(unclosedInner);
+            } else {
+                result += remainder.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
+            }
+
+            return result;
+        }
+
         function mobileInputAuswerten(e) {
             if (automatik) return;
-            var val = e.target.value; var formatiert = "";
-            for (var i = 0; i < val.length; i++) {
-                var char = val.charAt(i);
-                if (char >= '0' && char <= '9') { formatiert += "<sub>" + char + "</sub>"; } 
-                else { formatiert += char; }
+            var val = e.target.value;
+            var formatiert = "";
+
+            if (istRealschule) {
+                formatiert = formatierteFormelRealschule(val);
+            } else {
+                for (var i = 0; i < val.length; i++) {
+                    var char = val.charAt(i);
+                    if (char >= '0' && char <= '9') { formatiert += "<sub>" + char + "</sub>"; } 
+                    else { formatiert += char; }
+                }
             }
+
             manuellerText = formatiert;
             document.getElementById("tippFeld").innerHTML = manuellerText;
         }
@@ -575,15 +701,20 @@
         }
 
         function baueTeilFormel(ion, zahl, farbKlasse) {
-            var basis = entferneTags(ion.formel);
             var klammerKlasse = farbKlasse ? ' class="' + farbKlasse + '"' : '';
-            
-            if (zahl > 1 && ion.molekuel) {
-                return "(" + basis + ")<sub" + klammerKlasse + ">" + zahl + "</sub>";
-            } else if (zahl > 1) {
-                return basis + "<sub" + klammerKlasse + ">" + zahl + "</sub>";
+
+            if (istRealschule) {
+                var idxText = (zahl > 1) ? "<sub" + klammerKlasse + ">" + zahl + "</sub>" : "";
+                return "(" + ion.formel + ")" + idxText;
+            } else {
+                var basis = entferneTags(ion.formel);
+                if (zahl > 1 && ion.molekuel) {
+                    return "(" + basis + ")<sub" + klammerKlasse + ">" + zahl + "</sub>";
+                } else if (zahl > 1) {
+                    return basis + "<sub" + klammerKlasse + ">" + zahl + "</sub>";
+                }
+                return basis;
             }
-            return basis;
         }
 
         function autoFormel() {
@@ -598,6 +729,17 @@
             return document.getElementById("tippFeld").innerHTML.replace(/ class=".*?"/g, '').trim();
         }
 
+        function normalisiereText(str) {
+            if (!str) return "";
+            return str
+                .replace(/<[^>]+>/g, '')
+                .replace(/\s+/g, '')
+                .replace(/[–—−]/g, '-')
+                .replace(/¹/g, '1').replace(/²/g, '2').replace(/³/g, '3').replace(/⁴/g, '4')
+                .replace(/₁/g, '1').replace(/₂/g, '2').replace(/₃/g, '3').replace(/₄/g, '4')
+                .replace(/⁺/g, '+').replace(/⁻/g, '-');
+        }
+
         function antwortPruefen() {
             var eing = formel();
             if (eing != "") {
@@ -605,11 +747,11 @@
                 var zielAni = baueTeilFormel(frageAnion, frageAnionenZahl, null);
                 var zielFormel = (zielKat + zielAni).trim();
                 
-                var eingBereinigt = eing.replace(/\s+/g, '').replace(/<sub\s*>/g, '<sub>').replace(/<\/sub\s*>/g, '</sub>');
-                var zielBereinigt = zielFormel.replace(/\s+/g, '').replace(/<sub\s*>/g, '<sub>').replace(/<\/sub\s*>/g, '</sub>');
+                var eingNorm = normalisiereText(eing);
+                var zielNorm = normalisiereText(zielFormel);
                 
-                if (zielBereinigt == eingBereinigt) return 1;
-                if (zielBereinigt.toLowerCase() == eingBereinigt.toLowerCase()) return 2;
+                if (zielNorm == eingNorm) return 1;
+                if (zielNorm.toLowerCase() == eingNorm.toLowerCase()) return 2;
                 return 0;
             }
             if (antwortKationenZahl == frageKationenZahl && antwortAnionenZahl == frageAnionenZahl) return 3;
@@ -660,7 +802,6 @@
         function frageSchreiben() {
             var kationName = frageKation.name;
             var anionName = frageAnion.name;
-            /* Automatische Anpassung für korrekte Wortbildung (z. B. Silber(I)-chlorid statt Silber(I)-Chlorid) */
             var s = kationName.endsWith("-") ? kationName + anionName.toLowerCase() : kationName + anionName.toLowerCase();
             
             document.getElementById("titel").innerHTML = s;
@@ -727,6 +868,7 @@
     <!-- Startseite -->
     <div id="welcome-area">
         <div class="menu-row">
+            <button class="big-btn" id="schulformBtnWelcome" onClick="wechselSchulform()">Schulform:<br><b>Gymnasium</b></button>
             <button class="big-btn" id="wechselWelcome" onClick="wechselAuto()">Modus:<br><b>Lernen</b></button>
             <button class="big-btn" id="levelBtnWelcome" onClick="wechselLevel()">Level:<br><b>Basis</b></button>
         </div>
@@ -742,7 +884,8 @@
     <!-- Spielbereich -->
     <div id="gameplay-area">
         <div class="menu-row">
-            <button class="big-btn" id="start" onClick="start()">Neu starten</button>
+            <button class="big-btn" id="start" onClick="zumStartbildschirm()">Neu starten</button>
+            <button class="big-btn" id="schulformBtn" onClick="wechselSchulform()">Schulform:<br><b>Gymnasium</b></button>
             <button class="big-btn" id="wechsel" onClick="wechselAuto()">Modus:<br><b>Lernen</b></button>
             <button class="big-btn" id="levelBtn" onClick="wechselLevel()">Level:<br><b>Basis</b></button>
         </div>
