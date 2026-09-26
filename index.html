@@ -6,7 +6,7 @@
     <title>Verhältnisformel-Trainer</title>
     <!-- Web-App Manifest & PWA-Metadaten -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="#7c3aed">
 
     <!-- iOS-Unterstützung (Safari) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,19 +20,19 @@
             --surface: #ffffff;
             --ink: #0f172a;
             --ink-muted: #64748b;
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --cation-color: #dc2626; /* Rot */
-            --anion-color: #2563eb;  /* Blau */
+            --primary: #7c3aed; /* Lilaton für Light Mode */
+            --primary-hover: #6d28d9;
+            --cation-color: #dc2626; /* Rot - exklusiv für Kationen */
+            --anion-color: #2563eb;  /* Blau - exklusiv für Anionen */
             --border: #cbd5e1;
-            --radius: 12px;
+            --radius: 16px; /* Schön abgerundete Ecken */
             --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             --ok-bg: #dcfce7;
             --ok-ink: #166534;
             --bad-bg: #fee2e2;
             --bad-ink: #991b1b;
-            --info-bg: #e0f2fe;
-            --info-ink: #0369a1;
+            --info-bg: #f3e8ff; /* Helles Lila für Info-Badges/Buttons */
+            --info-ink: #6b21a8; /* Dunkles Lila für Info-Text */
             --balance-color: #15803d; /* Dunkelgrün für Light Mode */
         }
 
@@ -42,8 +42,8 @@
                 --surface: #1e293b;
                 --ink: #f8fafc;
                 --ink-muted: #94a3b8;
-                --primary: #3b82f6;
-                --primary-hover: #60a5fa;
+                --primary: #a855f7; /* Helles Lila im Dark Mode */
+                --primary-hover: #c084fc;
                 --cation-color: #ef4444; /* Hellrot im Dark Mode */
                 --anion-color: #3b82f6;  /* Hellblau im Dark Mode */
                 --border: #334155;
@@ -52,8 +52,8 @@
                 --ok-ink: #4ade80;        /* Hellgrün für Dark Mode */
                 --bad-bg: #7f1d1d;
                 --bad-ink: #fecaca;
-                --info-bg: #0c4a6e;
-                --info-ink: #bae6fd;
+                --info-bg: #3b0764; /* Dunkellila für Dark Mode */
+                --info-ink: #e9d5ff; /* Helllila für Text im Dark Mode */
                 --balance-color: #4ade80; /* Gut sichtbares Hellgrün für Dark Mode */
             }
         }
@@ -87,6 +87,12 @@
             gap: 0.5rem;
             position: relative;
             transition: max-width 0.2s ease, padding 0.2s ease;
+        }
+
+        /* Spezieller kompakter Modus für Level 4 (Tastatur-Freundlich) */
+        #app.stage-4-mode {
+            justify-content: flex-start;
+            gap: 0.4rem;
         }
 
         /* Responsive Layout-Anpassungen */
@@ -190,7 +196,7 @@
         .tile-btn {
             background: var(--bg);
             border: 1.5px solid var(--border);
-            border-radius: var(--radius);
+            border-radius: 12px;
             padding: clamp(0.4rem, 1.2vw, 0.75rem);
             text-align: left;
             cursor: pointer;
@@ -204,7 +210,7 @@
 
         .tile-btn[aria-pressed="true"] {
             border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.08);
+            background: rgba(124, 58, 237, 0.1);
         }
 
         .tile-btn b { display: block; font-size: clamp(0.78rem, 1.3vw, 0.95rem); }
@@ -222,7 +228,7 @@
 
         .level-card:hover, .level-card:focus {
             border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.04);
+            background: rgba(124, 58, 237, 0.05);
             transform: translateY(-1px);
         }
 
@@ -334,7 +340,7 @@
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.8rem, 1.5vw, 1.2rem);
             font-size: clamp(0.82rem, 1.2vw, 0.95rem);
             font-weight: 700;
@@ -353,19 +359,45 @@
             to { transform: scale(1); opacity: 1; }
         }
 
+        /* Task Header mit linksbündigem "SALZ"-Label und zentriertem Salznamen */
         .task-header {
-            text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.35rem, 1.2vw, 0.65rem);
+            padding: clamp(0.4rem, 1.2vw, 0.7rem) clamp(0.6rem, 1.5vw, 1rem);
+            min-height: clamp(46px, 6vh, 54px);
             flex-shrink: 0;
         }
 
-        .task-header small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); text-transform: uppercase; font-weight: 700; }
-        .task-header h2 { font-size: clamp(1.05rem, 2.2vw, 1.5rem); color: var(--ink); line-height: 1.25; }
+        .task-header small { 
+            position: absolute;
+            left: clamp(0.6rem, 1.5vw, 1rem);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem); 
+            color: var(--ink-muted); 
+            text-transform: uppercase; 
+            font-weight: 700; 
+            letter-spacing: 0.04em;
+            margin-bottom: 0;
+            pointer-events: none;
+            z-index: 6;
+        }
+        
+        .task-header h2 { 
+            font-size: clamp(1.1rem, 2.3vw, 1.55rem); 
+            color: var(--ink); 
+            line-height: 1.25; 
+            text-align: center;
+            width: 100%;
+            padding: 0 3.5rem;
+        }
 
-        /* Visualisierung der Ionenbalken (Vergrößert) */
+        /* Visualisierung der Ionenbalken */
         .visualizer-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -374,7 +406,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: clamp(140px, 22vh, 180px);
+            height: clamp(165px, 26vh, 210px);
             position: relative;
             flex-shrink: 0;
         }
@@ -443,7 +475,7 @@
 
         .ion-group-block {
             position: relative;
-            border-radius: 5px;
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -494,7 +526,7 @@
             color: var(--balance-color);
             background: var(--surface);
             padding: 0 6px;
-            border-radius: 4px;
+            border-radius: 6px;
         }
 
         .balance-unbalanced-text {
@@ -508,36 +540,52 @@
             color: var(--ink-muted);
         }
 
-        /* Formel Vorschau & Live-Formatiertes Eingabefeld */
+        /* Formel Box & Eingabefeld */
         .formula-box {
             background: var(--surface);
             border: 1.5px dashed var(--primary);
             border-radius: var(--radius);
-            padding: clamp(0.35rem, 1.2vw, 0.6rem);
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .formula-box small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); display: block; }
-        .formula-box .formula { font-size: clamp(1.35rem, 3vw, 1.8rem); font-weight: 700; letter-spacing: 0.02em; min-height: 32px; }
-
-        .formula-input-wrapper {
+            padding: clamp(0.35rem, 1.2vw, 0.55rem) clamp(0.6rem, 2vw, 1rem);
             position: relative;
-            width: 100%;
-            min-height: clamp(42px, 6vh, 52px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--surface);
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            cursor: text;
-            margin-top: 4px;
+            min-height: clamp(46px, 6vh, 54px);
+            width: 100%;
+            flex-shrink: 0;
             transition: border-color 0.15s ease;
         }
 
-        .formula-input-wrapper:focus-within {
+        .formula-box.input-mode {
+            border: 2px solid var(--border);
+            cursor: text;
+        }
+
+        .formula-box.input-mode:focus-within {
             border-color: var(--primary);
+        }
+
+        .formula-label {
+            position: absolute;
+            left: clamp(0.6rem, 1.5vw, 1rem);
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+            font-weight: 700;
+            color: var(--primary); /* Lila Schriftzug */
+            line-height: 1.1;
+            text-align: left;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .formula-box .formula { 
+            width: 100%;
+            font-size: clamp(1.35rem, 3vw, 1.8rem); 
+            font-weight: 700; 
+            letter-spacing: 0.02em; 
+            min-height: 32px;
+            text-align: center;
         }
 
         .formatted-display {
@@ -549,12 +597,6 @@
             padding: 0 0.5rem;
             display: inline-block;
             line-height: 1.3;
-            transition: padding-right 0.15s ease;
-        }
-
-        /* Platz sparen, wenn der Button eingeblendet ist */
-        .formula-input-wrapper:focus-within .formatted-display {
-            padding-right: 72px;
         }
 
         .formatted-display:empty::before {
@@ -565,8 +607,7 @@
             font-size: clamp(0.9rem, 1.5vw, 1.1rem);
         }
 
-        /* Blinkender Cursor nur bei aktivem Eingabefeld */
-        .formula-input-wrapper:focus-within .formatted-display::after {
+        .formula-box.input-mode:focus-within .formatted-display::after {
             content: '|';
             display: inline-block;
             color: var(--primary);
@@ -592,18 +633,17 @@
             cursor: text;
         }
 
-        /* Done Button: Nur sichtbar bei aktivem Fokus */
         .done-btn {
             display: none;
             position: absolute;
-            right: 6px;
+            right: 8px;
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
             background: var(--bg);
             color: var(--primary);
             border: 1.5px solid var(--border);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: clamp(4px, 0.8vw, 6px) clamp(10px, 1.5vw, 16px);
             font-size: clamp(0.75rem, 1.2vw, 0.88rem);
             font-weight: 700;
@@ -612,7 +652,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
 
-        .formula-input-wrapper:focus-within .done-btn {
+        .formula-box.input-mode:focus-within .done-btn {
             display: block;
         }
 
@@ -663,12 +703,11 @@
             width: 100%;
         }
 
-        /* Vergrößerte Ionen-Buttons */
         .ion-chip {
             font-size: clamp(0.85rem, 1.4vw, 1.05rem);
             font-weight: 700;
             padding: clamp(5px, 1vw, 8px) clamp(8px, 1.5vw, 12px);
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1.5px solid var(--border);
             background: var(--bg);
             color: var(--ink);
@@ -707,7 +746,7 @@
             background: var(--bg);
             border: 1px solid var(--border);
             padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.8rem);
-            border-radius: 8px;
+            border-radius: 10px;
             width: 100%;
         }
 
@@ -718,14 +757,14 @@
         }
 
         .stepper-arrows button {
-            width: clamp(34px, 4vw, 42px);
-            height: clamp(24px, 3vh, 30px);
-            border-radius: 6px;
+            width: clamp(52px, 8vw, 70px);
+            height: clamp(28px, 3.5vh, 34px);
+            border-radius: 8px;
             border: 1px solid var(--border);
             background: var(--surface);
             color: var(--ink);
             font-weight: 700;
-            font-size: clamp(0.85rem, 1.3vw, 1rem);
+            font-size: clamp(0.95rem, 1.4vw, 1.15rem);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -767,7 +806,7 @@
             justify-content: center;
             text-align: center;
             padding: 0.35rem 0.6rem;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: clamp(0.75rem, 1.2vw, 0.9rem);
             font-weight: 700;
             line-height: 1.35;
@@ -916,7 +955,6 @@ const EXPERT_CATIONS = [
     { s: "NH_4", c: 1, n: "Ammonium-Ion", poly: true }
 ];
 
-// Im Fortgeschrittenen-Modus zur Übersichtlichkeit ohne F-, Cl-, Br-, I- und O2-
 const EXPERT_ANIONS = [
     { s: "S", c: -2, n: "Sulfid-Ion" },
     { s: "N", c: -3, n: "Nitrid-Ion" },
@@ -932,7 +970,7 @@ const EXPERT_ANIONS = [
     { s: "MnO_4", c: -1, n: "Permanganat-Ion", poly: true } 
 ];
 
-// Dynamische Hilfsfunktionen zur sicheren Verknüpfung von Ionen
+// Dynamische Hilfsfunktionen
 const getCat = (sym, charge) => EXPERT_CATIONS.find(c => c.s === sym && (charge === undefined || c.c === charge));
 const getAn = (sym) => EXPERT_ANIONS.find(a => a.s === sym) || BASIS_ANIONS.find(a => a.s === sym);
 
@@ -1010,13 +1048,11 @@ function fmtIon(symbol, charge) {
     return `${cleanSym}<sup>${cStr}</sup>`;
 }
 
-// Prüft dynamisch, ob ein Prefix zu einem mehratomigen Ion gehört
 function isPolyPrefix(prefix) {
     const polyPrefixes = ["NH", "NO", "HCO", "MnO", "SO", "PO", "CO", "OH"];
     return polyPrefixes.some(p => p.toLowerCase() === prefix.toLowerCase());
 }
 
-// Präzises Parsing von Formel-Indizes und Ionenladungen innerhalb von Klammern
 function formatiereIonInhalt(inner) {
     if (!inner) return "";
     var clean = inner.replace(/\s+/g, '');
@@ -1082,7 +1118,6 @@ function formatiereIonInhalt(inner) {
     return formattedFormula + formattedCharge;
 }
 
-// Live-Formatierer für den Realschulmodus
 function formatierteFormelRealschule(val) {
     if (!val) return "";
     val = val.replace(/[–—−]/g, '-');
@@ -1199,7 +1234,6 @@ function startStage(stageNum) {
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
     const rawPool = S.level === 'basis' ? BASIS_SALTS : ADVANCED_SALTS;
 
-    // Filter stellt sicher, dass nur Salze gewählt werden, deren Ionen in den Buttons wählbar sind
     const pool = rawPool.filter(salt => 
         catList.some(c => c.s === salt.cat.s && c.c === salt.cat.c) &&
         anList.some(a => a.s === salt.an.s)
@@ -1290,7 +1324,6 @@ function checkTypedSolution(userInput, targetSalt) {
         return { ok: true, msg: `✓ Richtig! Die Verhältnisformel lautet ${formatTypedInput(rawTarget)}.` };
     }
 
-    // Spezifische Prüfung auf den Index 1
     if (input.includes('1')) {
         const exampleMsg = S.school === 'real' 
             ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' 
@@ -1305,7 +1338,6 @@ function checkTypedSolution(userInput, targetSalt) {
         return { ok: false, msg: '⚠️ Achte auf die Groß- und Kleinschreibung (z. B. Al statt al).' };
     }
 
-    // Prüfung, ob überhaupt die passenden Ionen enthalten sind
     const catBase = targetSalt.cat.s.replace(/_/g, '').toLowerCase();
     const anBase = targetSalt.an.s.replace(/_/g, '').toLowerCase();
     const inputLower = input.toLowerCase();
@@ -1325,7 +1357,6 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
-    // Realschulmodus: Prüfung auf Ionenschreibweise (Klammern und Ladungen)
     if (S.school === 'real') {
         if (!input.includes('(') || !input.includes(')') || (!input.includes('+') && !input.includes('-'))) {
             return { 
@@ -1335,7 +1366,6 @@ function checkTypedSolution(userInput, targetSalt) {
         }
     }
 
-    // Gymnasiumsmodus: Klammern bei mehratomigen Ionen mit Index > 1
     if (S.school === 'gym') {
         if ((targetSalt.cat.poly && correctCatCount > 1) || (targetSalt.an.poly && correctAnCount > 1)) {
             if (!input.includes('(') || !input.includes(')')) {
@@ -1344,7 +1374,6 @@ function checkTypedSolution(userInput, targetSalt) {
         }
     }
 
-    // Indizes prüfen
     const inputNoDigits = input.replace(/[0-9]/g, '');
     const targetNoDigits = rawTarget.replace(/[0-9]/g, '');
     if (inputNoDigits.toLowerCase() === targetNoDigits.toLowerCase()) {
@@ -1421,7 +1450,7 @@ function renderChargeVisualizer() {
     const posTotal = S.catCount * catCharge;
     const negTotal = S.anCount * anCharge;
 
-    const unitH = 15;
+    const unitH = 19;
     const gap = 2;
 
     function renderBlocks(count, charge, colorClass, ion) {
@@ -1490,6 +1519,14 @@ function renderChargeVisualizer() {
 // --- Render-Logik ---
 function render() {
     const app = document.getElementById('app');
+    
+    // In Level 4 wird das Layout kompakt oben ausgerichtet
+    if (S.screen === 'task' && S.stage === 4) {
+        app.classList.add('stage-4-mode');
+    } else {
+        app.classList.remove('stage-4-mode');
+    }
+
     if (S.screen === 'start') app.innerHTML = renderStart();
     else if (S.screen === 'task') app.innerHTML = renderTask();
     else app.innerHTML = renderEnd();
@@ -1571,8 +1608,8 @@ function getInfoText(stage) {
 function renderInfoOverlay() {
     if (!S.infoOpen) return '';
     return `
-        <div class="info-backdrop" onclick="S.infoOpen = false; render();">
-            <div class="info-modal" onclick="event.stopPropagation(); S.infoOpen = false; render();">
+        <div class="info-backdrop">
+            <div class="info-modal" onclick="event.stopPropagation();">
                 <div class="info-modal-header">
                     <span style="font-size: 1.1rem;">💡</span>
                     <span>Anleitung – Level ${S.stage}: ${getStageName(S.stage)}</span>
@@ -1589,7 +1626,7 @@ function renderInfoOverlay() {
 function renderEasterEggOverlay() {
     if (!S.easterEggOpen) return '';
     return `
-        <div class="info-backdrop" onclick="closeEasterEgg()">
+        <div class="info-backdrop">
             <div class="info-modal" onclick="event.stopPropagation();">
                 <div class="info-modal-header">
                     <span style="font-size: 1.1rem;">💡</span>
@@ -1613,7 +1650,6 @@ function renderTask() {
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
 
     const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
-    const inputBoxTitle = S.school === 'real' ? 'Verhältnisformel in Ionenschreibweise:' : 'Deine Verhältnisformel';
 
     return `
     ${renderInfoOverlay()}
@@ -1628,7 +1664,7 @@ function renderTask() {
     </div>
 
     <div class="task-header">
-        <small>Gesuchtes Salz</small>
+        <small>SALZ</small>
         <h2>${saltName}</h2>
     </div>
 
@@ -1636,21 +1672,19 @@ function renderTask() {
 
     ${S.stage < 3 ? `
         <div class="formula-box">
-            <small>Ergebende Verhältnisformel</small>
+            <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
         <!-- Live-Formatierte Direkteingabe -->
-        <div class="formula-box">
-            <small>${inputBoxTitle}</small>
-            <div class="formula-input-wrapper" onclick="document.getElementById('hiddenFormulaInput').focus();">
-                <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
-                <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
-                <button type="button" class="done-btn" 
-                        ontouchstart="closeKeyboard(event)" 
-                        onmousedown="closeKeyboard(event)" 
-                        onclick="closeKeyboard(event)">Fertig</button>
-            </div>
+        <div class="formula-box input-mode" onclick="document.getElementById('hiddenFormulaInput').focus();">
+            <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
+            <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
+            <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
+            <button type="button" class="done-btn" 
+                    ontouchstart="closeKeyboard(event)" 
+                    onmousedown="closeKeyboard(event)" 
+                    onclick="closeKeyboard(event)">Fertig</button>
         </div>
     `}
 
