@@ -2,270 +2,577 @@
 <html lang="de">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verhaeltnisformel-Trainer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Verhältnisformel-Trainer</title>
+    
     <style>
-        body { 
-            font: 1em sans-serif; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            margin: 5px;
-            background-color: #f9f9f9;
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --ink: #0f172a;
+            --ink-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --cation-color: #dc2626; /* Rot */
+            --anion-color: #2563eb;  /* Blau */
+            --border: #cbd5e1;
+            --radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --ok-bg: #dcfce7;
+            --ok-ink: #166534;
+            --bad-bg: #fee2e2;
+            --bad-ink: #991b1b;
+            --info-bg: #e0f2fe;
+            --info-ink: #0369a1;
+            --balance-color: #15803d; /* Dunkelgrün für Light Mode */
         }
-        .game-container {
-            max-width: 950px;
-            width: 100%;
-            text-align: center;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            box-sizing: border-box;
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --surface: #1e293b;
+                --ink: #f8fafc;
+                --ink-muted: #94a3b8;
+                --primary: #3b82f6;
+                --primary-hover: #60a5fa;
+                --cation-color: #ef4444; /* Hellrot im Dark Mode */
+                --anion-color: #3b82f6;  /* Hellblau im Dark Mode */
+                --border: #334155;
+                --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+                --ok-bg: #064e3b;
+                --ok-ink: #4ade80;        /* Hellgrün für Dark Mode */
+                --bad-bg: #7f1d1d;
+                --bad-ink: #fecaca;
+                --info-bg: #0c4a6e;
+                --info-ink: #bae6fd;
+                --balance-color: #4ade80; /* Gut sichtbares Hellgrün für Dark Mode */
+            }
         }
-        .menu-row {
-            margin: 0 0 10px 0;
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        }
+        
+        html, body {
+            height: 100%;
+            width: 100vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            background-color: var(--bg);
+            color: var(--ink);
+        }
+
+        /* Responsive Container */
+        #app {
+            min-height: 100dvh;
             display: flex;
-            justify-content: center;
-            gap: 6px;
+            flex-direction: column;
+            justify-content: space-between;
             width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0.5rem;
+            gap: 0.5rem;
+            position: relative;
+            transition: max-width 0.2s ease, padding 0.2s ease;
         }
-        .header-row {
+
+        /* Responsive Layout-Anpassungen */
+        @media (min-width: 600px) {
+            #app {
+                max-width: 680px;
+                justify-content: flex-start;
+                padding: 1.25rem 1.5rem;
+                gap: 1rem;
+            }
+            .level-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+            }
+        }
+
+        @media (min-width: 960px) {
+            #app {
+                max-width: 760px;
+                justify-content: flex-start;
+                padding: 1.5rem 2rem;
+                gap: 1.25rem;
+            }
+        }
+
+        /* Robuste Ausrichtung für Hoch- und Tiefstellung */
+        sub, sup {
+            font-size: 0.7em;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+        }
+        sup { top: -0.45em; }
+        sub { bottom: -0.15em; }
+
+        /* Start-Bildschirm Layout */
+        .start-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            height: 100%;
+            justify-content: space-between;
+            padding: 0.2rem 0;
+        }
+
+        .hero-title {
+            text-align: center;
+            font-size: clamp(1.4rem, 3vw, 2.2rem);
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .hero-subtitle {
+            text-align: center;
+            font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+            color: var(--ink-muted);
+            line-height: 1.35;
+            padding: 0 0.5rem;
+        }
+
+        /* Voreinstellungen */
+        .preset-card {
+            background: var(--surface);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: clamp(0.5rem, 1.5vw, 1rem);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .preset-title {
+            font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+        }
+
+        .section-label {
+            font-size: clamp(0.68rem, 1.2vw, 0.8rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--ink-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .tiles-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .tile-btn {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(0.4rem, 1.2vw, 0.75rem);
+            text-align: left;
+            cursor: pointer;
+            color: var(--ink);
+            transition: all 0.15s ease;
+        }
+
+        .tile-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .tile-btn[aria-pressed="true"] {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .tile-btn b { display: block; font-size: clamp(0.78rem, 1.3vw, 0.95rem); }
+        .tile-btn small { font-size: clamp(0.65rem, 1.1vw, 0.8rem); color: var(--ink-muted); line-height: 1.2; display: block; margin-top: 3px; }
+
+        .level-card {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(0.5rem, 1.5vw, 0.85rem);
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .level-card:hover, .level-card:focus {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.04);
+            transform: translateY(-1px);
+        }
+
+        .level-card b { display: block; font-size: clamp(0.82rem, 1.4vw, 1rem); color: var(--primary); }
+        .level-card small { font-size: clamp(0.65rem, 1.1vw, 0.8rem); color: var(--ink-muted); line-height: 1.2; display: block; margin-top: 3px; }
+
+        /* Task Screen Layout */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
-            margin-bottom: 5px;
-            gap: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        #titelFeld {
-            transition: color 0.2s ease;
-            outline: none;
-            flex: 1;
-        }
-        
-        .welcome-screen {
-            max-width: 500px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background-color: #fafafa;
-            text-align: center;
-        }
-        .main-start-btn {
-            height: 45px;
-            width: 180px;
-            font-size: 1.05em;
-            font-weight: bold;
-            background-color: #28a745;
-            color: white;
-            border: 1px solid #1e7e34;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        .main-start-btn:hover {
-            background-color: #218838;
-        }
-        
-        #gameplay-area {
-            display: none;
+            font-size: clamp(0.8rem, 1.3vw, 1rem);
+            font-weight: 700;
+            min-height: 28px;
+            flex-shrink: 0;
         }
 
-        .block-display-row {
-            display: grid;
-            grid-template-columns: 60px 1fr 60px;
-            align-items: center; 
-            gap: 10px;
-            margin: 10px 0;
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .ion-count-box {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #555;
+
+        .school-badge {
+            color: var(--ink-muted);
+            font-weight: 400;
+            font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+            margin-left: 0.2rem;
+        }
+
+        .info-toggle-btn {
+            background: var(--info-bg);
+            color: var(--info-ink);
+            border: 1px solid var(--border);
+            width: clamp(22px, 3vw, 28px);
+            height: clamp(22px, 3vw, 28px);
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.15s ease;
         }
-        .canvas-container {
+
+        .info-toggle-btn:hover {
+            transform: scale(1.08);
+        }
+
+        .text-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 700;
+            cursor: pointer;
+            font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+        }
+
+        /* Information Overlay (Modal) */
+        .info-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(2px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.15s ease;
+        }
+
+        .info-modal {
+            background: var(--surface);
+            color: var(--ink);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius);
+            padding: clamp(0.9rem, 2vw, 1.4rem);
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-        }
-        
-        canvas { 
-            width: 100%; 
-            max-width: 384px; 
-            height: auto; 
-            aspect-ratio: 4/2.4;
-            border: 2px solid black; 
-            background: #fff;
-            outline: none;
+            gap: 0.75rem;
+            animation: popIn 0.2s ease;
         }
 
-        .formula-section-row {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            width: 100%;
-            margin-top: 10px;
-            box-sizing: border-box;
-        }
-        .formula-wrapper {
-            width: 100%;
-            max-width: 384px;
-            position: relative;
-            box-sizing: border-box;
-            min-height: 45px;
+        .info-modal-header {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            color: var(--primary);
         }
-        #tippFeld { 
-            font-size: 1.8em; 
-            font-weight: bold;
+
+        .info-modal-body {
+            font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+            line-height: 1.4;
+            color: var(--ink);
+        }
+
+        .info-modal-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.8rem, 1.5vw, 1.2rem);
+            font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+            font-weight: 700;
+            cursor: pointer;
+            align-self: flex-end;
+            margin-top: 0.2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.92); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .task-header {
             text-align: center;
-            min-height: 45px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(0.35rem, 1.2vw, 0.65rem);
+            flex-shrink: 0;
+        }
+
+        .task-header small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); text-transform: uppercase; font-weight: 700; }
+        .task-header h2 { font-size: clamp(1.05rem, 2.2vw, 1.5rem); color: var(--ink); line-height: 1.25; }
+
+        /* Visualisierung der Ionenbalken (Vergrößert) */
+        .visualizer-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem 0.85rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: clamp(140px, 22vh, 180px);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .charge-columns-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: clamp(16px, 4vw, 28px);
+            height: 100%;
             width: 100%;
+            position: relative;
+            padding-bottom: 2px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .charge-sum-badge {
+            font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+            font-weight: 700;
+            background: transparent;
+            border: none;
+            padding: 0 2px;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .charge-sum-badge.pos { color: var(--cation-color); }
+        .charge-sum-badge.neg { color: var(--anion-color); }
+
+        .indicator-line {
+            width: 4px;
+            border-radius: 2px;
+            transition: height 0.2s ease;
+        }
+
+        .indicator-line.pos { background-color: rgba(220, 38, 38, 0.35); }
+        .indicator-line.neg { background-color: rgba(37, 99, 235, 0.35); }
+
+        .columns-inner-wrap {
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            gap: clamp(24px, 5vw, 48px);
+            height: 100%;
+        }
+
+        .side-col-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .badge-line-wrap {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: height 0.2s ease;
+        }
+
+        .charge-col {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 2px;
+            width: clamp(74px, 15vw, 102px);
+        }
+
+        .ion-group-block {
+            position: relative;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            transition: all 0.2s ease;
+        }
+
+        .ion-group-block.cat-block { background-color: var(--cation-color); }
+        .ion-group-block.an-block { background-color: var(--anion-color); }
+
+        .unit-segment {
+            flex: 1;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .unit-segment:last-child { border-bottom: none; }
+
+        .ion-group-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: clamp(0.82rem, 1.4vw, 1.02rem);
+            white-space: nowrap;
+            pointer-events: none;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .balance-line {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            border-top: 2px dashed var(--balance-color);
+            pointer-events: none;
+            transition: bottom 0.2s ease;
+        }
+
+        .balance-line-text {
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+            font-weight: 700;
+            color: var(--balance-color);
+            background: var(--surface);
+            padding: 0 6px;
+            border-radius: 4px;
+        }
+
+        .balance-unbalanced-text {
+            position: absolute;
+            top: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+            font-weight: 700;
+            color: var(--ink-muted);
+        }
+
+        /* Formel Vorschau & Live-Formatiertes Eingabefeld */
+        .formula-box {
+            background: var(--surface);
+            border: 1.5px dashed var(--primary);
+            border-radius: var(--radius);
+            padding: clamp(0.35rem, 1.2vw, 0.6rem);
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .formula-box small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); display: block; }
+        .formula-box .formula { font-size: clamp(1.35rem, 3vw, 1.8rem); font-weight: 700; letter-spacing: 0.02em; min-height: 32px; }
+
+        .formula-input-wrapper {
+            position: relative;
+            width: 100%;
+            min-height: clamp(42px, 6vh, 52px);
             display: flex;
             align-items: center;
             justify-content: center;
-            word-break: break-word;
-            padding: 3px; 
-            box-sizing: border-box;
-            color: #000000 !important;
-        }
-        #tippFeld sup, #tippFeld sub {
-            font-size: 0.6em;
-            line-height: 0;
-            position: relative;
-            display: inline-block;
-        }
-        #tippFeld sup { bottom: 0.5em; }
-        #tippFeld sub { top: 0.45em; }
-
-        #tippFeld sub.kat-idx { color: #FF4444 !important; font-weight: bold; }
-        #tippFeld sub.ani-idx { color: #4444FF !important; font-weight: bold; }
-
-        .small-next-btn {
-            display: none;
-            height: 40px;
-            width: 95px;
-            background-color: #efefef;
-            color: black;
-            border: 1px solid #767676;
-            border-radius: 2px;
-            font-family: sans-serif;
-            font-size: 0.9em;
-            cursor: pointer;
-            box-sizing: border-box;
-            justify-self: end;
-        }
-        .small-next-btn:hover {
-            background-color: #e5e5e5;
-            border-color: #4f4f4f;
-        }
-
-        .main-grid {
-            margin-top: 15px;
-            width: 100%;
-        }
-        .buttons-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            width: 100%;
-        }
-        
-        #kationen {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            background: #FFEAEA;
-            border: 1px solid #FFCCCC;
-            border-radius: 6px;
-            padding: 6px;
-        }
-        #anionen {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            background: #EAEAff;
-            border: 1px solid #CCCCFF;
-            border-radius: 6px;
-            padding: 6px;
-        }
-        
-        #kationen button { 
-            height: 34px; 
-            width: 100%; 
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.9em;
-            padding: 2px;
-            box-sizing: border-box;
-            background-color: #FFDDDD;
-            border: 1px solid #FF8888;
-            color: #A02020;
-            border-radius: 4px;
-        }
-        #kationen button:hover { background-color: #FFAAAA; }
-        
-        #anionen button { 
-            height: 34px; 
-            width: 100%; 
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.9em;
-            padding: 2px;
-            box-sizing: border-box;
-            background-color: #DDDDFF;
-            border: 1px solid #8888FF;
-            color: #2020A0;
-            border-radius: 4px;
-        }
-        #anionen button:hover { background-color: #AAAAFF; }
-        
-        .big-btn {
-            height: 42px;
-            flex: 1 1 0;
-            max-width: 120px;
-            min-width: 0;
-            background-color: #efefef;
-            color: black;
-            border: 1px solid #767676;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85em;
-            padding: 2px 1px;
-            line-height: 1.15;
-            box-sizing: border-box;
-        }
-        .big-btn:hover {
-            background-color: #e5e5e5;
-        }
-
-        .testmodus-aktiv {
-            border: 2px dashed #767676 !important;
-            background-color: #f5f5f5 !important;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
             cursor: text;
-            border-radius: 6px;
+            margin-top: 4px;
+            transition: border-color 0.15s ease;
         }
-        .testmodus-aktiv:empty::before {
-            content: "Verhältnisformel...";
-            font-size: 0.6em;
-            color: #888;
+
+        .formula-input-wrapper:focus-within {
+            border-color: var(--primary);
+        }
+
+        .formatted-display {
+            font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+            font-weight: 700;
+            text-align: center;
+            word-break: break-word;
+            color: var(--ink);
+            padding: 0 0.5rem;
+            display: inline-block;
+            line-height: 1.3;
+            transition: padding-right 0.15s ease;
+        }
+
+        /* Platz sparen, wenn der Button eingeblendet ist */
+        .formula-input-wrapper:focus-within .formatted-display {
+            padding-right: 72px;
+        }
+
+        .formatted-display:empty::before {
+            content: "Formel eingeben...";
+            color: var(--ink-muted);
             font-style: italic;
             font-weight: normal;
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
         }
-        
-        #hiddenInput {
+
+        /* Blinkender Cursor nur bei aktivem Eingabefeld */
+        .formula-input-wrapper:focus-within .formatted-display::after {
+            content: '|';
+            display: inline-block;
+            color: var(--primary);
+            font-weight: 700;
+            margin-left: 2px;
+            vertical-align: baseline;
+            animation: cursor-blink 1s step-start infinite;
+        }
+
+        @keyframes cursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .hidden-text-input {
             position: absolute;
             top: 0;
             left: 0;
@@ -276,658 +583,1126 @@
             cursor: text;
         }
 
-        @media (max-width: 600px) {
-            .menu-row { gap: 4px; }
-            .big-btn { font-size: 0.72em; padding: 2px 1px; height: 38px; }
-            .block-display-row {
-                grid-template-columns: 40px 1fr 40px;
-                gap: 5px;
-            }
-            .formula-section-row {
-                grid-template-columns: 1fr auto 1fr;
-            }
-            .ion-count-box { font-size: 1.8em; }
-            .buttons-wrapper { gap: 8px; }
-            #kationen, #anionen { padding: 4px; gap: 3px; }
-            #tippFeld { font-size: 1.4em; min-height: 40px; }
-            .formula-wrapper { max-width: 100%; }
-            .small-next-btn { width: 70px; font-size: 0.85em; height: 36px; }
+        /* Done Button: Nur sichtbar bei aktivem Fokus */
+        .done-btn {
+            display: none;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: var(--bg);
+            color: var(--primary);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            padding: clamp(4px, 0.8vw, 6px) clamp(10px, 1.5vw, 16px);
+            font-size: clamp(0.75rem, 1.2vw, 0.88rem);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .formula-input-wrapper:focus-within .done-btn {
+            display: block;
+        }
+
+        .done-btn:hover, .done-btn:active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        /* Ionen Auswahl & Stepper */
+        .ion-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(0.35rem, 1.2vw, 0.75rem);
+            flex-shrink: 0;
+        }
+
+        .ion-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(0.3rem, 1.2vw, 0.65rem);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            gap: clamp(0.2rem, 1vw, 0.5rem);
+        }
+
+        .ion-card.cation { border-color: var(--cation-color); }
+        .ion-card.anion { border-color: var(--anion-color); }
+
+        .ion-header-label {
+            font-size: clamp(0.65rem, 1vw, 0.78rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .cation .ion-header-label { color: var(--cation-color); }
+        .anion .ion-header-label { color: var(--anion-color); }
+
+        .ion-chip-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Vergrößerte Ionen-Buttons */
+        .ion-chip {
+            font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+            font-weight: 700;
+            padding: clamp(5px, 1vw, 8px) clamp(8px, 1.5vw, 12px);
+            border-radius: 8px;
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            color: var(--ink);
+            cursor: pointer;
+            line-height: 1.15;
+            transition: all 0.15s ease;
+        }
+
+        .ion-chip:hover {
+            border-color: var(--primary);
+        }
+
+        .cation .ion-chip[aria-selected="true"] {
+            background: var(--cation-color);
+            color: #ffffff;
+            border-color: var(--cation-color);
+        }
+
+        .anion .ion-chip[aria-selected="true"] {
+            background: var(--anion-color);
+            color: #ffffff;
+            border-color: var(--anion-color);
+        }
+
+        .ion-name-single {
+            font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+            font-weight: 700;
+            color: var(--ink-muted);
+        }
+
+        .stepper-v {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(0.6rem, 1.5vw, 1rem);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.5rem, 1.5vw, 0.8rem);
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .stepper-arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .stepper-arrows button {
+            width: clamp(34px, 4vw, 42px);
+            height: clamp(24px, 3vh, 30px);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--ink);
+            font-weight: 700;
+            font-size: clamp(0.85rem, 1.3vw, 1rem);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background 0.1s ease;
+        }
+
+        .stepper-arrows button:hover {
+            background: var(--border);
+        }
+
+        .stepper-val-wrap {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.4rem, 1vw, 0.6rem);
+        }
+
+        .stepper-count {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 700;
+            min-width: 1.2rem;
+            text-align: center;
+        }
+
+        .cation .stepper-count { color: var(--cation-color); }
+        .anion .stepper-count { color: var(--anion-color); }
+
+        .stepper-formula {
+            font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+            font-weight: 700;
+        }
+
+        /* Feedback Area */
+        .feedback-area {
+            min-height: clamp(28px, 4vh, 38px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0.35rem 0.6rem;
+            border-radius: 8px;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            font-weight: 700;
+            line-height: 1.35;
+            flex-shrink: 0;
+        }
+
+        .feedback-area.ok { background: var(--ok-bg); color: var(--ok-ink); }
+        .feedback-area.bad { background: var(--bad-bg); color: var(--bad-ink); }
+        .feedback-area.empty { background: transparent; }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: clamp(0.55rem, 1.2vw, 0.85rem);
+            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            flex-shrink: 0;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+
+        .action-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .action-btn:active {
+            transform: scale(0.99);
         }
     </style>
-    <script>
-        'use strict';
-
-        var basisAnionen = [
-            { name: "Fluorid", formel: "F<sup>-</sup>", ladung: -1, molekuel: false },
-            { name: "Chlorid", formel: "Cl<sup>-</sup>", ladung: -1, molekuel: false },
-            { name: "Bromid", formel: "Br<sup>-</sup>", ladung: -1, molekuel: false },
-            { name: "Iodid", formel: "I<sup>-</sup>", ladung: -1, molekuel: false },
-            { name: "Oxid", formel: "O<sup>2-</sup>", ladung: -2, molekuel: false },
-            { name: "Sulfid", formel: "S<sup>2-</sup>", ladung: -2, molekuel: false },
-            { name: "Nitrid", formel: "N<sup>3-</sup>", ladung: -3, molekuel: false },
-            { name: "Phosphid", formel: "P<sup>3-</sup>", ladung: -3, molekuel: false }
-        ];
-
-        var basisKationen = [
-            { name: "Lithium", formel: "Li<sup>+</sup>", ladung: 1, molekuel: false },
-            { name: "Natrium", formel: "Na<sup>+</sup>", ladung: 1, molekuel: false },
-            { name: "Kalium", formel: "K<sup>+</sup>", ladung: 1, molekuel: false },
-            { name: "Calcium", formel: "Ca<sup>2+</sup>", ladung: 2, molekuel: false },
-            { name: "Magnesium", formel: "Mg<sup>2+</sup>", ladung: 2, molekuel: false },
-            { name: "Aluminium", formel: "Al<sup>3+</sup>", ladung: 3, molekuel: false },
-            { name: "Eisen(II)-", formel: "Fe<sup>2+</sup>", ladung: 2, molekuel: false },
-            { name: "Eisen(III)-", formel: "Fe<sup>3+</sup>", ladung: 3, molekuel: false },
-            { name: "Silber(I)-", formel: "Ag<sup>+</sup>", ladung: 1, molekuel: false }
-        ];
-
-        var expertenAnionenVollstaendig = [
-            { name: "Carbonat", formel: "CO<sub>3</sub><sup>2-</sup>", ladung: -2, molekuel: true },
-            { name: "Hydrogencarbonat", formel: "HCO<sub>3</sub><sup>-</sup>", ladung: -1, molekuel: true },
-            { name: "Hydroxid", formel: "OH<sup>-</sup>", ladung: -1, molekuel: true },
-            { name: "Nitrat", formel: "NO<sub>3</sub><sup>-</sup>", ladung: -1, molekuel: true },
-            { name: "Nitrit", formel: "NO<sub>2</sub><sup>-</sup>", ladung: -1, molekuel: true },
-            { name: "Permanganat", formel: "MnO<sub>4</sub><sup>-</sup>", ladung: -1, molekuel: true },
-            { name: "Phosphat", formel: "PO<sub>4</sub><sup>3-</sup>", ladung: -3, molekuel: true },
-            { name: "Sulfat", formel: "SO<sub>4</sub><sup>2-</sup>", ladung: -2, molekuel: true },
-            { name: "Sulfit", formel: "SO<sub>3</sub><sup>2-</sup>", ladung: -2, molekuel: true }
-        ];
-
-        var expertenKationenVollstaendig = [
-            { name: "Ammonium", formel: "NH<sub>4</sub><sup>+</sup>", ladung: 1, molekuel: true }
-        ];
-
-        var aktuelleAnionen = [];
-        var aktuelleKationen = [];
-
-        var frageKation = null;
-        var frageAnion = null;
-        var frageKationenZahl = 0;
-        var frageAnionenZahl = 0;
-        var antwortAnionenZahl = 0;
-        var antwortKationenZahl = 0;
-        
-        var automatik = true;
-        var istExperte = false;
-        var istRealschule = false;
-        var pkte = 0;
-        var zielPunkte = 1000;
-        var nr = 0;
-        var gameStarted = false;
-        var manuellerText = "";
-        var challengeErreicht = false;
-
-        function playSuccessSound() {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc1 = ctx.createOscillator(); var osc2 = ctx.createOscillator(); var gain = ctx.createGain();
-            osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
-            osc1.type = "sine"; osc2.type = "sine"; osc1.frequency.value = 600; osc2.frequency.value = 800;
-            gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.5);
-            osc1.start(); osc2.start(); osc1.stop(ctx.currentTime + 0.5); osc2.stop(ctx.currentTime + 0.5);
-        }
-
-        function playErrorSound() {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var osc = ctx.createOscillator(); var gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination); osc.type = "sawtooth"; osc.frequency.value = 200;
-            gain.gain.setValueAtTime(0.1, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.3);
-            osc.start(); osc.stop(ctx.currentTime + 0.3);
-        }
-
-        function playApplauseSound() {
-            var ctx = new (window.AudioContext || window.webkitAudioContext)();
-            var bufferSize = ctx.sampleRate * 1.5; 
-            var buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            var data = buffer.getChannelData(0);
-            
-            for (var i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-
-            for (var t = 0; t < 1.4; t += 0.08) {
-                var noise = ctx.createBufferSource();
-                noise.buffer = buffer;
-
-                var filter = ctx.createBiquadFilter();
-                filter.type = "bandpass";
-                filter.frequency.value = 1200 + Math.random() * 400;
-                filter.Q.value = 3.0;
-
-                var gain = ctx.createGain();
-                var startVal = 0.15 + Math.random() * 0.1;
-                gain.gain.setValueAtTime(startVal, ctx.currentTime + t);
-                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.04);
-
-                noise.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-
-                noise.start(ctx.currentTime + t);
-                noise.stop(ctx.currentTime + t + 0.05);
-            }
-        }
-
-        window.addEventListener("load", function() {
-            var tf = document.getElementById("tippFeld");
-            var hi = document.getElementById("hiddenInput");
-            
-            tf.addEventListener("click", function() {
-                if (!automatik) { 
-                    hi.focus(); 
-                    setTimeout(function() { tf.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 200);
-                }
-            });
-            hi.addEventListener("input", mobileInputAuswerten);
-            poolsAktualisieren();
-        });
-
-        function poolsAktualisieren() {
-            if (istExperte) {
-                var gefilterteEinfacheAnionen = basisAnionen.filter(function(anion) {
-                    return anion.name === "Sulfid" || anion.name === "Nitrid" || anion.name === "Phosphid";
-                });
-                aktuelleAnionen = gefilterteEinfacheAnionen.concat(expertenAnionenVollstaendig);
-                aktuelleKationen = basisKationen.concat(expertenKationenVollstaendig);
-            } else {
-                aktuelleAnionen = basisAnionen;
-                aktuelleKationen = basisKationen;
-            }
-        }
-
-        function zumStartbildschirm() {
-            gameStarted = false;
-            document.getElementById("gameplay-area").style.display = "none";
-            document.getElementById("welcome-area").style.display = "block";
-        }
-
-        function wechselSchulform() {
-            istRealschule = !istRealschule;
-            var text = "Schulform:<br><b>" + (istRealschule ? "Realschule" : "Gymnasium") + "</b>";
-            document.getElementById("schulformBtn").innerHTML = text;
-            document.getElementById("schulformBtnWelcome").innerHTML = text;
-            if (gameStarted) {
-                if (automatik) {
-                    autoFormel();
-                } else {
-                    var hi = document.getElementById("hiddenInput");
-                    if (hi) {
-                        mobileInputAuswerten({ target: { value: hi.value } });
-                    }
-                }
-            }
-        }
-
-        function wechselLevel() {
-            istExperte = !istExperte;
-            var text = "Level:<br><b>" + (istExperte ? "Fortgeschritten" : "Basis") + "</b>";
-            document.getElementById("levelBtn").innerHTML = text;
-            document.getElementById("levelBtnWelcome").innerHTML = text;
-            poolsAktualisieren();
-            if (gameStarted) {
-                if (confirm("Fortschritt zurücksetzen und Level wechseln?")) {
-                    zumStartbildschirm();
-                } else {
-                    istExperte = !istExperte;
-                    poolsAktualisieren();
-                }
-            }
-        }
-
-        function wechselAuto() {
-            var tf = document.getElementById("tippFeld");
-            if (automatik) {
-                automatik = false;
-                var btnText = "Modus:<br><b>Test</b>";
-                document.getElementById("wechsel").innerHTML = btnText;
-                document.getElementById("wechselWelcome").innerHTML = btnText;
-                tf.classList.add("testmodus-aktiv");
-            } else {
-                automatik = true;
-                var btnText = "Modus:<br><b>Lernen</b>";
-                document.getElementById("wechsel").innerHTML = btnText;
-                document.getElementById("wechselWelcome").innerHTML = btnText;
-                tf.classList.remove("testmodus-aktiv");
-            }
-            document.getElementById("punkte-display").style.visibility = automatik ? "hidden" : "visible";
-            
-            if (gameStarted) {
-                nr = 0; neueFrage(); frageSchreiben();
-            }
-        }
-
-        function formatiereIonInhalt(inner) {
-            if (!inner) return "";
-            var clean = inner.replace(/\s+/g, '');
-
-            // Rule 1: Polyatomare Ionen mit Stöchiometrie-Index UND Ladungszahl (z.B. CO32, CO32-, PO43, PO43-, SO42, SO42-, SO32, SO32-)
-            var mDouble = clean.match(/^([A-Za-z]+)([234])([23])([+-]?)$/);
-            if (mDouble) {
-                var base = mDouble[1];
-                var subIdx = mDouble[2];
-                var chargeNum = mDouble[3];
-                var chargeSign = mDouble[4];
-                return base + "<sub>" + subIdx + "</sub><sup>" + chargeNum + chargeSign + "</sup>";
-            }
-
-            // Rule 2: Einfache Ionen mit Mehrfachladung (z.B. Ca2, Ca2+, Mg2, Mg2+, Al3, Al3+, Fe2, Fe2+, Fe3, Fe3+, O2, O2-, S2, S2-, N3, N3-, P3, P3-)
-            var mMono = clean.match(/^(Ca|Mg|Al|Fe|O|S|N|P)([23])([+-]?)$/i);
-            if (mMono) {
-                var elem = mMono[1];
-                elem = elem.charAt(0).toUpperCase() + elem.slice(1).toLowerCase();
-                var chargeNum = mMono[2];
-                var chargeSign = mMono[3];
-                return elem + "<sup>" + chargeNum + chargeSign + "</sup>";
-            }
-
-            // Rule 3: Polyatomare Ionen mit Einfachladung oder Stöchiometrie (z.B. NH4, NH4+, HCO3, HCO3-, NO3, NO3-, NO2, NO2-, MnO4, MnO4-)
-            var mPoly = clean.match(/^([A-Za-z]+)([234])([+-]?)$/);
-            if (mPoly) {
-                var elemGroup = mPoly[1];
-                var subIdx = mPoly[2];
-                var chargeSign = mPoly[3];
-                var supText = chargeSign ? "<sup>" + chargeSign + "</sup>" : "";
-                return elemGroup + "<sub>" + subIdx + "</sub>" + supText;
-            }
-
-            // Rule 4: Einfache Ionen ohne Stöchiometrie-Index (z.B. Li+, Na+, K+, Ag+, F-, Cl-, Br-, I-, OH-)
-            var mSingle = clean.match(/^([A-Za-z]+)([+-]?)$/);
-            if (mSingle) {
-                var elemGroup = mSingle[1];
-                var chargeSign = mSingle[2];
-                var supText = chargeSign ? "<sup>" + chargeSign + "</sup>" : "";
-                return elemGroup + supText;
-            }
-
-            // Fallback: Explizite Ladung am Ende erkennen
-            var chargeMatch = clean.match(/(2\+|3\+|2-|3-|\+|-)\s*$/);
-            if (chargeMatch) {
-                var charge = chargeMatch[1];
-                var rest = clean.slice(0, chargeMatch.index);
-                var restFormatiert = rest.replace(/\d+/g, function(d) {
-                    return "<sub>" + d + "</sub>";
-                });
-                return restFormatiert + "<sup>" + charge + "</sup>";
-            }
-
-            // Standard-Fallback
-            return clean.replace(/\d+/g, function(d) {
-                return "<sub>" + d + "</sub>";
-            });
-        }
-
-        function formatierteFormelRealschule(val) {
-            if (!val) return "";
-            val = val.replace(/[–—−]/g, '-');
-
-            var result = "";
-            var lastIdx = 0;
-            var bracketRegex = /\(([^)]*)\)/g;
-            var match;
-
-            while ((match = bracketRegex.exec(val)) !== null) {
-                var prefix = val.substring(lastIdx, match.index);
-                result += prefix.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
-
-                var inner = match[1];
-                result += "(" + formatiereIonInhalt(inner) + ")";
-
-                lastIdx = bracketRegex.lastIndex;
-            }
-
-            var remainder = val.substring(lastIdx);
-            var unclosedMatch = remainder.match(/^(\s*)\((.*)$/);
-            if (unclosedMatch) {
-                var leadingSpace = unclosedMatch[1];
-                var unclosedInner = unclosedMatch[2];
-                result += leadingSpace + "(" + formatiereIonInhalt(unclosedInner);
-            } else {
-                result += remainder.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
-            }
-
-            return result;
-        }
-
-        function mobileInputAuswerten(e) {
-            if (automatik) return;
-            var val = e.target.value;
-            var formatiert = "";
-
-            if (istRealschule) {
-                formatiert = formatierteFormelRealschule(val);
-            } else {
-                for (var i = 0; i < val.length; i++) {
-                    var char = val.charAt(i);
-                    if (char >= '0' && char <= '9') { formatiert += "<sub>" + char + "</sub>"; } 
-                    else { formatiert += char; }
-                }
-            }
-
-            manuellerText = formatiert;
-            document.getElementById("tippFeld").innerHTML = manuellerText;
-        }
-
-        function drawFormel(isKation, aktuellesIon) {
-            var element = document.getElementById('canvas'); var context = element.getContext('2d');
-            context.textBaseline = 'middle';
-            var htmlText = aktuellesIon.formel;
-            var ladung = aktuellesIon.ladung; var dy = Math.abs(ladung) * 40;
-            var x = 0; var y = 0;
-
-            if (!isKation) {
-                x = 192; y = antwortAnionenZahl * dy;
-                context.fillStyle = "#BBBBFF"; context.strokeStyle = "#4444FF";
-            } else {
-                x = 0; y = antwortKationenZahl * dy;
-                context.fillStyle = "#FFBBBB"; context.strokeStyle = "#FF4444";
-            }
-            context.fillRect(x + 2, y + 2, 192 - 4, dy - 4); context.strokeRect(x + 2, y + 2, 192 - 4, dy - 4);
-            
-            context.fillStyle = isKation ? "#600000" : "#000060";
-            var centerY = y + dy / 2;
-            
-            var tempDiv = document.createElement("div");
-            tempDiv.innerHTML = htmlText;
-            
-            var totalWidth = 0;
-            for (var i = 0; i < tempDiv.childNodes.length; i++) {
-                var node = tempDiv.childNodes[i];
-                if (node.nodeType === Node.TEXT_NODE) {
-                    context.font = 'bold 20px sans-serif';
-                    totalWidth += context.measureText(node.textContent).width;
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    context.font = 'bold 13px sans-serif';
-                    totalWidth += context.measureText(node.textContent).width + 1;
-                }
-            }
-            
-            var currentX = x + (96 - totalWidth / 2);
-            for (var i = 0; i < tempDiv.childNodes.length; i++) {
-                var node = tempDiv.childNodes[i];
-                if (node.nodeType === Node.TEXT_NODE) {
-                    context.font = 'bold 20px sans-serif';
-                    context.fillText(node.textContent, currentX, centerY);
-                    currentX += context.measureText(node.textContent).width;
-                } else if (node.nodeType === Node.ELEMENT_NODE) {
-                    if (node.tagName.toLowerCase() === 'sub') {
-                        context.font = 'bold 13px sans-serif';
-                        context.fillText(node.textContent, currentX, centerY + 8);
-                        currentX += context.measureText(node.textContent).width + 1;
-                    } else if (node.tagName.toLowerCase() === 'sup') {
-                        context.font = 'bold 13px sans-serif';
-                        context.fillText(node.textContent, currentX, centerY - 9);
-                        currentX += context.measureText(node.textContent).width + 1;
-                    }
-                }
-            }
-        }
-
-        function textAusgabe(s, isSuccess) {
-            var tf = document.getElementById("titelFeld"); tf.innerHTML = s;
-            tf.style.color = isSuccess === true ? "#00CC00" : (isSuccess === false ? "#FF3333" : "#000000");
-            tf.tabIndex = -1; tf.focus();
-            tf.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function punkte(i) { 
-            if (automatik) return; 
-            
-            pkte = pkte + i; 
-            if(pkte < 0) pkte = 0;
-            document.getElementById("pkte").innerHTML = pkte.toString(); 
-            
-            if (pkte >= zielPunkte && !challengeErreicht) {
-                challengeErreicht = true;
-                playApplauseSound();
-                
-                setTimeout(function() {
-                    if (!istExperte) {
-                        alert("Glückwunsch! Du hast das Challenge-Ziel von 1000 Punkten erreicht!\n\nProbier jetzt mal den Fortgeschrittenen-Modus aus!");
-                    } else {
-                        alert("Großartig! Du hast das Challenge-Ziel von 1000 Punkten im Expertenlevel geknackt!");
-                    }
-                }, 400);
-            }
-        }
-
-        function formelPruefen() {
-            if (antwortAnionenZahl < frageAnionenZahl || antwortKationenZahl < frageKationenZahl) {
-                playErrorSound(); textAusgabe("Du hast noch nicht genug Ionen gewählt.", false); punkte(-50);
-            } else if ((antwortKationenZahl == frageKationenZahl) && (antwortAnionenZahl == frageAnionenZahl)) {
-                playSuccessSound(); textAusgabe("Super gelöst! Klicke auf 'Weiter'.", true); punkte(100);
-            }
-        }
-
-        function entferneTags(htmlString) {
-            return htmlString.replace(/<sup>.*?<\/sup>/g, '').replace(/<span.*?<\/span>/g, '');
-        }
-
-        function baueTeilFormel(ion, zahl, farbKlasse) {
-            var klammerKlasse = farbKlasse ? ' class="' + farbKlasse + '"' : '';
-
-            if (istRealschule) {
-                var idxText = (zahl > 1) ? "<sub" + klammerKlasse + ">" + zahl + "</sub>" : "";
-                return "(" + ion.formel + ")" + idxText;
-            } else {
-                var basis = entferneTags(ion.formel);
-                if (zahl > 1 && ion.molekuel) {
-                    return "(" + basis + ")<sub" + klammerKlasse + ">" + zahl + "</sub>";
-                } else if (zahl > 1) {
-                    return basis + "<sub" + klammerKlasse + ">" + zahl + "</sub>";
-                }
-                return basis;
-            }
-        }
-
-        function autoFormel() {
-            var kat = antwortKationenZahl > 0 ? baueTeilFormel(frageKation, antwortKationenZahl, "kat-idx") : "";
-            var ani = antwortAnionenZahl > 0 ? baueTeilFormel(frageAnion, antwortAnionenZahl, "ani-idx") : "";
-            
-            document.getElementById("tippFeld").innerHTML = kat + ani;
-            if (antwortPruefen() === 1) { playSuccessSound(); textAusgabe("Klasse gemacht! Das ist absolut richtig.", true); }
-        }
-
-        function formel() {
-            return document.getElementById("tippFeld").innerHTML.replace(/ class=".*?"/g, '').trim();
-        }
-
-        function normalisiereText(str) {
-            if (!str) return "";
-            return str
-                .replace(/<[^>]+>/g, '')
-                .replace(/\s+/g, '')
-                .replace(/[–—−]/g, '-')
-                .replace(/¹/g, '1').replace(/²/g, '2').replace(/³/g, '3').replace(/⁴/g, '4')
-                .replace(/₁/g, '1').replace(/₂/g, '2').replace(/₃/g, '3').replace(/₄/g, '4')
-                .replace(/⁺/g, '+').replace(/⁻/g, '-');
-        }
-
-        function antwortPruefen() {
-            var eing = formel();
-            if (eing != "") {
-                var zielKat = baueTeilFormel(frageKation, frageKationenZahl, null);
-                var zielAni = baueTeilFormel(frageAnion, frageAnionenZahl, null);
-                var zielFormel = (zielKat + zielAni).trim();
-                
-                var eingNorm = normalisiereText(eing);
-                var zielNorm = normalisiereText(zielFormel);
-                
-                if (zielNorm == eingNorm) return 1;
-                if (zielNorm.toLowerCase() == eingNorm.toLowerCase()) return 2;
-                return 0;
-            }
-            if (antwortKationenZahl == frageKationenZahl && antwortAnionenZahl == frageAnionenZahl) return 3;
-            return 0;
-        }
-
-        function naechsteFrage() {
-            var status = antwortPruefen();
-            if (status === 1) {
-                playSuccessSound(); textAusgabe("Klasse gemacht! Das ist absolut richtig.", true); punkte(100);
-                setTimeout(function() { neueFrage(); frageSchreiben(); }, 1500);
-            } else if (status === 2) {
-                playErrorSound(); textAusgabe("Schau noch einmal genau hin! Achte auf die korrekte Groß- und Kleinschreibung sowie die Klammern.", false); punkte(-50);
-            } else if (status === 3 && !automatik) {
-                playErrorSound(); textAusgabe("Die Ionen wurden korrekt gewählt. Bitte tippe nun noch die fertige Verhältnisformel in das Eingabefeld ein.", false);
-            } else {
-                playErrorSound();
-                if (automatik) { formelPruefen(); } 
-                else { textAusgabe("Leider nicht richtig! Versuche es noch einmal.", false); punkte(-100); }
-            }
-        }
-
-        function updateZahlenAnzeige() {
-            document.getElementById("kationenZahlLinks").innerHTML = antwortKationenZahl > 0 ? antwortKationenZahl : "";
-            document.getElementById("anionenZahlRechts").innerHTML = antwortAnionenZahl > 0 ? antwortAnionenZahl : "";
-        }
-
-        function auswertung(isKation, index) {
-            var gewaehltesIon = isKation ? aktuelleKationen[index] : aktuelleAnionen[index];
-            var korrekteArt = isKation ? (frageKation === gewaehltesIon) : (frageAnion === gewaehltesIon);
-
-            if (!korrekteArt) {
-                playErrorSound(); textAusgabe("Das " + gewaehltesIon.name + "-Ion brauchst du für diese Verhältnisformel nicht!", false); punkte(-10);
-            } else {
-                if (!isKation) {
-                    if (frageAnionenZahl > antwortAnionenZahl) { drawFormel(false, gewaehltesIon); antwortAnionenZahl++; } 
-                    else { playErrorSound(); textAusgabe("Du hast bereits genug Anionen gewählt!", false); }
-                } else {
-                    if (frageKationenZahl > antwortKationenZahl) { drawFormel(true, gewaehltesIon); antwortKationenZahl++; } 
-                    else { playErrorSound(); textAusgabe("Du hast bereits genug Kationen gewählt!", false); }
-                }
-            }
-            updateZahlenAnzeige();
-            if (automatik) { autoFormel(); } 
-            else { document.getElementById("tippFeld").innerHTML = manuellerText; }
-        }
-
-        function frageSchreiben() {
-            var kationName = frageKation.name;
-            var anionName = frageAnion.name;
-            var s = kationName.endsWith("-") ? kationName + anionName.toLowerCase() : kationName + anionName.toLowerCase();
-            
-            document.getElementById("titel").innerHTML = s;
-            textAusgabe("Setze die Verhältnisformel zusammen:", null);
-            document.getElementById("tippFeld").innerHTML = ""; manuellerText = ""; document.getElementById("hiddenInput").value = "";
-            updateZahlenAnzeige();
-        }
-
-        function neueFrage() {
-            var aniIndex = Math.floor(Math.random() * aktuelleAnionen.length);
-            var katIndex = Math.floor(Math.random() * aktuelleKationen.length);
-            frageAnion = aktuelleAnionen[aniIndex];
-            frageKation = aktuelleKationen[katIndex];
-
-            frageAnionenZahl = Math.abs(frageKation.ladung);
-            frageKationenZahl = Math.abs(frageAnion.ladung);
-            
-            if (frageAnionenZahl == frageKationenZahl && frageAnionenZahl != 1) {
-                frageAnionenZahl = 1; frageKationenZahl = 1;
-            }
-            
-            antwortAnionenZahl = 0; antwortKationenZahl = 0;
-            var canvas = document.getElementById("canvas"); canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-            nr++; document.getElementById("nr").innerHTML = nr.toString();
-        }
-
-        function initCanvas() {
-            var canvas = document.getElementById('canvas'); var ctx = canvas.getContext('2d');
-            var dpr = window.devicePixelRatio || 1;
-            canvas.width = 384 * dpr; canvas.height = 240 * dpr; ctx.scale(dpr, dpr);
-        }
-
-        function start() {
-            document.getElementById("welcome-area").style.display = "none";
-            document.getElementById("gameplay-area").style.display = "block";
-
-            initCanvas();
-
-            gameStarted = true; nr = 0; pkte = 0; challengeErreicht = false;
-            document.getElementById("pkte").innerHTML = pkte.toString();
-            
-            document.getElementById("punkte-display").style.visibility = automatik ? "hidden" : "visible";
-            
-            poolsAktualisieren(); neueFrage(); frageSchreiben();
-            document.getElementById("pruefen").style.display = "block";
-            
-            var kationenDiv = document.getElementById("kationen");
-            var anionenDiv = document.getElementById("anionen");
-            kationenDiv.innerHTML = ""; anionenDiv.innerHTML = "";
-
-            for (var i = 0; i < aktuelleKationen.length; i++) {
-                kationenDiv.innerHTML += '<button onClick="auswertung(true, ' + i + ')">' + aktuelleKationen[i].formel + '</button>';
-            }
-            for (var i = 0; i < aktuelleAnionen.length; i++) {
-                anionenDiv.innerHTML += '<button onClick="auswertung(false, ' + i + ')">' + aktuelleAnionen[i].formel + '</button>';
-            }
-        }
-    </script>
 </head>
 <body>
 
-<div class="game-container">
+<div id="app"></div>
 
-    <!-- Startseite -->
-    <div id="welcome-area">
-        <div class="menu-row">
-            <button class="big-btn" id="schulformBtnWelcome" onClick="wechselSchulform()">Schulform:<br><b>Gymnasium</b></button>
-            <button class="big-btn" id="wechselWelcome" onClick="wechselAuto()">Modus:<br><b>Lernen</b></button>
-            <button class="big-btn" id="levelBtnWelcome" onClick="wechselLevel()">Level:<br><b>Basis</b></button>
-        </div>
+<script>
+// --- Hilfsfunktion zum Einklappen der Tastatur ---
+function closeKeyboard(e) {
+    if (e) {
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    const inp = document.getElementById('hiddenFormulaInput');
+    if (inp) {
+        inp.blur();
+    }
+    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+        document.activeElement.blur();
+    }
+}
 
-        <div class="welcome-screen">
-            <h2>Salze: Verhältnisformel-Trainer</h2>
-            <p>Gleiche die Ionenladungen aus und finde die richtige Verhältnisformel.</p>
-            <p>Erreiche 1000 Punkte im Testmodus zum Gewinnen!</p>
-            <button class="main-start-btn" onClick="start()">Spiel starten →</button>
-        </div>
-    </div>
+// --- Web Audio API Feedback-Sounds ---
+let audioCtx = null;
 
-    <!-- Spielbereich -->
-    <div id="gameplay-area">
-        <div class="menu-row">
-            <button class="big-btn" id="start" onClick="zumStartbildschirm()">Neu starten</button>
-            <button class="big-btn" id="schulformBtn" onClick="wechselSchulform()">Schulform:<br><b>Gymnasium</b></button>
-            <button class="big-btn" id="wechsel" onClick="wechselAuto()">Modus:<br><b>Lernen</b></button>
-            <button class="big-btn" id="levelBtn" onClick="wechselLevel()">Level:<br><b>Basis</b></button>
-        </div>
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
 
-        <div class="header-row">
-            <div>Salz-Nr. <span id="nr">1</span></div>
-            <div id="titelFeld">Setze die Verhältnisformel zusammen:</div>
-            <div id="punkte-display">Punkte: <span id="pkte">0</span> / 1000</div>
-        </div>
+function playSound(type) {
+    try {
+        initAudio();
+        if (!audioCtx) return;
+        
+        const now = audioCtx.currentTime;
 
-        <div style="margin: 5px 0;">
-            <span id="titel" style="font-size: 2em; font-weight: bold; display: block; min-height: 35px; color: #333;"></span>
-        </div>
+        if (type === 'correct') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now);
+            osc.frequency.setValueAtTime(783.99, now + 0.1);
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        } else if (type === 'wrong') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(160, now);
+            osc.frequency.exponentialRampToValueAtTime(110, now + 0.25);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.25);
+        } else if (type === 'fanfare') {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const startTime = now + idx * 0.08;
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, startTime);
+                gain.gain.setValueAtTime(0.18, startTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + 0.4);
+            });
+        }
+    } catch (e) {
+        console.log("Audio nicht unterstützt oder blockiert", e);
+    }
+}
 
-        <div class="block-display-row">
-            <div class="ion-count-box" id="kationenZahlLinks" style="color: #FF4444;"></div>
-            <div class="canvas-container">
-                <canvas id="canvas"></canvas>
-            </div>
-            <div class="ion-count-box" id="anionenZahlRechts" style="color: #4444FF;"></div>
-        </div>
+// --- Exakter Ionen-Stamm ---
+const BASIS_CATIONS = [
+    { s: "Li", c: 1, n: "Lithium-Ion" },
+    { s: "Na", c: 1, n: "Natrium-Ion" },
+    { s: "K", c: 1, n: "Kalium-Ion" },
+    { s: "Ca", c: 2, n: "Calcium-Ion" },
+    { s: "Mg", c: 2, n: "Magnesium-Ion" },
+    { s: "Ba", c: 2, n: "Barium-Ion" },
+    { s: "Al", c: 3, n: "Aluminium-Ion" }
+];
 
-        <div class="formula-section-row">
-            <div></div> 
-            <div class="canvas-container">
-                <div class="formula-wrapper">
-                    <div id="tippFeld"></div>
-                    <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+const BASIS_ANIONS = [
+    { s: "F", c: -1, n: "Fluorid-Ion" },
+    { s: "Cl", c: -1, n: "Chlorid-Ion" },
+    { s: "Br", c: -1, n: "Bromid-Ion" },
+    { s: "I", c: -1, n: "Iodid-Ion" },
+    { s: "O", c: -2, n: "Oxid-Ion" },
+    { s: "S", c: -2, n: "Sulfid-Ion" },
+    { s: "N", c: -3, n: "Nitrid-Ion" },
+    { s: "P", c: -3, n: "Phosphid-Ion" }
+];
+
+const EXPERT_CATIONS = [
+    ...BASIS_CATIONS,
+    { s: "Fe", c: 2, n: "Eisen(II)-Ion" },
+    { s: "Fe", c: 3, n: "Eisen(III)-Ion" },
+    { s: "Cu", c: 1, n: "Kupfer(I)-Ion" },
+    { s: "Cu", c: 2, n: "Kupfer(II)-Ion" },
+    { s: "NH_4", c: 1, n: "Ammonium-Ion", poly: true }
+];
+
+// Im Fortgeschrittenen-Modus zur Übersichtlichkeit ohne F-, Cl-, Br-, I- und O2-
+const EXPERT_ANIONS = [
+    { s: "S", c: -2, n: "Sulfid-Ion" },
+    { s: "N", c: -3, n: "Nitrid-Ion" },
+    { s: "P", c: -3, n: "Phosphid-Ion" },
+    { s: "SO_3", c: -2, n: "Sulfit-Ion", poly: true },  
+    { s: "SO_4", c: -2, n: "Sulfat-Ion", poly: true },  
+    { s: "NO_2", c: -1, n: "Nitrit-Ion", poly: true },  
+    { s: "NO_3", c: -1, n: "Nitrat-Ion", poly: true },  
+    { s: "PO_4", c: -3, n: "Phosphat-Ion", poly: true },
+    { s: "CO_3", c: -2, n: "Carbonat-Ion", poly: true },
+    { s: "HCO_3", c: -1, n: "Hydrogencarbonat-Ion", poly: true }, 
+    { s: "OH", c: -1, n: "Hydroxid-Ion", poly: true },  
+    { s: "MnO_4", c: -1, n: "Permanganat-Ion", poly: true } 
+];
+
+// Dynamische Hilfsfunktionen zur sicheren Verknüpfung von Ionen
+const getCat = (sym, charge) => EXPERT_CATIONS.find(c => c.s === sym && (charge === undefined || c.c === charge));
+const getAn = (sym) => EXPERT_ANIONS.find(a => a.s === sym) || BASIS_ANIONS.find(a => a.s === sym);
+
+const BASIS_SALTS = [
+    { name: "Natriumchlorid", cat: getCat("Na"), an: getAn("Cl") },
+    { name: "Magnesiumoxid", cat: getCat("Mg"), an: getAn("O") },
+    { name: "Calciumfluorid", cat: getCat("Ca"), an: getAn("F") },
+    { name: "Aluminiumfluorid", cat: getCat("Al"), an: getAn("F") },
+    { name: "Natriumoxid", cat: getCat("Na"), an: getAn("O") },
+    { name: "Aluminiumoxid", cat: getCat("Al"), an: getAn("O") },
+    { name: "Kaliumbromid", cat: getCat("K"), an: getAn("Br") },
+    { name: "Bariumchlorid", cat: getCat("Ba"), an: getAn("Cl") },
+    { name: "Lithiumnitrid", cat: getCat("Li"), an: getAn("N") },
+    { name: "Calciumphosphid", cat: getCat("Ca"), an: getAn("P") }
+];
+
+const ADVANCED_SALTS = [
+    { name: "Eisen(III)-sulfid", cat: getCat("Fe", 3), an: getAn("S") },
+    { name: "Eisen(II)-sulfat", cat: getCat("Fe", 2), an: getAn("SO_4") },
+    { name: "Kupfer(II)-sulfat", cat: getCat("Cu", 2), an: getAn("SO_4") },
+    { name: "Kupfer(I)-sulfid", cat: getCat("Cu", 1), an: getAn("S") },
+    { name: "Calciumhydroxid", cat: getCat("Ca"), an: getAn("OH") },
+    { name: "Natriumsulfat", cat: getCat("Na"), an: getAn("SO_4") },
+    { name: "Ammoniumnitrat", cat: getCat("NH_4"), an: getAn("NO_3") },
+    { name: "Aluminiumsulfat", cat: getCat("Al"), an: getAn("SO_4") },
+    { name: "Calciumphosphat", cat: getCat("Ca"), an: getAn("PO_4") },
+    { name: "Kaliumnitrat", cat: getCat("K"), an: getAn("NO_3") },
+    { name: "Magnesiumcarbonat", cat: getCat("Mg"), an: getAn("CO_3") },
+    { name: "Natriumhydrogencarbonat", cat: getCat("Na"), an: getAn("HCO_3") },
+    { name: "Kaliumpermanganat", cat: getCat("K"), an: getAn("MnO_4") },
+    { name: "Natriumsulfit", cat: getCat("Na"), an: getAn("SO_3") },
+    { name: "Ammoniumsulfat", cat: getCat("NH_4"), an: getAn("SO_4") }
+];
+
+// --- App-Status ---
+const S = {
+    school: 'gym',       // 'gym' | 'real'
+    level: 'basis',      // 'basis' | 'advanced'
+    stage: 1,            // 1 | 2 | 3 | 4
+    screen: 'start',     // 'start' | 'task' | 'end'
+    taskIdx: 0,
+    tasks: [],
+    catCount: 1,
+    anCount: 1,
+    selectedCatIdx: 0,
+    selectedAnIdx: 0,
+    typedFormula: '',
+    infoOpen: false,
+    fb: null,
+    done: false,
+    score: 0
+};
+
+// --- Hilfsfunktionen ---
+function gcd(a, b) {
+    return b === 0 ? a : gcd(b, a % b);
+}
+
+function getStageName(stage) {
+    switch(stage) {
+        case 1: return "Einführung";
+        case 2: return "Lernen";
+        case 3: return "Üben";
+        case 4: return "Check";
+        default: return "";
+    }
+}
+
+function fmtIon(symbol, charge) {
+    const sign = charge > 0 ? '+' : '-';
+    const abs = Math.abs(charge);
+    const cStr = abs === 1 ? sign : `${abs}${sign}`;
+    const cleanSym = symbol.replace(/_([0-9a-z]+)/gi, '<sub>$1</sub>');
+    return `${cleanSym}<sup>${cStr}</sup>`;
+}
+
+// Prüft dynamisch, ob ein Prefix zu einem mehratomigen Ion gehört
+function isPolyPrefix(prefix) {
+    const polyPrefixes = ["NH", "NO", "HCO", "MnO", "SO", "PO", "CO", "OH"];
+    return polyPrefixes.some(p => p.toLowerCase() === prefix.toLowerCase());
+}
+
+// Präzises Parsing von Formel-Indizes und Ionenladungen innerhalb von Klammern
+function formatiereIonInhalt(inner) {
+    if (!inner) return "";
+    var clean = inner.replace(/\s+/g, '');
+    if (!clean) return "";
+
+    var formulaStr = "";
+    var chargeStr = "";
+
+    if (/[+-]$/.test(clean)) {
+        var sign = clean.slice(-1);
+        var rest = clean.slice(0, -1);
+
+        var doubleDigitMatch = rest.match(/^(.*)(\d)(\d)$/);
+        if (doubleDigitMatch) {
+            formulaStr = doubleDigitMatch[1] + doubleDigitMatch[2];
+            chargeStr = doubleDigitMatch[3] + sign;
+        } else {
+            var singleDigitMatch = rest.match(/^(.*)(\d)$/);
+            if (singleDigitMatch) {
+                var prefix = singleDigitMatch[1];
+                var digit = singleDigitMatch[2];
+
+                if (isPolyPrefix(prefix)) {
+                    formulaStr = prefix + digit;
+                    chargeStr = sign;
+                } else {
+                    formulaStr = prefix;
+                    chargeStr = digit + sign;
+                }
+            } else {
+                formulaStr = rest;
+                chargeStr = sign;
+            }
+        }
+    } else {
+        var doubleDigitMatch = clean.match(/^(.*)(\d)(\d)$/);
+        if (doubleDigitMatch) {
+            formulaStr = doubleDigitMatch[1] + doubleDigitMatch[2];
+            chargeStr = doubleDigitMatch[3];
+        } else {
+            var singleDigitMatch = clean.match(/^(.*)(\d)$/);
+            if (singleDigitMatch) {
+                var prefix = singleDigitMatch[1];
+                var digit = singleDigitMatch[2];
+
+                if (isPolyPrefix(prefix)) {
+                    formulaStr = prefix + digit;
+                    chargeStr = "";
+                } else {
+                    formulaStr = prefix;
+                    chargeStr = digit;
+                }
+            } else {
+                formulaStr = clean;
+                chargeStr = "";
+            }
+        }
+    }
+
+    var formattedFormula = formulaStr.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
+    var formattedCharge = chargeStr ? "<sup>" + chargeStr + "</sup>" : "";
+
+    return formattedFormula + formattedCharge;
+}
+
+// Live-Formatierer für den Realschulmodus
+function formatierteFormelRealschule(val) {
+    if (!val) return "";
+    val = val.replace(/[–—−]/g, '-');
+
+    var result = "";
+    var i = 0;
+    var len = val.length;
+
+    while (i < len) {
+        if (val.charAt(i) === '(') {
+            var closeIdx = val.indexOf(')', i + 1);
+            var nextOpenIdx = val.indexOf('(', i + 1);
+
+            if (closeIdx !== -1 && (nextOpenIdx === -1 || closeIdx < nextOpenIdx)) {
+                var inner = val.substring(i + 1, closeIdx);
+                result += "(" + formatiereIonInhalt(inner) + ")";
+                i = closeIdx + 1;
+            } else {
+                var endUnclosed = (nextOpenIdx !== -1) ? nextOpenIdx : len;
+                var unclosedInner = val.substring(i + 1, endUnclosed);
+                result += "(" + formatiereIonInhalt(unclosedInner);
+                i = endUnclosed;
+            }
+        } else {
+            var nextParen = val.indexOf('(', i);
+            var segment = (nextParen !== -1) ? val.substring(i, nextParen) : val.substring(i);
+            result += segment.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
+            i = (nextParen !== -1) ? nextParen : len;
+        }
+    }
+
+    return result;
+}
+
+function formatTypedInput(val) {
+    if (!val) return '';
+    val = val.replace(/\s+/g, '');
+    if (S.school === 'real') {
+        return formatierteFormelRealschule(val);
+    } else {
+        var formatiert = "";
+        for (var i = 0; i < val.length; i++) {
+            var char = val.charAt(i);
+            if (char >= '0' && char <= '9') { formatiert += "<sub>" + char + "</sub>"; } 
+            else { formatiert += char; }
+        }
+        return formatiert;
+    }
+}
+
+function buildRawTargetFormula(catObj, anObj, cCount, aCount, school) {
+    if (!catObj || !anObj) return '';
+    const cleanSym = s => s.replace(/_/g, '');
+
+    if (school === 'gym') {
+        let cPart = cleanSym(catObj.s);
+        if (cCount > 1) cPart = catObj.poly ? `(${cPart})${cCount}` : `${cPart}${cCount}`;
+
+        let aPart = cleanSym(anObj.s);
+        if (aCount > 1) aPart = anObj.poly ? `(${aPart})${aCount}` : `${aPart}${aCount}`;
+
+        return cPart + aPart;
+    } else {
+        const cChargeStr = catObj.c === 1 ? '+' : `${catObj.c}+`;
+        const cIon = `(${cleanSym(catObj.s)}${cChargeStr})`;
+        const cPart = cCount > 1 ? `${cIon}${cCount}` : cIon;
+
+        const absA = Math.abs(anObj.c);
+        const aChargeStr = absA === 1 ? '-' : `${absA}-`;
+        const aIon = `(${cleanSym(anObj.s)}${aChargeStr})`;
+        const aPart = aCount > 1 ? `${aIon}${aCount}` : aIon;
+
+        return cPart + aPart;
+    }
+}
+
+function buildFormulaHTML(catObj, anObj, cCount, aCount, school) {
+    if (!catObj || !anObj) return '—';
+    const clean = s => s.replace(/_([0-9a-z]+)/gi, '<sub>$1</sub>');
+
+    const cSub = cCount > 1 ? `<sub style="color: var(--cation-color); font-weight: bold;">${cCount}</sub>` : '';
+    const aSub = aCount > 1 ? `<sub style="color: var(--anion-color); font-weight: bold;">${aCount}</sub>` : '';
+
+    if (school === 'gym') {
+        let cSym = clean(catObj.s);
+        if (cCount > 1) cSym = catObj.poly ? `(${cSym})${cSub}` : `${cSym}${cSub}`;
+
+        let aSym = clean(anObj.s);
+        if (aCount > 1) aSym = anObj.poly ? `(${aSym})${aSub}` : `${aSym}${aSub}`;
+
+        return cSym + aSym;
+    } else {
+        const cChargeStr = catObj.c === 1 ? '+' : `${catObj.c}+`;
+        const cSym = clean(catObj.s);
+        const cIon = `(${cSym}<sup>${cChargeStr}</sup>)`;
+        const cPart = cCount > 1 ? `${cIon}${cSub}` : cIon;
+
+        const absA = Math.abs(anObj.c);
+        const aChargeStr = absA === 1 ? '-' : `${absA}-`;
+        const aSym = clean(anObj.s);
+        const aIon = `(${aSym}<sup>${aChargeStr}</sup>)`;
+        const aPart = aCount > 1 ? `${aIon}${aSub}` : aIon;
+
+        return cPart + aPart;
+    }
+}
+
+// --- Steuerung ---
+function startStage(stageNum) {
+    initAudio();
+    S.stage = stageNum;
+    
+    const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
+    const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
+    const rawPool = S.level === 'basis' ? BASIS_SALTS : ADVANCED_SALTS;
+
+    // Filter stellt sicher, dass nur Salze gewählt werden, deren Ionen in den Buttons wählbar sind
+    const pool = rawPool.filter(salt => 
+        catList.some(c => c.s === salt.cat.s && c.c === salt.cat.c) &&
+        anList.some(a => a.s === salt.an.s)
+    );
+    
+    const taskCount = S.stage === 1 ? 3 : Math.min(10, pool.length);
+    S.tasks = pool.sort(() => Math.random() - 0.5).slice(0, taskCount);
+    S.taskIdx = 0;
+    S.score = 0;
+
+    loadTask();
+}
+
+function loadTask() {
+    S.screen = 'task';
+    S.catCount = 1;
+    S.anCount = 1;
+    S.selectedCatIdx = 0;
+    S.selectedAnIdx = 0;
+    S.typedFormula = '';
+    S.fb = null;
+    S.done = false;
+    
+    S.infoOpen = (S.taskIdx === 0);
+    render();
+}
+
+function getActiveIons() {
+    const targetSalt = S.tasks[S.taskIdx];
+    const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
+    const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
+
+    if (S.stage === 1) {
+        return { cat: targetSalt.cat, an: targetSalt.an };
+    } else {
+        return { 
+            cat: catList[S.selectedCatIdx] || catList[0], 
+            an: anList[S.selectedAnIdx] || anList[0] 
+        };
+    }
+}
+
+function checkTypedSolution(userInput, targetSalt) {
+    const input = userInput.replace(/\s+/g, '');
+    if (!input) {
+        return { ok: false, msg: '⚠️ Bitte gib eine Verhältnisformel ein.' };
+    }
+
+    const g = gcd(targetSalt.cat.c, Math.abs(targetSalt.an.c));
+    const correctCatCount = Math.abs(targetSalt.an.c) / g;
+    const correctAnCount = targetSalt.cat.c / g;
+
+    const rawTarget = buildRawTargetFormula(targetSalt.cat, targetSalt.an, correctCatCount, correctAnCount, S.school);
+
+    if (input === rawTarget) {
+        return { ok: true, msg: `✓ Richtig! Die Verhältnisformel lautet ${formatTypedInput(rawTarget)}.` };
+    }
+
+    // Spezifische Prüfung auf den Index 1
+    if (input.includes('1')) {
+        const exampleMsg = S.school === 'real' 
+            ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' 
+            : 'NaCl statt Na₁Cl₁';
+        return { 
+            ok: false, 
+            msg: `⚠️ Der Index 1 wird in chemischen Formeln nicht geschrieben und muss weggelassen werden (z. B. ${exampleMsg}).` 
+        };
+    }
+
+    if (input.toLowerCase() === rawTarget.toLowerCase()) {
+        return { ok: false, msg: '⚠️ Achte auf die Groß- und Kleinschreibung (z. B. Al statt al).' };
+    }
+
+    // Prüfung, ob überhaupt die passenden Ionen enthalten sind
+    const catBase = targetSalt.cat.s.replace(/_/g, '').toLowerCase();
+    const anBase = targetSalt.an.s.replace(/_/g, '').toLowerCase();
+    const inputLower = input.toLowerCase();
+
+    const catName = targetSalt.cat.n;
+    const anName = targetSalt.an.n;
+    const saltName = targetSalt.name;
+
+    const toPlural = (name) => name.endsWith('Ion') ? `${name}en` : `${name} Ionen`;
+    const catNamePlural = toPlural(catName);
+    const anNamePlural = toPlural(anName);
+
+    if (!inputLower.includes(catBase) || !inputLower.includes(anBase)) {
+        return { 
+            ok: false, 
+            msg: `⚠️ Die Formel enthält nicht die passenden Ionen für ${saltName}. Benötigt werden ${catNamePlural} und ${anNamePlural}.` 
+        };
+    }
+
+    // Realschulmodus: Prüfung auf Ionenschreibweise (Klammern und Ladungen)
+    if (S.school === 'real') {
+        if (!input.includes('(') || !input.includes(')') || (!input.includes('+') && !input.includes('-'))) {
+            return { 
+                ok: false, 
+                msg: '⚠️ Nutze im Realschulmodus die Ionenschreibweise: Setze die Ionen mit ihren Ladungen in Klammern, z. B. (NH₄⁺)₂(SO₄²⁻).' 
+            };
+        }
+    }
+
+    // Gymnasiumsmodus: Klammern bei mehratomigen Ionen mit Index > 1
+    if (S.school === 'gym') {
+        if ((targetSalt.cat.poly && correctCatCount > 1) || (targetSalt.an.poly && correctAnCount > 1)) {
+            if (!input.includes('(') || !input.includes(')')) {
+                return { ok: false, msg: '⚠️ Denke an die Klammern bei mehratomigen Ionen, z. B. (OH)₂.' };
+            }
+        }
+    }
+
+    // Indizes prüfen
+    const inputNoDigits = input.replace(/[0-9]/g, '');
+    const targetNoDigits = rawTarget.replace(/[0-9]/g, '');
+    if (inputNoDigits.toLowerCase() === targetNoDigits.toLowerCase()) {
+        return { ok: false, msg: '⚠️ Die Indizes (Anzahl der Ionen) stimmen noch nicht.' };
+    }
+
+    return { ok: false, msg: '⚠️ Die Formel ist noch nicht korrekt. Überprüfe Symbole, Klammern und Indizes.' };
+}
+
+function checkSolution() {
+    const targetSalt = S.tasks[S.taskIdx];
+    const { cat, an } = getActiveIons();
+
+    if (S.stage === 1 || S.stage === 2) {
+        const catMatch = cat.s === targetSalt.cat.s;
+        const anMatch = an.s === targetSalt.an.s;
+
+        if (!catMatch || !anMatch) {
+            S.fb = { type: 'bad', msg: '⚠️ Ionen passen nicht zum Salznamen.' };
+            playSound('wrong');
+        } else {
+            const pos = S.catCount * cat.c;
+            const neg = S.anCount * Math.abs(an.c);
+
+            if (pos !== neg) {
+                S.fb = { type: 'bad', msg: '⚠️ Ladungen noch nicht ausgeglichen.' };
+                playSound('wrong');
+            } else if (gcd(S.catCount, S.anCount) > 1) {
+                S.fb = { type: 'bad', msg: '⚠️ Formel bitte noch kürzen (z. B. 1:1 statt 2:2).' };
+                playSound('wrong');
+            } else {
+                S.fb = { type: 'ok', msg: `✓ Richtig! Ladungen vollständig ausgeglichen.` };
+                S.done = true;
+                S.score += 100;
+                playSound('correct');
+            }
+        }
+    } else {
+        const res = checkTypedSolution(S.typedFormula, targetSalt);
+        S.fb = { type: res.ok ? 'ok' : 'bad', msg: res.msg };
+        if (res.ok) {
+            S.done = true;
+            S.score += 100;
+            playSound('correct');
+        } else {
+            playSound('wrong');
+        }
+    }
+    render();
+}
+
+function nextTask() {
+    S.taskIdx++;
+    if (S.taskIdx < S.tasks.length) {
+        loadTask();
+    } else {
+        S.screen = 'end';
+        playSound('fanfare');
+        render();
+    }
+}
+
+// --- Visualisierung der Ionenbalken ---
+function renderChargeVisualizer() {
+    const { cat, an } = getActiveIons();
+    if (!cat || !an) return '';
+
+    const catCharge = cat.c;
+    const anCharge = Math.abs(an.c);
+
+    const posTotal = S.catCount * catCharge;
+    const negTotal = S.anCount * anCharge;
+
+    const unitH = 15;
+    const gap = 2;
+
+    function renderBlocks(count, charge, colorClass, ion) {
+        let blocksHtml = '';
+        for (let i = 0; i < count; i++) {
+            let unitSegments = '';
+            for (let u = 0; u < charge; u++) {
+                unitSegments += `<div class="unit-segment"></div>`;
+            }
+            const blockH = charge * unitH + (charge - 1) * gap;
+            blocksHtml += `
+                <div class="ion-group-block ${colorClass}" style="height: ${blockH}px;">
+                    ${unitSegments}
+                    <div class="ion-group-label">${fmtIon(ion.s, ion.c)}</div>
+                </div>
+            `;
+        }
+        return blocksHtml;
+    }
+
+    const isBalanced = (posTotal === negTotal) && posTotal > 0;
+    
+    const catTowerH = posTotal * unitH + (posTotal - 1) * gap;
+    const anTowerH = negTotal * unitH + (negTotal - 1) * gap;
+
+    return `
+        <div class="visualizer-card">
+            ${!isBalanced ? `<div class="balance-unbalanced-text">⚠️ Verbindung ist noch nicht elektrisch neutral.</div>` : ''}
+            <div class="charge-columns-wrap">
+                <div class="columns-inner-wrap">
+                    
+                    <!-- Kationen (Rot) -->
+                    <div class="side-col-wrapper">
+                        <div class="badge-line-wrap" style="height: ${catTowerH}px;">
+                            <div class="charge-sum-badge pos">${S.catCount}</div>
+                            <div class="indicator-line pos" style="height: 100%;"></div>
+                        </div>
+                        <div class="charge-col cation-col">
+                            ${renderBlocks(S.catCount, catCharge, 'cat-block', cat)}
+                        </div>
+                    </div>
+
+                    <!-- Anionen (Blau) -->
+                    <div class="side-col-wrapper">
+                        <div class="charge-col anion-col">
+                            ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
+                        </div>
+                        <div class="badge-line-wrap" style="height: ${anTowerH}px;">
+                            <div class="indicator-line neg" style="height: 100%;"></div>
+                            <div class="charge-sum-badge neg">${S.anCount}</div>
+                        </div>
+                    </div>
+
+                    <!-- Ausgleichslinie -->
+                    ${isBalanced ? `
+                        <div class="balance-line" style="bottom: ${catTowerH + 3}px;">
+                            <span class="balance-line-text">✓ Ladungen sind ausgeglichen!</span>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
-            <button class="small-next-btn" id="pruefen" onClick="naechsteFrage()">Weiter</button>
+        </div>
+    `;
+}
+
+// --- Render-Logik ---
+function render() {
+    const app = document.getElementById('app');
+    if (S.screen === 'start') app.innerHTML = renderStart();
+    else if (S.screen === 'task') app.innerHTML = renderTask();
+    else app.innerHTML = renderEnd();
+}
+
+function renderStart() {
+    return `
+    <div class="start-container">
+        <div>
+            <h1 class="hero-title">Verhältnisformel-Trainer</h1>
+            <p class="hero-subtitle">Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!</p>
         </div>
 
-        <div class="main-grid">
-            <div class="buttons-wrapper">
-                <div id="kationen"></div>
-                <div id="anionen"></div>
+        <div class="preset-card">
+            <div class="preset-title">⚙️ Voreinstellungen</div>
+            
+            <div>
+                <div class="section-label">Schultyp</div>
+                <div class="tiles-row">
+                    <button class="tile-btn" aria-pressed="${S.school === 'gym'}" onclick="S.school='gym'; render();">
+                        <b>Gymnasium</b>
+                        <small>Klassisch z. B. NaCl</small>
+                    </button>
+                    <button class="tile-btn" aria-pressed="${S.school === 'real'}" onclick="S.school='real'; render();">
+                        <b>Realschule</b>
+                        <small>Ionenschreibweise z. B. (Na⁺)(Cl⁻)</small>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-label">Schwierigkeitsgrad</div>
+                <div class="tiles-row">
+                    <button class="tile-btn" aria-pressed="${S.level === 'basis'}" onclick="S.level='basis'; render();">
+                        <b>Basis</b>
+                        <small>Nur einfache Hauptgruppen-Ionen</small>
+                    </button>
+                    <button class="tile-btn" aria-pressed="${S.level === 'advanced'}" onclick="S.level='advanced'; render();">
+                        <b>Fortgeschritten</b>
+                        <small>Inkl. Nebengruppen-Ionen und Molekül-Ionen</small>
+                    </button>
+                </div>
             </div>
         </div>
+
+        <div>
+            <div class="section-label" style="margin-bottom: 0.3rem;">Level wählen</div>
+            <div class="level-grid">
+                <div class="level-card" onclick="startStage(1)">
+                    <b>Level 1: Einführung</b>
+                    <small>Grundlagen & Ladungsausgleich</small>
+                </div>
+                <div class="level-card" onclick="startStage(2)">
+                    <b>Level 2: Lernen</b>
+                    <small>Richtige Ionen auswählen</small>
+                </div>
+                <div class="level-card" onclick="startStage(3)">
+                    <b>Level 3: Üben</b>
+                    <small>Verhältnisformeln schreiben</small>
+                </div>
+                <div class="level-card" onclick="startStage(4)">
+                    <b>Level 4: Check</b>
+                    <small>Ohne Hilfsmittel</small>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function getInfoText(stage) {
+    switch(stage) {
+        case 1: return "Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen der Kationen (+) und der Anionen (-) aus. Passe die Anzahl der Ionen mit ▲ und ▼ an, bis beide Balken gleich hoch sind und damit die Ladungen ausgeglichen sind.";
+        case 2: return "Wähle zuerst die passenden Ionen für das Salz aus und gleiche dann die Ladungen aus.";
+        case 3: return "Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.";
+        case 4: return "Du bist nun auf dich allein gestellt! Tippe die fertige Verhältnisformel direkt ein.";
+    }
+}
+
+function renderInfoOverlay() {
+    if (!S.infoOpen) return '';
+    return `
+        <div class="info-backdrop" onclick="S.infoOpen = false; render();">
+            <div class="info-modal" onclick="event.stopPropagation(); S.infoOpen = false; render();">
+                <div class="info-modal-header">
+                    <span style="font-size: 1.1rem;">💡</span>
+                    <span>Anleitung – Level ${S.stage}: ${getStageName(S.stage)}</span>
+                </div>
+                <div class="info-modal-body">
+                    ${getInfoText(S.stage)}
+                </div>
+                <button class="info-modal-btn" onclick="S.infoOpen = false; render();">Verstanden</button>
+            </div>
+        </div>
+    `;
+}
+
+function renderTask() {
+    const targetSalt = S.tasks[S.taskIdx];
+    const saltName = targetSalt.name;
+    const { cat, an } = getActiveIons();
+
+    const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
+    const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
+
+    const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
+    const inputBoxTitle = S.school === 'real' ? 'Verhältnisformel in Ionenschreibweise:' : 'Deine Verhältnisformel';
+
+    return `
+    ${renderInfoOverlay()}
+
+    <div class="top-bar">
+        <div class="top-left">
+            <button class="info-toggle-btn" onclick="S.infoOpen = !S.infoOpen; render();">i</button>
+            <span>Level ${S.stage}: ${getStageName(S.stage)} (${S.taskIdx + 1}/${S.tasks.length})<span class="school-badge">(${schoolLabel})</span></span>
+        </div>
+        <button class="text-btn" onclick="S.screen='start'; render();">Beenden</button>
     </div>
 
-</div>
+    <div class="task-header">
+        <small>Gesuchtes Salz</small>
+        <h2>${saltName}</h2>
+    </div>
 
+    ${S.stage < 4 ? renderChargeVisualizer() : ''}
+
+    ${S.stage < 3 ? `
+        <div class="formula-box">
+            <small>Ergebende Verhältnisformel</small>
+            <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
+        </div>
+    ` : `
+        <!-- Live-Formatierte Direkteingabe -->
+        <div class="formula-box">
+            <small>${inputBoxTitle}</small>
+            <div class="formula-input-wrapper" onclick="document.getElementById('hiddenFormulaInput').focus();">
+                <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
+                <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
+                <button type="button" class="done-btn" 
+                        ontouchstart="closeKeyboard(event)" 
+                        onmousedown="closeKeyboard(event)" 
+                        onclick="closeKeyboard(event)">Fertig</button>
+            </div>
+        </div>
+    `}
+
+    ${S.stage < 4 ? `
+        <div class="ion-controls">
+            <!-- Kation Karte -->
+            <div class="ion-card cation">
+                <div class="ion-header-label">Kationen (positiv)</div>
+                ${S.stage > 1 ? `
+                    <div class="ion-chip-grid">
+                        ${catList.map((c, i) => `
+                            <button class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="S.selectedCatIdx=${i}; render();">
+                                ${fmtIon(c.s, c.c)}
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : `<span class="ion-name-single">${cat.n}</span>`}
+                
+                <div class="stepper-v">
+                    <div class="stepper-arrows">
+                        <button onclick="S.catCount++; render();">▲</button>
+                        <button onclick="S.catCount = Math.max(1, S.catCount - 1); render();">▼</button>
+                    </div>
+                    <div class="stepper-val-wrap">
+                        <span class="stepper-count">${S.catCount}</span>
+                        <span class="stepper-formula">${fmtIon(cat.s, cat.c)}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anion Karte -->
+            <div class="ion-card anion">
+                <div class="ion-header-label">Anionen (negativ)</div>
+                ${S.stage > 1 ? `
+                    <div class="ion-chip-grid">
+                        ${anList.map((a, i) => `
+                            <button class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="S.selectedAnIdx=${i}; render();">
+                                ${fmtIon(a.s, a.c)}
+                            </button>
+                        `).join('')}
+                    </div>
+                ` : `<span class="ion-name-single">${an.n}</span>`}
+                
+                <div class="stepper-v">
+                    <div class="stepper-arrows">
+                        <button onclick="S.anCount++; render();">▲</button>
+                        <button onclick="S.anCount = Math.max(1, S.anCount - 1); render();">▼</button>
+                    </div>
+                    <div class="stepper-val-wrap">
+                        <span class="stepper-count">${S.anCount}</span>
+                        <span class="stepper-formula">${fmtIon(an.s, an.c)}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    ` : ''}
+
+    <div class="feedback-area ${S.fb ? S.fb.type : 'empty'}" role="status" aria-live="polite">
+        ${S.fb ? S.fb.msg : ''}
+    </div>
+
+    <div>
+        ${!S.done 
+            ? `<button class="action-btn" onclick="checkSolution()">Verhältnisformel prüfen</button>`
+            : `<button class="action-btn" onclick="nextTask()">Nächstes Salz →</button>`
+        }
+    </div>`;
+}
+
+function renderEnd() {
+    let title = "";
+    let msg = "";
+    let buttons = "";
+
+    if (S.stage === 1) {
+        title = "Grundprinzip verstanden! 🎉";
+        msg = "Du weißt jetzt, wie Ladungen ausgeglichen werden. Weiter geht’s mit mehr Ionen zur Auswahl!";
+        buttons = `<button class="action-btn" onclick="startStage(2)">Weiter zu Level 2 →</button>`;
+    } else if (S.stage === 2) {
+        title = "Stark gemacht!";
+        msg = "Du weißt nun, welche Ionen du auswählen musst.";
+        buttons = `
+            <button class="action-btn" style="background: var(--bg); color: var(--ink); border: 1px solid var(--border); margin-bottom: 0.4rem;" onclick="startStage(2)">Level 2 wiederholen</button>
+            <button class="action-btn" onclick="startStage(3)">Weiter zu Level 3 →</button>
+        `;
+    } else if (S.stage === 3) {
+        title = "Die Formelschreibweise sitzt!";
+        msg = "Bereit für den Abschlusstest?";
+        buttons = `
+            <button class="action-btn" style="background: var(--bg); color: var(--ink); border: 1px solid var(--border); margin-bottom: 0.4rem;" onclick="startStage(3)">Level 3 wiederholen</button>
+            <button class="action-btn" onclick="startStage(4)">Weiter zu Level 4 (Check) →</button>
+        `;
+    } else {
+        title = "Challenge gemeistert! 🎉";
+        msg = "Du beherrschst die Verhältnisformeln sicher.";
+        if (S.level === 'basis') {
+            msg += "<br><br><small style='color: var(--primary); font-weight: bold;'>Tipp: Versuche das Ganze jetzt im Schwierigkeitsgrad 'Fortgeschritten' mit Nebengruppen- und Molekül-Ionen!</small>";
+        }
+        buttons = `<button class="action-btn" onclick="S.screen='start'; render();">Hauptmenü</button>`;
+    }
+
+    return `
+    <div class="start-container" style="text-align: center; justify-content: center; gap: 1.2rem;">
+        <div>
+            <h1 class="hero-title">${title}</h1>
+            <p class="hero-subtitle" style="margin-top: 0.4rem;">${msg}</p>
+        </div>
+
+        <div style="width: 100%;">
+            ${buttons}
+        </div>
+    </div>`;
+}
+
+// Startaufruf
+render();
+</script>
 </body>
 </html>
