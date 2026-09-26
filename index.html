@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Verhältnisformel-Trainer</title>
     <!-- Web-App Manifest & PWA-Metadaten -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2563eb">
 
-<!-- iOS-Unterstützung (Safari) -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Verhältnisformel">
-<link rel="apple-touch-icon" href="icons/icon192x192.png">
+    <!-- iOS-Unterstützung (Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Verhältnisformel">
+    <link rel="apple-touch-icon" href="icons/icon192x192.png">
 
     <style>
         :root {
@@ -981,6 +981,7 @@ const S = {
     selectedAnIdx: 0,
     typedFormula: '',
     infoOpen: false,
+    easterEggOpen: false,
     fb: null,
     done: false,
     score: 0
@@ -1221,8 +1222,40 @@ function loadTask() {
     S.typedFormula = '';
     S.fb = null;
     S.done = false;
+    S.easterEggOpen = false;
     
     S.infoOpen = (S.taskIdx === 0);
+    render();
+}
+
+function incCat() {
+    S.catCount++;
+    if (S.catCount >= 10) {
+        triggerEasterEgg();
+    } else {
+        render();
+    }
+}
+
+function incAn() {
+    S.anCount++;
+    if (S.anCount >= 10) {
+        triggerEasterEgg();
+    } else {
+        render();
+    }
+}
+
+function triggerEasterEgg() {
+    S.easterEggOpen = true;
+    playSound('correct');
+    render();
+}
+
+function closeEasterEgg() {
+    S.catCount = 1;
+    S.anCount = 1;
+    S.easterEggOpen = false;
     render();
 }
 
@@ -1343,7 +1376,10 @@ function checkSolution() {
                 S.fb = { type: 'bad', msg: '⚠️ Formel bitte noch kürzen (z. B. 1:1 statt 2:2).' };
                 playSound('wrong');
             } else {
-                S.fb = { type: 'ok', msg: `✓ Richtig! Ladungen vollständig ausgeglichen.` };
+                const okText = S.stage === 2 
+                    ? 'Richtig! Schau dir die Verhältnisformel noch einmal an. In Level 3 musst du sie selbst eintippen!' 
+                    : '✓ Richtig! Ladungen vollständig ausgeglichen.';
+                S.fb = { type: 'ok', msg: okText };
                 S.done = true;
                 S.score += 100;
                 playSound('correct');
@@ -1550,6 +1586,24 @@ function renderInfoOverlay() {
     `;
 }
 
+function renderEasterEggOverlay() {
+    if (!S.easterEggOpen) return '';
+    return `
+        <div class="info-backdrop" onclick="closeEasterEgg()">
+            <div class="info-modal" onclick="event.stopPropagation();">
+                <div class="info-modal-header">
+                    <span style="font-size: 1.1rem;">💡</span>
+                    <span>Ionengitter-Hinweis</span>
+                </div>
+                <div class="info-modal-body">
+                    Ja, du hast Recht! In einem Ionengitter kommen unzählige Ionen vor. Die Verhältnisformel soll jedoch nur das Verhältnis von Kationen zu Anionen darstellen. Versuch es noch einmal!
+                </div>
+                <button class="info-modal-btn" onclick="closeEasterEgg()">Verstanden</button>
+            </div>
+        </div>
+    `;
+}
+
 function renderTask() {
     const targetSalt = S.tasks[S.taskIdx];
     const saltName = targetSalt.name;
@@ -1563,6 +1617,7 @@ function renderTask() {
 
     return `
     ${renderInfoOverlay()}
+    ${renderEasterEggOverlay()}
 
     <div class="top-bar">
         <div class="top-left">
@@ -1616,7 +1671,7 @@ function renderTask() {
                 
                 <div class="stepper-v">
                     <div class="stepper-arrows">
-                        <button onclick="S.catCount++; render();">▲</button>
+                        <button onclick="incCat()">▲</button>
                         <button onclick="S.catCount = Math.max(1, S.catCount - 1); render();">▼</button>
                     </div>
                     <div class="stepper-val-wrap">
@@ -1641,7 +1696,7 @@ function renderTask() {
                 
                 <div class="stepper-v">
                     <div class="stepper-arrows">
-                        <button onclick="S.anCount++; render();">▲</button>
+                        <button onclick="incAn()">▲</button>
                         <button onclick="S.anCount = Math.max(1, S.anCount - 1); render();">▼</button>
                     </div>
                     <div class="stepper-val-wrap">
