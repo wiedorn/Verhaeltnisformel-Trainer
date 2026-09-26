@@ -2,12 +2,11 @@
   "name": "Verhältnisformel-Trainer",
   "short_name": "Verhältnisformel",
   "description": "Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./index.html",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "orientation": "portrait",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
   "icons": [
     {
       "src": "icons/icon-48x48.png",
