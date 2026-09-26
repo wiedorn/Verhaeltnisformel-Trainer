@@ -67,26 +67,38 @@
         
         html, body {
             height: 100%;
+            height: 100dvh;
             width: 100vw;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden; /* Verhindert ungewolltes Scrollen der Hauptseite */
             background-color: var(--bg);
             color: var(--ink);
         }
 
-        /* Responsive Container */
+        /* Responsive Container mit Safe-Area-Integration für PWAs */
         #app {
-            min-height: 100dvh;
+            height: 100%;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
-            padding: 0.5rem;
-            gap: 0.5rem;
+            padding: max(0.4rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.4rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+            gap: clamp(0.25rem, 1vh, 0.5rem);
             position: relative;
+            box-sizing: border-box;
             transition: max-width 0.2s ease, padding 0.2s ease;
+        }
+
+        /* Spezielle Optimierung für installierte PWA (Standalone-Modus) */
+        @media (display-mode: standalone) {
+            #app {
+                gap: clamp(0.2rem, 0.8vh, 0.45rem);
+            }
+            .visualizer-card {
+                height: clamp(140px, 22vh, 190px) !important;
+            }
         }
 
         /* Spezieller kompakter Modus für Level 4 (Tastatur-Freundlich) */
@@ -368,8 +380,8 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.4rem, 1.2vw, 0.7rem) clamp(0.6rem, 1.5vw, 1rem);
-            min-height: clamp(46px, 6vh, 54px);
+            padding: clamp(0.35rem, 1vw, 0.6rem) clamp(0.6rem, 1.5vw, 1rem);
+            min-height: clamp(42px, 5.5vh, 50px);
             flex-shrink: 0;
         }
 
@@ -389,7 +401,7 @@
         }
         
         .task-header h2 { 
-            font-size: clamp(1.1rem, 2.3vw, 1.55rem); 
+            font-size: clamp(1.05rem, 2.2vw, 1.5rem); 
             color: var(--ink); 
             line-height: 1.25; 
             text-align: center;
@@ -402,11 +414,11 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 0.5rem 0.85rem;
+            padding: 0.4rem 0.85rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: clamp(165px, 26vh, 210px);
+            height: clamp(145px, 23vh, 200px);
             position: relative;
             flex-shrink: 0;
         }
@@ -424,7 +436,7 @@
         }
 
         .charge-sum-badge {
-            font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+            font-size: clamp(1.25rem, 2.3vw, 1.75rem);
             font-weight: 700;
             background: transparent;
             border: none;
@@ -470,7 +482,7 @@
             display: flex;
             flex-direction: column-reverse;
             gap: 2px;
-            width: clamp(74px, 15vw, 102px);
+            width: clamp(70px, 14vw, 98px);
         }
 
         .ion-group-block {
@@ -500,7 +512,7 @@
             transform: translate(-50%, -50%);
             color: #ffffff;
             font-weight: 700;
-            font-size: clamp(0.82rem, 1.4vw, 1.02rem);
+            font-size: clamp(0.8rem, 1.3vw, 1rem);
             white-space: nowrap;
             pointer-events: none;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -521,7 +533,7 @@
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+            font-size: clamp(0.7rem, 1.1vw, 0.85rem);
             font-weight: 700;
             color: var(--balance-color);
             background: var(--surface);
@@ -535,7 +547,7 @@
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: clamp(0.72rem, 1.2vw, 0.88rem);
+            font-size: clamp(0.7rem, 1.1vw, 0.85rem);
             font-weight: 700;
             color: var(--ink-muted);
         }
@@ -550,7 +562,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: clamp(46px, 6vh, 54px);
+            min-height: clamp(44px, 5.5vh, 52px);
             width: 100%;
             flex-shrink: 0;
             transition: border-color 0.15s ease;
@@ -581,15 +593,15 @@
 
         .formula-box .formula { 
             width: 100%;
-            font-size: clamp(1.35rem, 3vw, 1.8rem); 
+            font-size: clamp(1.3rem, 2.8vw, 1.75rem); 
             font-weight: 700; 
             letter-spacing: 0.02em; 
-            min-height: 32px;
+            min-height: 30px;
             text-align: center;
         }
 
         .formatted-display {
-            font-size: clamp(1.25rem, 2.5vw, 1.7rem);
+            font-size: clamp(1.2rem, 2.4vw, 1.65rem);
             font-weight: 700;
             text-align: center;
             word-break: break-word;
@@ -604,7 +616,7 @@
             color: var(--ink-muted);
             font-style: italic;
             font-weight: normal;
-            font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+            font-size: clamp(0.85rem, 1.4vw, 1.05rem);
         }
 
         .formula-box.input-mode:focus-within .formatted-display::after {
@@ -800,7 +812,7 @@
 
         /* Feedback Area */
         .feedback-area {
-            min-height: clamp(28px, 4vh, 38px);
+            min-height: clamp(28px, 3.5vh, 36px);
             display: flex;
             align-items: center;
             justify-content: center;
