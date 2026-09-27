@@ -117,14 +117,15 @@
             }
         }
 
+        /* WEB-APP STANDALONE MODUS: Sicherheitsabstand unter der milchigen Statusleiste auf iOS/iPadOS */
         @media (display-mode: standalone) {
             #app {
+                padding-top: max(2.4rem, calc(env(safe-area-inset-top) + 0.8rem)) !important;
                 gap: clamp(0.2rem, 0.8vh, 0.45rem);
             }
             .visualizer-card {
                 height: clamp(140px, 22vh, 190px) !important;
             }
-            /* Verberge den Install-Banner, wenn bereits installiert */
             .pwa-install-card {
                 display: none !important;
             }
@@ -140,7 +141,7 @@
             #app {
                 max-width: 680px;
                 justify-content: flex-start;
-                padding: 1.25rem 1.5rem;
+                padding: max(1.25rem, env(safe-area-inset-top)) 1.5rem 1.25rem 1.5rem;
                 gap: 1rem;
             }
             .start-container {
@@ -161,7 +162,7 @@
             #app {
                 max-width: 760px;
                 justify-content: flex-start;
-                padding: 1.5rem 2rem;
+                padding: max(1.5rem, env(safe-area-inset-top)) 2rem 1.5rem 2rem;
                 gap: 1.25rem;
             }
             .middle-spacer {
@@ -179,7 +180,6 @@
         sup { top: -0.45em; }
         sub { bottom: -0.15em; }
 
-        /* Start-Bildschirm Layout */
         .start-container {
             display: flex;
             flex-direction: column;
@@ -378,7 +378,6 @@
             color: var(--primary);
         }
 
-        /* VOLLFARBIGER / OPAKER PWA-INSTALL-BANNER */
         .pwa-install-card {
             background: var(--surface);
             border: 1.5px solid var(--border);
@@ -475,7 +474,6 @@
             font-size: clamp(0.82rem, 1.3vw, 0.95rem);
         }
 
-        /* Information Overlay */
         .info-backdrop {
             position: fixed;
             top: 0;
@@ -540,7 +538,6 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* Task Header */
         .task-header {
             position: relative;
             display: flex;
@@ -578,7 +575,6 @@
             padding: 0 3.5rem;
         }
 
-        /* Visualisierung der Ionenbalken */
         .visualizer-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -839,7 +835,6 @@
             border-color: var(--primary);
         }
 
-        /* Ionen Auswahl & Stepper */
         .ion-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1045,9 +1040,16 @@ window.addEventListener('appinstalled', () => {
     render();
 });
 
+// Zuweisung & Erkennung von iOS und iPadOS (inkl. Safari Desktop-Modus auf Macs/iPads)
 function isIos() {
     const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test(userAgent);
+    const isMaciPad = /macintosh/.test(userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 0;
+    return /iphone|ipad|ipod/.test(userAgent) || isMaciPad;
+}
+
+function isIpad() {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /ipad/.test(userAgent) || (/macintosh/.test(userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
 }
 
 function isStandalone() {
@@ -1069,7 +1071,6 @@ function triggerPwaInstall() {
     }
 }
 
-// --- Hilfsfunktion zum Einklappen der Tastatur ---
 function closeKeyboard(e) {
     if (e) {
         e.stopPropagation();
@@ -1946,6 +1947,7 @@ function renderPwaBanner() {
 
     // iOS/iPadOS Safari Banner
     if (isIos()) {
+        const sharePositionText = isIpad() ? 'rechts oben' : 'unten';
         return `
             <div class="pwa-install-card" style="flex-direction: column; align-items: stretch; gap: 0.35rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1956,7 +1958,7 @@ function renderPwaBanner() {
                 </div>
                 ${showIosInstallGuide ? `
                     <div style="font-size: 0.78rem; color: var(--ink-muted); line-height: 1.35; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
-                        Tippe in Safari unten auf das <b>Teilen-Symbol ⎘</b> (Quadrat mit Pfeil) und wähle dann <b>„Zum Home-Bildschirm“ ➕</b>.
+                        Tippe in Safari <b>${sharePositionText}</b> auf das <b>Teilen-Symbol ⎘</b> (Quadrat mit Pfeil) und wähle dann <b>„Zum Home-Bildschirm“ ➕</b>.
                     </div>
                 ` : ''}
             </div>
