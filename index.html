@@ -147,7 +147,7 @@
             position: relative;
         }
 
-        /* 1. VOLLBILD-GRAFIK HINTERGRUND (FIXIERUNG FÜR OBEREN RAND) */
+        /* VOLLBILD-GRAFIK HINTERGRUND */
         .hero-graphic-bg {
             position: fixed;
             top: 0;
@@ -266,53 +266,55 @@
             gap: 0.4rem;
         }
 
-        .tile-btn {
+        .tile-btn, .level-card {
             background: var(--bg);
             border: 1.5px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.35rem, 1vw, 0.6rem);
+            padding: clamp(0.35rem, 1vw, 0.65rem);
             text-align: left;
             cursor: pointer;
             color: var(--ink);
             transition: all 0.15s ease;
         }
 
-        .tile-btn:hover {
+        .tile-btn:hover, .level-card:hover,
+        .tile-btn:focus, .level-card:focus {
             border-color: var(--primary);
-        }
-
-        .tile-btn[aria-pressed="true"] {
-            border-color: var(--primary);
-            background: rgba(124, 58, 237, 0.1);
-        }
-
-        .tile-btn b { display: block; font-size: clamp(0.75rem, 1.2vw, 0.9rem); }
-        .tile-btn small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); line-height: 1.15; display: block; margin-top: 2px; }
-
-        .level-card {
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            padding: clamp(0.4rem, 1.2vw, 0.7rem);
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .level-card:hover, .level-card:focus {
-            border-color: var(--primary);
-            background: rgba(124, 58, 237, 0.05);
             transform: translateY(-1px);
         }
 
-        .level-card[aria-pressed="true"] {
-            border-color: var(--primary);
-            background: rgba(124, 58, 237, 0.12);
-            box-shadow: 0 0 0 1px var(--primary);
+        .tile-btn b, .level-card b { 
+            display: block; 
+            font-size: clamp(0.78rem, 1.3vw, 0.92rem); 
+            color: var(--ink); 
         }
 
-        .level-card b { display: block; font-size: clamp(0.78rem, 1.3vw, 0.95rem); color: var(--primary); }
-        .level-card small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); line-height: 1.15; display: block; margin-top: 2px; }
+        .tile-btn small, .level-card small { 
+            font-size: clamp(0.62rem, 1vw, 0.75rem); 
+            color: var(--ink-muted); 
+            line-height: 1.15; 
+            display: block; 
+            margin-top: 2px; 
+        }
+
+        /* Ausgewählter Zustand (Aktiv) mit weißer Schrift auf Lila-Hintergrund */
+        .tile-btn[aria-pressed="true"],
+        .level-card[aria-pressed="true"] {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+        }
+
+        .tile-btn[aria-pressed="true"] b,
+        .level-card[aria-pressed="true"] b {
+            color: #ffffff;
+        }
+
+        .tile-btn[aria-pressed="true"] small,
+        .level-card[aria-pressed="true"] small {
+            color: rgba(255, 255, 255, 0.88);
+        }
 
         /* Task Screen Layout */
         .top-bar {
@@ -367,7 +369,7 @@
             font-size: clamp(0.82rem, 1.3vw, 0.95rem);
         }
 
-        /* Information Overlay */
+        /* Information Overlay mit wiederhergestelltem Blur-Effekt */
         .info-backdrop {
             position: fixed;
             top: 0;
@@ -376,6 +378,8 @@
             height: 100vh;
             height: 100dvh;
             background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             z-index: 100;
             display: flex;
             align-items: center;
@@ -1620,7 +1624,7 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
-/* 3D-GITTER: ANIONEN & ABSTÄNDE -10%, ANZAHL -10%, ZENTRUM NACH LINKS OBEN VERSCHOBEN */
+/* 3D-GITTER: PERFORMANCE-OPTIMIERT & VORDERSTE ANIONEN-SCHICHT ENTFERNT */
 function renderLatticeSVG() {
     const rawNodes = [];
     
@@ -1683,22 +1687,15 @@ function renderLatticeSVG() {
         }
     });
 
-    // Anzahl der Ionen um genau 10% reduzieren (äußerste Ionen entfernen)
-    nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
-    nodes = nodes.slice(0, Math.floor(nodes.length * 0.9));
-
     // 3D-Rotationswinkel (Yaw = 35°, Pitch = 22°)
     const radY = 35 * Math.PI / 180;
     const radX = 22 * Math.PI / 180;
 
-    // Abstände um 10% reduziert (scale = 252 statt 280) & Zentrierung nach links oben verschoben (440, 350)
     const scale = 252;
     const centerX = 440;
     const centerY = 350;
 
-    let minDepth = Infinity;
-    let maxDepth = -Infinity;
-
+    // Tiefenberechnung für Ausblendung der vordersten Anionen
     nodes.forEach(node => {
         const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
         const z1 = -node.x * Math.sin(radY) + node.z * Math.cos(radY);
@@ -1709,12 +1706,27 @@ function renderLatticeSVG() {
         node.px = centerX + x1 * scale;
         node.py = centerY - y2 * scale;
         node.depth = z2;
+    });
 
+    // Vorderste Anionen-Schicht identifizieren & entfernen (Macht Kationen sichtbarer)
+    const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
+    if (anionDepths.length > 0) {
+        const maxAnionDepth = Math.max(...anionDepths);
+        nodes = nodes.filter(n => !(n.isAnion && n.depth > maxAnionDepth - 0.35));
+    }
+
+    // Gesamtanzahl für flüssige Performance spürbar reduzieren (ca. 75% der zentralen Ionen behalten)
+    nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
+    nodes = nodes.slice(0, Math.floor(nodes.length * 0.75));
+
+    // Tiefensortierung (Malt von hinten nach vorne)
+    let minDepth = Infinity;
+    let maxDepth = -Infinity;
+    nodes.forEach(node => {
         if (node.depth < minDepth) minDepth = node.depth;
         if (node.depth > maxDepth) maxDepth = node.depth;
     });
 
-    // Tiefensortierung (Malt von hinten nach vorne)
     nodes.sort((a, b) => a.depth - b.depth);
 
     const depthRange = (maxDepth - minDepth) || 1;
@@ -1729,7 +1741,7 @@ function renderLatticeSVG() {
         const rCation = (12.0 + 8.0 * depthFactor).toFixed(1);
         const fontCation = (11.0 + 6.0 * depthFactor).toFixed(1);
 
-        // Anionengröße um 10% verkleinert (22.5 / 15.3 bzw. Font 15.3 / 9.0)
+        // Anionengröße
         const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
         const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
 
