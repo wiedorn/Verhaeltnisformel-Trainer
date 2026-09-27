@@ -6,7 +6,7 @@
     <title>Verhältnisformel-Trainer</title>
     <!-- Web-App Manifest & PWA-Metadaten -->
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#7c3aed">
+    <meta name="theme-color" content="#6b21a8">
 
     <!-- iOS-Unterstützung (Safari) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,9 +20,9 @@
             --surface: #ffffff; 
             --surface-alpha: rgba(255, 255, 255, 0.75);
             --ink: #0f172a;
-            --ink-muted: #64748b;
-            --primary: #7c3aed; 
-            --primary-hover: #6d28d9;
+            --ink-muted: #334155; /* Dunklerer Grauton für höheren Kontrast */
+            --primary: #6b21a8; /* Etwas dunkleres, weniger leuchtendes Lila */
+            --primary-hover: #581c87;
             --cation-color: #dc2626; 
             --anion-color: #2563eb;  
             --border: #cbd5e1;
@@ -33,31 +33,8 @@
             --bad-bg: #fee2e2;
             --bad-ink: #991b1b;
             --info-bg: #f3e8ff;
-            --info-ink: #6b21a8;
-            --balance-color: #15803d;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f172a;
-                --surface: #1e293b; 
-                --surface-alpha: rgba(30, 41, 59, 0.75);
-                --ink: #f8fafc;
-                --ink-muted: #94a3b8;
-                --primary: #a855f7;
-                --primary-hover: #c084fc;
-                --cation-color: #ef4444;
-                --anion-color: #3b82f6;
-                --border: #334155;
-                --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-                --ok-bg: #064e3b;
-                --ok-ink: #4ade80;
-                --bad-bg: #7f1d1d;
-                --bad-ink: #fecaca;
-                --info-bg: #3b0764;
-                --info-ink: #e9d5ff;
-                --balance-color: #4ade80;
-            }
+            --info-ink: #581c87;
+            --balance-color: rgba(34, 197, 94, 0.45);
         }
 
         * { 
@@ -79,7 +56,7 @@
             user-select: none;
         }
 
-        /* Falls die Displayhöhe doch einmal knapp wird */
+        /* Falls die Displayhöhe knapp wird */
         @media (max-height: 720px) {
             html, body {
                 overflow-y: auto !important;
@@ -102,7 +79,7 @@
             max-width: 500px;
             margin: 0 auto;
             padding: max(0.35rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.35rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
-            gap: clamp(0.2rem, 0.9vh, 0.45rem);
+            gap: clamp(0.15rem, 0.6vh, 0.35rem);
             position: relative;
             box-sizing: border-box;
             z-index: 2;
@@ -128,7 +105,7 @@
                 min-height: 100vh !important;
             }
             .middle-spacer {
-                min-height: 120px !important;
+                min-height: 100px !important;
             }
         }
 
@@ -136,7 +113,7 @@
         @media (display-mode: standalone) {
             #app {
                 padding-top: max(3.8rem, calc(env(safe-area-inset-top) + 2.2rem)) !important;
-                gap: clamp(0.2rem, 0.8vh, 0.45rem);
+                gap: clamp(0.15rem, 0.6vh, 0.35rem);
             }
             .pwa-install-card {
                 display: none !important;
@@ -153,7 +130,7 @@
             #app {
                 max-width: 720px;
                 padding: max(1rem, env(safe-area-inset-top)) 1.5rem max(1rem, env(safe-area-inset-bottom)) 1.5rem;
-                gap: clamp(0.5rem, 1.8vh, 1.2rem);
+                gap: clamp(0.4rem, 1.4vh, 1.0rem);
             }
             .start-container {
                 justify-content: flex-start;
@@ -171,47 +148,30 @@
                 min-height: clamp(160px, 25vh, 320px);
             }
             .task-header {
-                min-height: clamp(46px, 5.5vh, 60px);
+                min-height: clamp(50px, 6vh, 66px);
                 padding: 0.6rem 1.2rem;
             }
             .task-header h2 {
-                font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+                font-size: clamp(1.4rem, 2.8vw, 1.9rem);
             }
             .formula-box {
-                min-height: clamp(52px, 6.5vh, 68px);
+                min-height: clamp(56px, 7vh, 72px);
             }
             .formula-box .formula, .formatted-display {
-                font-size: clamp(1.4rem, 3vw, 2.1rem);
+                font-size: clamp(1.6rem, 3.2vw, 2.3rem);
             }
             .ion-card {
                 padding: clamp(0.6rem, 1.5vh, 1.1rem);
-                gap: clamp(0.4rem, 1vh, 0.8rem);
+                gap: clamp(0.5rem, 1vh, 0.8rem);
             }
             .ion-chip {
-                font-size: clamp(0.95rem, 1.5vw, 1.25rem);
-                padding: clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px);
-            }
-            .stepper-v {
-                padding: clamp(0.35rem, 0.8vh, 0.6rem) clamp(0.6rem, 1.2vw, 1rem);
-            }
-            .stepper-arrows button {
-                height: clamp(34px, 4.2vh, 46px);
-                width: clamp(56px, 8vw, 76px);
-                font-size: clamp(1.1rem, 1.6vw, 1.3rem);
-            }
-            .stepper-count {
-                font-size: clamp(1.3rem, 2.2vw, 1.8rem);
-            }
-            .stepper-formula {
-                font-size: clamp(1.2rem, 2vw, 1.6rem);
+                font-size: clamp(1.2rem, 2vw, 1.55rem) !important;
+                padding: clamp(8px, 1.4vw, 12px) clamp(14px, 2vw, 20px) !important;
+                min-height: 46px;
             }
             .action-btn {
-                padding: clamp(0.7rem, 1.6vh, 1.1rem);
-                font-size: clamp(1.05rem, 1.8vw, 1.3rem);
-            }
-            .feedback-area {
-                min-height: clamp(32px, 4vh, 44px);
-                font-size: clamp(0.88rem, 1.4vw, 1.1rem);
+                padding: clamp(0.8rem, 1.8vh, 1.2rem);
+                font-size: clamp(1.15rem, 2vw, 1.4rem);
             }
         }
 
@@ -222,7 +182,7 @@
             }
             #app {
                 max-width: 860px;
-                gap: clamp(0.6rem, 2vh, 1.5rem);
+                gap: clamp(0.5rem, 1.6vh, 1.2rem);
                 padding-top: max(1.2rem, env(safe-area-inset-top));
                 padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
             }
@@ -235,7 +195,7 @@
             }
             #app {
                 max-width: 960px;
-                gap: clamp(0.7rem, 2.2vh, 1.6rem);
+                gap: clamp(0.6rem, 1.8vh, 1.4rem);
             }
         }
 
@@ -277,7 +237,7 @@
             background: var(--surface);
             border: 1.5px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.5rem, 1.2vh, 0.8rem) clamp(0.6rem, 1.5vw, 1rem);
+            padding: clamp(0.65rem, 1.5vh, 1.0rem) clamp(0.6rem, 1.5vw, 1rem);
             box-shadow: var(--shadow);
             position: relative;
             z-index: 10;
@@ -285,58 +245,36 @@
 
         .hero-title {
             text-align: center;
-            font-size: clamp(1.25rem, 2.8vw, 1.9rem);
+            font-size: clamp(1.6rem, 5.1vw, 2.6rem);
             color: var(--primary);
-            font-weight: 700;
+            font-weight: 900;
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            width: 100%;
         }
 
         .hero-subtitle {
             text-align: center;
-            font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+            font-size: clamp(0.95rem, 1.6vw, 1.15rem);
             color: var(--ink-muted);
-            line-height: 1.25;
-            padding: 0 0.5rem;
-            margin-top: 0.2rem;
+            font-weight: 600;
+            line-height: 1.3;
+            padding: 0 0.2rem;
+            margin-top: 0.35rem;
         }
 
         .middle-spacer {
             flex: 1;
-            min-height: 120px;
+            min-height: 100px;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            align-items: flex-end;
+            justify-content: flex-end;
+            padding-right: 1.2rem;
+            padding-bottom: 0.4rem;
             position: relative;
             z-index: 10;
             pointer-events: none;
         }
-
-        .formula-preview-badge {
-            position: relative;
-            background: rgba(255, 255, 255, 0.38);
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            padding: 0.5rem 1.4rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            font-size: clamp(2.5rem, 6.4vw, 3.4rem);
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-            z-index: 12;
-            pointer-events: auto;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .formula-preview-badge {
-                background: rgba(30, 41, 59, 0.38);
-            }
-        }
-
-        .formula-preview-badge .cat-part { color: var(--cation-color); }
-        .formula-preview-badge .an-part { color: var(--anion-color); }
 
         .bottom-controls-group {
             display: flex;
@@ -352,28 +290,28 @@
             background: var(--surface);
             border: 1.5px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.4rem, 1.2vw, 0.75rem);
+            padding: clamp(0.5rem, 1.4vw, 0.85rem);
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            gap: 0.45rem;
+            gap: 0.55rem;
         }
 
         .preset-title {
-            font-size: clamp(0.68rem, 1.1vw, 0.8rem);
-            font-weight: 700;
+            font-size: clamp(0.85rem, 1.35vw, 1.05rem);
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--primary);
         }
 
         .section-label {
-            font-size: clamp(0.65rem, 1.1vw, 0.78rem);
-            font-weight: 700;
+            font-size: clamp(0.8rem, 1.25vw, 0.98rem);
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--ink-muted);
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.25rem;
         }
 
         .tiles-row {
@@ -392,7 +330,7 @@
             background: var(--bg);
             border: 1.5px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.35rem, 1vw, 0.65rem);
+            padding: clamp(0.45rem, 1.1vw, 0.75rem);
             text-align: left;
             cursor: pointer;
             color: var(--ink);
@@ -402,42 +340,38 @@
         .tile-btn:hover, .level-card:hover,
         .tile-btn:focus, .level-card:focus {
             border-color: var(--primary);
-            background: rgba(124, 58, 237, 0.05);
+            background: rgba(107, 33, 168, 0.05);
             transform: translateY(-1px);
         }
 
-        .tile-btn b { 
-            display: block; 
-            font-size: clamp(0.75rem, 1.2vw, 0.9rem); 
-            color: var(--ink); 
-        }
-
-        .tile-btn small { 
-            font-size: clamp(0.62rem, 1vw, 0.75rem); 
-            color: var(--ink-muted); 
-            line-height: 1.15; 
-            display: block; 
-            margin-top: 2px; 
-        }
-
+        .tile-btn b,
         .level-card b { 
             display: block; 
-            font-size: clamp(0.78rem, 1.3vw, 0.95rem); 
-            color: var(--primary); 
+            font-size: clamp(0.98rem, 1.75vw, 1.28rem); 
+            font-weight: 800;
+            color: var(--ink); 
+            white-space: nowrap;
+            letter-spacing: -0.01em;
         }
 
+        .level-card b {
+            color: var(--primary);
+        }
+
+        .tile-btn small,
         .level-card small { 
-            font-size: clamp(0.62rem, 1vw, 0.75rem); 
+            font-size: clamp(0.78rem, 1.18vw, 0.92rem); 
             color: var(--ink-muted); 
-            line-height: 1.15; 
+            font-weight: 600;
+            line-height: 1.2; 
             display: block; 
-            margin-top: 2px; 
+            margin-top: 3px; 
         }
 
         .tile-btn[aria-pressed="true"],
         .level-card[aria-pressed="true"] {
             border-color: var(--primary);
-            background: rgba(124, 58, 237, 0.12);
+            background: rgba(107, 33, 168, 0.12);
             box-shadow: 0 0 0 1px var(--primary);
         }
 
@@ -470,7 +404,7 @@
         }
 
         .pwa-install-text {
-            font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+            font-size: clamp(0.85rem, 1.3vw, 1.02rem);
             color: var(--ink);
             line-height: 1.25;
         }
@@ -486,8 +420,8 @@
             border: none;
             border-radius: 8px;
             padding: 0.4rem 0.75rem;
-            font-size: clamp(0.72rem, 1.1vw, 0.82rem);
-            font-weight: 700;
+            font-size: clamp(0.82rem, 1.25vw, 0.98rem);
+            font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
             transition: background 0.15s ease;
@@ -502,9 +436,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+            font-size: clamp(0.92rem, 1.5vw, 1.25rem);
             font-weight: 700;
-            min-height: 28px;
+            min-height: 30px;
             flex-shrink: 0;
         }
 
@@ -516,20 +450,20 @@
 
         .school-badge {
             color: var(--ink-muted);
-            font-weight: 400;
-            font-size: clamp(0.72rem, 1.1vw, 0.9rem);
-            margin-left: 0.2rem;
+            font-weight: 600;
+            font-size: clamp(0.85rem, 1.3vw, 1.1rem);
+            margin-left: 0.1rem;
         }
 
         .info-toggle-btn {
             background: var(--info-bg);
             color: var(--info-ink);
             border: 1px solid var(--border);
-            width: clamp(24px, 3.2vw, 32px);
-            height: clamp(24px, 3.2vw, 32px);
+            width: clamp(26px, 3.5vw, 34px);
+            height: clamp(26px, 3.5vw, 34px);
             border-radius: 50%;
-            font-weight: 700;
-            font-size: clamp(0.75rem, 1.2vw, 1.05rem);
+            font-weight: 800;
+            font-size: clamp(0.85rem, 1.3vw, 1.15rem);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -545,9 +479,9 @@
             background: none;
             border: none;
             color: var(--primary);
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
-            font-size: clamp(0.82rem, 1.3vw, 1.05rem);
+            font-size: clamp(0.92rem, 1.4vw, 1.18rem);
         }
 
         .info-backdrop {
@@ -573,13 +507,13 @@
             color: var(--ink);
             border: 2px solid var(--primary);
             border-radius: var(--radius);
-            padding: clamp(0.9rem, 2.5vw, 1.6rem);
+            padding: clamp(1rem, 2.8vw, 1.8rem);
             max-width: 480px;
             width: 100%;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
-            gap: 0.85rem;
+            gap: 0.95rem;
             animation: popIn 0.2s ease;
         }
 
@@ -587,13 +521,13 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-weight: 700;
-            font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+            font-weight: 800;
+            font-size: clamp(1.05rem, 1.8vw, 1.35rem);
             color: var(--primary);
         }
 
         .info-modal-body {
-            font-size: clamp(0.82rem, 1.3vw, 1.05rem);
+            font-size: clamp(0.9rem, 1.4vw, 1.15rem);
             line-height: 1.45;
             color: var(--ink);
         }
@@ -603,9 +537,9 @@
             color: white;
             border: none;
             border-radius: 10px;
-            padding: clamp(0.45rem, 1vw, 0.75rem) clamp(0.8rem, 1.5vw, 1.3rem);
-            font-size: clamp(0.82rem, 1.2vw, 1.05rem);
-            font-weight: 700;
+            padding: clamp(0.5rem, 1.2vw, 0.8rem) clamp(0.9rem, 1.6vw, 1.4rem);
+            font-size: clamp(0.9rem, 1.3vw, 1.15rem);
+            font-weight: 800;
             cursor: pointer;
             align-self: flex-end;
             margin-top: 0.2rem;
@@ -613,6 +547,15 @@
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* GROSSBUCHSTABEN-ÜBERSCHRIFTEN */
+        .task-header small,
+        .ion-header-label {
+            font-size: clamp(1.05rem, 2.1vw, 1.45rem);
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
 
         .task-header {
             position: relative;
@@ -623,7 +566,7 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: clamp(0.25rem, 0.8vw, 0.5rem) clamp(0.6rem, 1.5vw, 1rem);
-            min-height: clamp(38px, 4.8vh, 46px);
+            min-height: clamp(40px, 4.8vh, 50px);
             flex-shrink: 0;
         }
 
@@ -632,58 +575,58 @@
             left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(0.72rem, 1.1vw, 0.9rem); 
             color: var(--ink-muted); 
-            text-transform: uppercase; 
-            font-weight: 700; 
-            letter-spacing: 0.04em;
             margin-bottom: 0;
             pointer-events: none;
             z-index: 6;
+            line-height: 1;
         }
         
         .task-header h2 { 
-            font-size: clamp(1rem, 2vw, 1.4rem); 
+            font-size: clamp(1.15rem, 2.4vw, 1.65rem); 
+            font-weight: 800;
             color: var(--ink); 
             line-height: 1.2; 
             text-align: center;
             width: 100%;
-            padding: 0 3.5rem;
+            padding: 0 4.2rem;
         }
 
+        /* Minimierter Abstand für maximale Ausnutzung kleiner Bildschirme */
         .visualizer-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 0.4rem 0.85rem;
+            background: transparent;
+            border: none;
+            padding: 0 0.85rem;
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            height: clamp(120px, 20vh, 320px);
+            height: clamp(110px, 18.5vh, 300px);
             position: relative;
-            flex-shrink: 0;
+            flex-shrink: 1;
+            margin-bottom: -0.15rem;
         }
 
         .charge-columns-wrap {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: clamp(16px, 4vw, 36px);
             height: 100%;
             width: 100%;
             position: relative;
             padding-bottom: 2px;
-            border-bottom: 2px solid var(--border);
         }
 
         .charge-sum-badge {
-            font-size: clamp(1.2rem, 2.5vw, 2.1rem);
-            font-weight: 700;
+            font-size: clamp(1.2rem, 2.5vw, 2.0rem);
+            font-weight: 800;
             background: transparent;
             border: none;
             padding: 0 2px;
             text-align: center;
             line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
         }
 
         .charge-sum-badge.pos { color: var(--cation-color); }
@@ -698,25 +641,31 @@
         .indicator-line.pos { background-color: rgba(220, 38, 38, 0.35); }
         .indicator-line.neg { background-color: rgba(37, 99, 235, 0.35); }
 
-        .columns-inner-wrap {
+        .bars-area-wrap {
             position: relative;
             display: flex;
             align-items: flex-end;
             gap: clamp(24px, 6vw, 64px);
-            height: 100%;
-        }
-
-        .side-col-wrapper {
-            display: flex;
-            align-items: flex-end;
-            gap: clamp(8px, 1.2vw, 14px);
         }
 
         .badge-line-wrap {
+            position: absolute;
+            bottom: 0;
             display: flex;
             align-items: center;
             gap: clamp(5px, 0.8vw, 9px);
             transition: height 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .badge-line-wrap.pos-wrap {
+            right: 100%;
+            margin-right: clamp(8px, 1.2vw, 14px);
+        }
+
+        .badge-line-wrap.neg-wrap {
+            left: 100%;
+            margin-left: clamp(8px, 1.2vw, 14px);
         }
 
         .charge-col {
@@ -752,8 +701,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: #ffffff;
-            font-weight: 700;
-            font-size: clamp(0.78rem, 1.4vw, 1.25rem);
+            font-weight: 800;
+            font-size: clamp(0.85rem, 1.5vw, 1.35rem);
             white-space: nowrap;
             pointer-events: none;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -761,48 +710,25 @@
 
         .balance-line {
             position: absolute;
-            left: 10px;
-            right: 10px;
-            border-top: 2px dashed var(--balance-color);
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: var(--balance-color);
+            border-radius: 2px;
             pointer-events: none;
             transition: bottom 0.2s ease;
-        }
-
-        .balance-line-text {
-            position: absolute;
-            bottom: 3px;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            font-size: clamp(0.68rem, 1.2vw, 1.05rem);
-            font-weight: 700;
-            color: var(--balance-color);
-            background: var(--surface);
-            padding: 0 8px;
-            border-radius: 6px;
-        }
-
-        .balance-unbalanced-text {
-            position: absolute;
-            top: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            font-size: clamp(0.68rem, 1.1vw, 0.95rem);
-            font-weight: 700;
-            color: var(--ink-muted);
         }
 
         .formula-box {
             background: var(--surface-alpha);
             border: 1.5px dashed var(--primary);
             border-radius: var(--radius);
-            padding: clamp(0.25rem, 1vw, 0.45rem) clamp(0.6rem, 2vw, 1rem);
+            padding: clamp(0.2rem, 0.8vw, 0.4rem) clamp(0.6rem, 2vw, 1rem);
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: clamp(40px, 4.8vh, 48px);
+            min-height: clamp(42px, 5.0vh, 50px);
             width: 100%;
             flex-shrink: 0;
             transition: border-color 0.15s ease;
@@ -822,27 +748,44 @@
             left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(0.68rem, 1.1vw, 0.9rem);
-            font-weight: 700;
             color: var(--primary);
-            line-height: 1.1;
+            line-height: 1.0;
             text-align: left;
             z-index: 6;
             pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .formula-label .label-top {
+            font-size: clamp(0.58rem, 1.15vw, 0.8rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .formula-label .label-bottom {
+            font-size: clamp(1.05rem, 2.1vw, 1.45rem);
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .formula-box .formula { 
             width: 100%;
-            font-size: clamp(1.2rem, 2.5vw, 1.65rem); 
-            font-weight: 700; 
+            font-size: clamp(1.35rem, 2.7vw, 1.85rem); 
+            font-weight: 800; 
             letter-spacing: 0.02em; 
             min-height: 28px;
             text-align: center;
         }
 
         .formatted-display {
-            font-size: clamp(1.15rem, 2.2vw, 1.55rem);
-            font-weight: 700;
+            font-size: clamp(1.3rem, 2.5vw, 1.75rem);
+            font-weight: 800;
             text-align: center;
             word-break: break-word;
             color: var(--ink);
@@ -857,14 +800,14 @@
             color: var(--ink-muted);
             font-style: italic;
             font-weight: normal;
-            font-size: clamp(0.8rem, 1.3vw, 0.98rem);
+            font-size: clamp(0.9rem, 1.4vw, 1.1rem);
         }
 
         .formula-box.input-mode:focus-within .formatted-display::after {
             content: '|';
             display: inline-block;
             color: var(--primary);
-            font-weight: 700;
+            font-weight: 800;
             margin-left: 2px;
             vertical-align: baseline;
             animation: cursor-blink 1s step-start infinite;
@@ -899,8 +842,8 @@
             border: 1.5px solid var(--border);
             border-radius: 10px;
             padding: clamp(3px, 0.6vw, 6px) clamp(8px, 1.2vw, 16px);
-            font-size: clamp(0.72rem, 1.1vw, 0.92rem);
-            font-weight: 700;
+            font-size: clamp(0.8rem, 1.2vw, 1.0rem);
+            font-weight: 800;
             cursor: pointer;
             transition: all 0.15s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
@@ -927,50 +870,96 @@
             background: var(--surface);
             border: 2px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.25rem, 0.8vw, 0.5rem);
+            padding: clamp(0.35rem, 0.9vw, 0.65rem);
             text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            gap: clamp(0.15rem, 0.6vw, 0.4rem);
+            gap: clamp(0.3rem, 0.8vw, 0.6rem);
         }
 
         .ion-card.cation { border-color: var(--cation-color); }
         .ion-card.anion { border-color: var(--anion-color); }
 
-        .ion-header-label {
-            font-size: clamp(0.62rem, 1vw, 0.85rem);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.03em;
+        .ion-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 0.1rem;
         }
+
         .cation .ion-header-label { color: var(--cation-color); }
         .anion .ion-header-label { color: var(--anion-color); }
+
+        .remove-ion-btn {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--cation-color);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            border-radius: 8px;
+            width: clamp(28px, 3.8vw, 36px);
+            height: clamp(28px, 3.8vw, 36px);
+            font-weight: 900;
+            font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .anion .remove-ion-btn {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--anion-color);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        .remove-ion-btn:hover:not(:disabled) {
+            background: var(--cation-color);
+            color: #ffffff;
+        }
+
+        .anion .remove-ion-btn:hover:not(:disabled) {
+            background: var(--anion-color);
+            color: #ffffff;
+        }
+
+        .remove-ion-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
 
         .ion-chip-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: clamp(4px, 0.8vw, 8px);
+            gap: clamp(5px, 1vw, 10px);
             justify-content: center;
             width: 100%;
         }
 
         .ion-chip {
-            font-size: clamp(0.8rem, 1.2vw, 0.98rem);
-            font-weight: 700;
-            padding: clamp(4px, 0.8vw, 6px) clamp(6px, 1.2vw, 10px);
-            border-radius: 8px;
-            border: 1.5px solid var(--border);
+            font-size: clamp(1.05rem, 1.8vw, 1.4rem);
+            font-weight: 800;
+            padding: clamp(6px, 1.2vw, 10px) clamp(10px, 1.8vw, 16px);
+            border-radius: 10px;
+            border: 2px solid var(--border);
             background: var(--bg);
             color: var(--ink);
             cursor: pointer;
             line-height: 1.15;
             transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
         }
 
         .ion-chip:hover {
             border-color: var(--primary);
+            transform: translateY(-1px);
         }
 
         .cation .ion-chip[aria-selected="true"] {
@@ -985,104 +974,105 @@
             border-color: var(--anion-color);
         }
 
-        .ion-name-single {
-            font-size: clamp(0.7rem, 1.2vw, 1.05rem);
-            font-weight: 700;
-            color: var(--ink-muted);
-        }
-
-        .stepper-v {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(0.5rem, 1.2vw, 0.8rem);
-            background: var(--bg);
-            border: 1px solid var(--border);
-            padding: clamp(0.2rem, 0.6vw, 0.4rem) clamp(0.4rem, 1vw, 0.7rem);
-            border-radius: 10px;
+        /* AKTIONEN & TOOLTIP FEEDBACK */
+        .action-btn-container {
+            position: relative;
             width: 100%;
-        }
-
-        .stepper-arrows {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .stepper-arrows button {
-            width: clamp(48px, 7vw, 64px);
-            height: clamp(26px, 3.2vh, 32px);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--ink);
-            font-weight: 700;
-            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            transition: background 0.1s ease;
-        }
-
-        .stepper-arrows button:hover {
-            background: var(--border);
-        }
-
-        .stepper-val-wrap {
-            display: flex;
-            align-items: center;
-            gap: clamp(0.35rem, 0.8vw, 0.55rem);
-        }
-
-        .stepper-count {
-            font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-            font-weight: 700;
-            min-width: 1.1rem;
-            text-align: center;
-        }
-
-        .cation .stepper-count { color: var(--cation-color); }
-        .anion .stepper-count { color: var(--anion-color); }
-
-        .stepper-formula {
-            font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-            font-weight: 700;
-        }
-
-        .feedback-area {
-            min-height: clamp(26px, 3.2vh, 34px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 0.3rem 0.5rem;
-            border-radius: 10px;
-            font-size: clamp(0.72rem, 1.15vw, 0.88rem);
-            font-weight: 700;
-            line-height: 1.3;
             flex-shrink: 0;
+            z-index: 10;
         }
 
-        .feedback-area.ok { background: var(--ok-bg); color: var(--ok-ink); }
-        .feedback-area.bad { background: var(--bad-bg); color: var(--bad-ink); }
-        .feedback-area.empty { background: transparent; }
+        .feedback-tooltip {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            width: max-content;
+            max-width: 96%;
+            padding: 0.55rem 0.95rem;
+            border-radius: 12px;
+            font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+            font-weight: 800;
+            text-align: center;
+            line-height: 1.3;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            pointer-events: none;
+            z-index: 20;
+            animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .feedback-tooltip.bad {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1.5px solid #fca5a5;
+            animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), tooltipShake 0.4s ease;
+        }
+
+        .feedback-tooltip.ok {
+            background: #dcfce7;
+            color: #166534;
+            border: 1.5px solid #86efac;
+        }
+
+        .tooltip-arrow {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid #fca5a5;
+        }
+
+        .feedback-tooltip.ok .tooltip-arrow {
+            border-top-color: #86efac;
+        }
+
+        @keyframes tooltipPop {
+            from { opacity: 0; transform: translate(-50%, 8px) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+
+        @keyframes tooltipShake {
+            0%, 100% { transform: translate(-50%, 0); }
+            20%, 60% { transform: translate(calc(-50% - 6px), 0); }
+            40%, 80% { transform: translate(calc(-50% + 6px), 0); }
+        }
+
+        @keyframes btnShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
 
         .action-btn {
             background: var(--primary);
             color: white;
             border: none;
             border-radius: var(--radius);
-            padding: clamp(0.5rem, 1.1vh, 0.8rem);
-            font-size: clamp(0.88rem, 1.4vw, 1.05rem);
-            font-weight: 700;
+            padding: clamp(0.6rem, 1.3vh, 0.95rem);
+            font-size: clamp(1.0rem, 1.6vw, 1.25rem);
+            font-weight: 800;
             cursor: pointer;
             width: 100%;
             flex-shrink: 0;
             transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
             position: relative;
             z-index: 10;
+        }
+
+        .action-btn.shake {
+            animation: btnShake 0.4s ease;
+        }
+
+        .action-btn.success-btn {
+            background: #16a34a;
+        }
+
+        .action-btn.success-btn:hover:not(:disabled) {
+            background: #15803d;
         }
 
         .action-btn:hover:not(:disabled) {
@@ -1149,7 +1139,6 @@ document.addEventListener('touchend', function (event) {
 }, { passive: false });
 
 // Re-render NUR bei tatsächlicher Breitenänderung (z. B. Display-Rotation).
-// Bei Höhenänderungen (wie Aufklappen der Smartphone-Tastatur) darf KEIN Re-Render ausgelöst werden.
 let lastWindowWidth = window.innerWidth;
 window.addEventListener('resize', () => {
     if (window.innerWidth !== lastWindowWidth) {
@@ -1652,6 +1641,7 @@ function loadTask() {
 
 function incCat() {
     S.catCount++;
+    S.fb = null;
     if (S.catCount >= 10) {
         triggerEasterEgg();
     } else {
@@ -1661,6 +1651,7 @@ function incCat() {
 
 function incAn() {
     S.anCount++;
+    S.fb = null;
     if (S.anCount >= 10) {
         triggerEasterEgg();
     } else {
@@ -1668,20 +1659,40 @@ function incAn() {
     }
 }
 
+function decCat() {
+    if (S.catCount > 1) {
+        S.catCount--;
+        S.fb = null;
+        render();
+    }
+}
+
+function decAn() {
+    if (S.anCount > 1) {
+        S.anCount--;
+        S.fb = null;
+        render();
+    }
+}
+
 function selectCation(idx) {
+    S.fb = null;
     if (S.selectedCatIdx === idx) {
         incCat();
     } else {
         S.selectedCatIdx = idx;
+        S.catCount = 1;
         render();
     }
 }
 
 function selectAnion(idx) {
+    S.fb = null;
     if (S.selectedAnIdx === idx) {
         incAn();
     } else {
         S.selectedAnIdx = idx;
+        S.anCount = 1;
         render();
     }
 }
@@ -1889,33 +1900,27 @@ function renderChargeVisualizer() {
 
     return `
         <div class="visualizer-card">
-            ${!isBalanced ? `<div class="balance-unbalanced-text">⚠️ Verbindung ist noch nicht elektrisch neutral.</div>` : ''}
             <div class="charge-columns-wrap">
-                <div class="columns-inner-wrap">
-                    <div class="side-col-wrapper">
-                        <div class="badge-line-wrap" style="height: ${catTowerH}px;">
-                            <div class="charge-sum-badge pos">${S.catCount}</div>
-                            <div class="indicator-line pos" style="height: 100%;"></div>
-                        </div>
-                        <div class="charge-col cation-col">
-                            ${renderBlocks(S.catCount, catCharge, 'cat-block', cat)}
-                        </div>
+                <div class="bars-area-wrap">
+                    <div class="badge-line-wrap pos-wrap" style="height: ${catTowerH}px;">
+                        <div class="charge-sum-badge pos">${S.catCount}&nbsp;${fmtIon(cat.s, cat.c)}</div>
+                        <div class="indicator-line pos" style="height: 100%;"></div>
                     </div>
 
-                    <div class="side-col-wrapper">
-                        <div class="charge-col anion-col">
-                            ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
-                        </div>
-                        <div class="badge-line-wrap" style="height: ${anTowerH}px;">
-                            <div class="indicator-line neg" style="height: 100%;"></div>
-                            <div class="charge-sum-badge neg">${S.anCount}</div>
-                        </div>
+                    <div class="charge-col cation-col">
+                        ${renderBlocks(S.catCount, catCharge, 'cat-block', cat)}
+                    </div>
+                    <div class="charge-col anion-col">
+                        ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
+                    </div>
+
+                    <div class="badge-line-wrap neg-wrap" style="height: ${anTowerH}px;">
+                        <div class="indicator-line neg" style="height: 100%;"></div>
+                        <div class="charge-sum-badge neg">${S.anCount}&nbsp;${fmtIon(an.s, an.c)}</div>
                     </div>
 
                     ${isBalanced ? `
-                        <div class="balance-line" style="bottom: ${catTowerH + 3}px;">
-                            <span class="balance-line-text">✓ Ladungen sind ausgeglichen!</span>
-                        </div>
+                        <div class="balance-line" style="bottom: ${catTowerH + 3}px;"></div>
                     ` : ''}
                 </div>
             </div>
@@ -1937,7 +1942,7 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
-/* 3D-GITTER SVG */
+/* 3D-GITTER SVG (Halber Weg zurückverschoben, Formel im freien Bereich zwischen Überschrift und Hinweisbox) */
 function renderLatticeSVG() {
     const rawNodes = [];
     const minD = -1.0, maxD = 1.5;
@@ -1997,6 +2002,9 @@ function renderLatticeSVG() {
         }
     });
 
+    // Entfernen der obersten 3D-Ionen-Schicht
+    nodes = nodes.filter(n => n.y < 1.2);
+
     const radY = 35 * Math.PI / 180;
     const radX = 22 * Math.PI / 180;
     const rotAngle = -45 * Math.PI / 180;
@@ -2004,8 +2012,8 @@ function renderLatticeSVG() {
     const sinA = Math.sin(rotAngle);
 
     const scale = 280;
-    const centerX = 500;
-    const centerY = 360;
+    const centerX = 445; // Halber Weg zurück zwischen 390 und 500
+    const centerY = 240; // Halber Weg zurück zwischen 190 und 290
 
     nodes.forEach(node => {
         const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
@@ -2024,6 +2032,9 @@ function renderLatticeSVG() {
         node.py = centerY + rotY;
         node.depth = z2;
     });
+
+    // Vertikaler Filterbereich entsprechend der Zentrierung
+    nodes = nodes.filter(n => n.py >= 60 && n.py <= 510);
 
     const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
     if (anionDepths.length > 0) {
@@ -2056,8 +2067,8 @@ function renderLatticeSVG() {
         const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
         const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
 
-        const dur = (0.75 + ((idx * 19) % 11) * 0.09).toFixed(2);
-        const delay = (((idx * 29) % 13) * 0.08).toFixed(2);
+        const dur = (0.40 + ((idx * 19) % 11) * 0.05).toFixed(2);
+        const delay = (((idx * 29) % 13) * 0.05).toFixed(2);
         const animName = ['ionWobbleA', 'ionWobbleB', 'ionWobbleC', 'ionWobbleD'][(idx * 7) % 4];
 
         const animStyle = `animation: ${animName} ${dur}s ease-in-out ${delay}s infinite alternate; transform-box: fill-box; transform-origin: center;`;
@@ -2076,6 +2087,18 @@ function renderLatticeSVG() {
             </g>`;
         }
     });
+
+    // Formel im freien Bereich rechts im Gitter (perfekt im Sichtfeld zwischen Überschrift und Einstellungsbox)
+    const isReal = S.school === 'real';
+    const catText = isReal ? '(Na⁺)' : 'Na';
+    const catSub = '2';
+    const anText = isReal ? '(S²⁻)' : 'S';
+
+    const formulaSVG = `
+        <text x="660" y="330" font-size="52" font-weight="800" opacity="0.45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">
+            <tspan fill="#dc2626">${catText}</tspan><tspan fill="#dc2626" font-size="34" dy="12">${catSub}</tspan><tspan fill="#2563eb" font-size="52" dy="-12">${anText}</tspan>
+        </text>
+    `;
 
     return `
     <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
@@ -2099,6 +2122,7 @@ function renderLatticeSVG() {
         @keyframes ionWobbleD { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.5px, -2.5px); } }
       </style>
 
+      ${formulaSVG}
       ${svgContent}
     </svg>
     `;
@@ -2139,7 +2163,7 @@ function renderPwaBanner() {
                     <button class="pwa-btn-sm" onclick="triggerPwaInstall()">${showIosInstallGuide ? 'Einklappen' : 'Anleitung'}</button>
                 </div>
                 ${showIosInstallGuide ? `
-                    <div style="font-size: 0.78rem; color: var(--ink-muted); line-height: 1.4; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
+                    <div style="font-size: 0.82rem; color: var(--ink-muted); line-height: 1.4; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
                         Tippe in Safari <b>${sharePositionText}</b> auf das <b>Teilen-Symbol</b>${sfShareIcon}, wähle dann <b>„Mehr anzeigen“</b> ${sfChevronDown} und tippe auf <b>„Zum Home-Bildschirm“</b>${sfAddHomeIcon}.
                     </div>
                 ` : ''}
@@ -2151,13 +2175,12 @@ function renderPwaBanner() {
 }
 
 function renderStart() {
-    const isReal = S.school === 'real';
     const hasSelection = S.selectedStartStage !== null;
     const btnLabel = hasSelection ? `Level ${S.selectedStartStage} starten!` : 'Wähle ein Level!';
 
     return `
     <div class="start-container">
-        <!-- Ganzflächige 3D-Hintergrundgrafik -->
+        <!-- Ganzflächige 3D-Hintergrundgrafik mit integrierter Formel -->
         <div class="hero-graphic-bg">
             ${renderLatticeSVG()}
         </div>
@@ -2168,15 +2191,8 @@ function renderStart() {
             <p class="hero-subtitle">Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!</p>
         </div>
 
-        <!-- Zentrierter Freiraum zwischen Überschrift und Einstellungsbox -->
-        <div class="middle-spacer">
-            <div class="formula-preview-badge">
-                ${isReal 
-                    ? `<span class="cat-part">(Na<sup>+</sup>)<sub>2</sub></span><span class="an-part">(S<sup>2-</sup>)</span>`
-                    : `<span class="cat-part">Na<sub>2</sub></span><span class="an-part">S</span>`
-                }
-            </div>
-        </div>
+        <!-- Zentrierter Freiraum -->
+        <div class="middle-spacer"></div>
 
         <!-- Unten verankerte Voreinstellungen, PWA-Banner & Level-Auswahl -->
         <div class="bottom-controls-group">
@@ -2208,7 +2224,7 @@ function renderStart() {
                         </button>
                         <button class="tile-btn" aria-pressed="${S.level === 'advanced'}" onclick="S.level='advanced'; render();">
                             <b>Fortgeschritten</b>
-                            <small>Inkl. Nebengruppen-Ionen und Molekül-Ionen</small>
+                            <small>Inkl. Nebengruppen- & Molekül-Ionen</small>
                         </button>
                     </div>
                 </div>
@@ -2247,8 +2263,8 @@ function renderStart() {
 
 function getInfoText(stage) {
     switch(stage) {
-        case 1: return "Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen der Kationen (+) und der Anionen (-) aus. Passe die Anzahl der Ionen mit ▲ und ▼ an, bis beide Balken gleich hoch sind und damit die Ladungen ausgeglichen sind.";
-        case 2: return "Wähle zuerst die passenden Ionen für das Salz aus und gleiche dann die Ladungen aus. Tippe ein Ion ein zweites Mal an, um es direkt hinzuzufügen!";
+        case 1: return "Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen der Kationen (+) und der Anionen (-) aus. Tippe auf die Ionen, um weitere hinzuzufügen, bis beide Balken gleich hoch sind. Nutze das ✕, um zu viele Ionen zu entfernen.";
+        case 2: return "Wähle zuerst die passenden Ionen für das Salz aus und gleiche dann die Ladungen aus. Tippe ein Ion mehrfach an, um mehr davon hinzuzufügen!";
         case 3: return "Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.";
         case 4: return "Du bist nun auf dich allein gestellt! Tippe die fertige Verhältnisformel direkt ein.";
     }
@@ -2307,7 +2323,7 @@ function renderTask() {
     <div class="top-bar">
         <div class="top-left">
             <button class="info-toggle-btn" onclick="S.infoOpen = !S.infoOpen; render();">i</button>
-            <span>Level ${S.stage}: ${getStageName(S.stage)} (${S.taskIdx + 1}/${S.tasks.length})<span class="school-badge">(${schoolLabel})</span></span>
+            <span>Level ${S.stage}: ${getStageName(S.stage)} (${S.taskIdx + 1}/${S.tasks.length})<span class="school-badge"> · ${schoolLabel}</span></span>
         </div>
         <button class="text-btn" onclick="S.screen='start'; render();">Beenden</button>
     </div>
@@ -2321,15 +2337,15 @@ function renderTask() {
 
     ${S.stage < 3 ? `
         <div class="formula-box">
-            <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
+            <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
         <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp && document.activeElement !== inp) { inp.focus(); }">
-            <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
+            <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
-                   oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
+                   oninput="S.typedFormula = this.value; S.fb = null; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
                    onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); closeKeyboard(event); if(!S.done){ checkSolution(); } else { nextTask(); } }"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
             <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
@@ -2339,63 +2355,53 @@ function renderTask() {
     ${S.stage < 4 ? `
         <div class="ion-controls">
             <div class="ion-card cation">
-                <div class="ion-header-label">Kationen (positiv)</div>
-                ${S.stage > 1 ? `
-                    <div class="ion-chip-grid">
-                        ${catList.map((c, i) => `
-                            <button class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="selectCation(${i})">
-                                ${fmtIon(c.s, c.c)}
-                            </button>
-                        `).join('')}
-                    </div>
-                ` : `<span class="ion-name-single">${cat.n}</span>`}
-                
-                <div class="stepper-v">
-                    <div class="stepper-arrows">
-                        <button onclick="incCat()">▲</button>
-                        <button onclick="S.catCount = Math.max(1, S.catCount - 1); render();">▼</button>
-                    </div>
-                    <div class="stepper-val-wrap">
-                        <span class="stepper-count">${S.catCount}</span>
-                        <span class="stepper-formula">${fmtIon(cat.s, cat.c)}</span>
-                    </div>
+                <div class="ion-card-header">
+                    <span class="ion-header-label">Kationen</span>
+                    <button type="button" class="remove-ion-btn" onclick="decCat()" ${S.catCount <= 1 ? 'disabled' : ''} aria-label="Kation entfernen" title="Kation entfernen">✕</button>
+                </div>
+                <div class="ion-chip-grid">
+                    ${S.stage > 1 ? catList.map((c, i) => `
+                        <button type="button" class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="selectCation(${i})">
+                            ${fmtIon(c.s, c.c)}
+                        </button>
+                    `).join('') : `
+                        <button type="button" class="ion-chip" aria-selected="true" onclick="incCat()">
+                            ${fmtIon(cat.s, cat.c)}
+                        </button>
+                    `}
                 </div>
             </div>
 
             <div class="ion-card anion">
-                <div class="ion-header-label">Anionen (negativ)</div>
-                ${S.stage > 1 ? `
-                    <div class="ion-chip-grid">
-                        ${anList.map((a, i) => `
-                            <button class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="selectAnion(${i})">
-                                ${fmtIon(a.s, a.c)}
-                            </button>
-                        `).join('')}
-                    </div>
-                ` : `<span class="ion-name-single">${an.n}</span>`}
-                
-                <div class="stepper-v">
-                    <div class="stepper-arrows">
-                        <button onclick="incAn()">▲</button>
-                        <button onclick="S.anCount = Math.max(1, S.anCount - 1); render();">▼</button>
-                    </div>
-                    <div class="stepper-val-wrap">
-                        <span class="stepper-count">${S.anCount}</span>
-                        <span class="stepper-formula">${fmtIon(an.s, an.c)}</span>
-                    </div>
+                <div class="ion-card-header">
+                    <span class="ion-header-label">Anionen</span>
+                    <button type="button" class="remove-ion-btn" onclick="decAn()" ${S.anCount <= 1 ? 'disabled' : ''} aria-label="Anion entfernen" title="Anion entfernen">✕</button>
+                </div>
+                <div class="ion-chip-grid">
+                    ${S.stage > 1 ? anList.map((a, i) => `
+                        <button type="button" class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="selectAnion(${i})">
+                            ${fmtIon(a.s, a.c)}
+                        </button>
+                    `).join('') : `
+                        <button type="button" class="ion-chip" aria-selected="true" onclick="incAn()">
+                            ${fmtIon(an.s, an.c)}
+                        </button>
+                    `}
                 </div>
             </div>
         </div>
     ` : ''}
 
-    <div class="feedback-area ${S.fb ? S.fb.type : 'empty'}" role="status" aria-live="polite">
-        ${S.fb ? S.fb.msg : ''}
-    </div>
-
-    <div>
+    <div class="action-btn-container">
+        ${S.fb ? `
+            <div class="feedback-tooltip ${S.fb.type}">
+                ${S.fb.msg}
+                <div class="tooltip-arrow"></div>
+            </div>
+        ` : ''}
         ${!S.done 
-            ? `<button class="action-btn" onclick="checkSolution()">Verhältnisformel prüfen</button>`
-            : `<button class="action-btn" onclick="nextTask()">Nächstes Salz →</button>`
+            ? `<button class="action-btn ${S.fb && S.fb.type === 'bad' ? 'shake' : ''}" onclick="checkSolution()">Verhältnisformel prüfen</button>`
+            : `<button class="action-btn success-btn" onclick="nextTask()">Nächstes Salz →</button>`
         }
     </div>`;
 }
