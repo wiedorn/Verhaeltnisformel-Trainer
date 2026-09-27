@@ -17,44 +17,46 @@
     <style>
         :root {
             --bg: #f8fafc;
-            --surface: #ffffff;
+            --surface: #ffffff; 
+            --surface-alpha: rgba(255, 255, 255, 0.65); /* Halbtransparent für Formelkarten */
             --ink: #0f172a;
             --ink-muted: #64748b;
-            --primary: #7c3aed; /* Lilaton für Light Mode */
+            --primary: #7c3aed; 
             --primary-hover: #6d28d9;
-            --cation-color: #dc2626; /* Rot - exklusiv für Kationen */
-            --anion-color: #2563eb;  /* Blau - exklusiv für Anionen */
+            --cation-color: #dc2626; 
+            --anion-color: #2563eb;  
             --border: #cbd5e1;
-            --radius: 16px; /* Schön abgerundete Ecken */
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
             --ok-bg: #dcfce7;
             --ok-ink: #166534;
             --bad-bg: #fee2e2;
             --bad-ink: #991b1b;
-            --info-bg: #f3e8ff; /* Helles Lila für Info-Badges/Buttons */
-            --info-ink: #6b21a8; /* Dunkles Lila für Info-Text */
-            --balance-color: #15803d; /* Dunkelgrün für Light Mode */
+            --info-bg: #f3e8ff;
+            --info-ink: #6b21a8;
+            --balance-color: #15803d;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
                 --bg: #0f172a;
-                --surface: #1e293b;
+                --surface: #1e293b; 
+                --surface-alpha: rgba(30, 41, 59, 0.65);
                 --ink: #f8fafc;
                 --ink-muted: #94a3b8;
-                --primary: #a855f7; /* Helles Lila im Dark Mode */
+                --primary: #a855f7;
                 --primary-hover: #c084fc;
-                --cation-color: #ef4444; /* Hellrot im Dark Mode */
-                --anion-color: #3b82f6;  /* Hellblau im Dark Mode */
+                --cation-color: #ef4444;
+                --anion-color: #3b82f6;
                 --border: #334155;
-                --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+                --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
                 --ok-bg: #064e3b;
-                --ok-ink: #4ade80;        /* Hellgrün für Dark Mode */
+                --ok-ink: #4ade80;
                 --bad-bg: #7f1d1d;
                 --bad-ink: #fecaca;
-                --info-bg: #3b0764; /* Dunkellila für Dark Mode */
-                --info-ink: #e9d5ff; /* Helllila für Text im Dark Mode */
-                --balance-color: #4ade80; /* Gut sichtbares Hellgrün für Dark Mode */
+                --info-bg: #3b0764;
+                --info-ink: #e9d5ff;
+                --balance-color: #4ade80;
             }
         }
 
@@ -69,12 +71,12 @@
             height: 100%;
             height: 100dvh;
             width: 100vw;
-            overflow: hidden; /* Verhindert ungewolltes Scrollen der Hauptseite */
+            overflow: hidden;
             background-color: var(--bg);
             color: var(--ink);
         }
 
-        /* Responsive Container mit Safe-Area-Integration für PWAs */
+        /* Responsive Container */
         #app {
             height: 100%;
             height: 100dvh;
@@ -88,10 +90,9 @@
             gap: clamp(0.25rem, 1vh, 0.5rem);
             position: relative;
             box-sizing: border-box;
-            transition: max-width 0.2s ease, padding 0.2s ease;
+            z-index: 2;
         }
 
-        /* Spezielle Optimierung für installierte PWA (Standalone-Modus) */
         @media (display-mode: standalone) {
             #app {
                 gap: clamp(0.2rem, 0.8vh, 0.45rem);
@@ -101,13 +102,11 @@
             }
         }
 
-        /* Spezieller kompakter Modus für Level 4 (Tastatur-Freundlich) */
         #app.stage-4-mode {
             justify-content: flex-start;
             gap: 0.4rem;
         }
 
-        /* Responsive Layout-Anpassungen */
         @media (min-width: 600px) {
             #app {
                 max-width: 680px;
@@ -129,7 +128,6 @@
             }
         }
 
-        /* Robuste Ausrichtung für Hoch- und Tiefstellung */
         sub, sup {
             font-size: 0.7em;
             line-height: 0;
@@ -143,41 +141,104 @@
         .start-container {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
             height: 100%;
             justify-content: space-between;
-            padding: 0.2rem 0;
+            padding: 0.1rem 0;
+            position: relative;
+        }
+
+        /* 1. VOLLBILD-GRAFIK HINTERGRUND (FIXIERUNG FÜR OBEREN RAND) */
+        .hero-graphic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Header Box oben */
+        .hero-header-box {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(0.5rem, 1.2vh, 0.8rem) clamp(0.6rem, 1.5vw, 1rem);
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 10;
         }
 
         .hero-title {
             text-align: center;
-            font-size: clamp(1.4rem, 3vw, 2.2rem);
+            font-size: clamp(1.25rem, 2.8vw, 1.9rem);
             color: var(--primary);
             font-weight: 700;
         }
 
         .hero-subtitle {
             text-align: center;
-            font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+            font-size: clamp(0.75rem, 1.3vw, 0.95rem);
             color: var(--ink-muted);
-            line-height: 1.35;
+            line-height: 1.25;
             padding: 0 0.5rem;
+            margin-top: 0.2rem;
         }
 
-        /* Voreinstellungen */
-        .preset-card {
-            background: var(--surface);
-            border: 2px solid var(--primary);
+        /* Freier Sichtbereich zwischen Überschrift und Steuerung */
+        .middle-spacer {
+            flex: 1;
+            min-height: 100px;
+            pointer-events: none;
+        }
+
+        .bottom-controls-group {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.35rem, 0.9vh, 0.65rem);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Halbtransparente Formelkarte (Formel-Badge) */
+        .formula-preview-badge {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 6px);
+            background: var(--surface-alpha);
+            border: 1.5px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.5rem, 1.5vw, 1rem);
+            padding: 0.35rem 0.85rem;
+            box-shadow: var(--shadow);
+            font-size: clamp(1.25rem, 3.2vw, 1.65rem);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            z-index: 12;
+        }
+
+        .formula-preview-badge .cat-part { color: var(--cation-color); }
+        .formula-preview-badge .an-part { color: var(--anion-color); }
+
+        .preset-card {
+            position: relative;
+            z-index: 10;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(0.4rem, 1.2vw, 0.75rem);
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            gap: 0.6rem;
+            gap: 0.45rem;
         }
 
         .preset-title {
-            font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+            font-size: clamp(0.68rem, 1.1vw, 0.8rem);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -185,31 +246,31 @@
         }
 
         .section-label {
-            font-size: clamp(0.68rem, 1.2vw, 0.8rem);
+            font-size: clamp(0.65rem, 1.1vw, 0.78rem);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--ink-muted);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.2rem;
         }
 
         .tiles-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .level-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
+            gap: 0.4rem;
         }
 
         .tile-btn {
             background: var(--bg);
             border: 1.5px solid var(--border);
-            border-radius: 12px;
-            padding: clamp(0.4rem, 1.2vw, 0.75rem);
+            border-radius: var(--radius);
+            padding: clamp(0.35rem, 1vw, 0.6rem);
             text-align: left;
             cursor: pointer;
             color: var(--ink);
@@ -225,14 +286,14 @@
             background: rgba(124, 58, 237, 0.1);
         }
 
-        .tile-btn b { display: block; font-size: clamp(0.78rem, 1.3vw, 0.95rem); }
-        .tile-btn small { font-size: clamp(0.65rem, 1.1vw, 0.8rem); color: var(--ink-muted); line-height: 1.2; display: block; margin-top: 3px; }
+        .tile-btn b { display: block; font-size: clamp(0.75rem, 1.2vw, 0.9rem); }
+        .tile-btn small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); line-height: 1.15; display: block; margin-top: 2px; }
 
         .level-card {
-            background: var(--surface);
+            background: var(--bg);
             border: 1.5px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.5rem, 1.5vw, 0.85rem);
+            padding: clamp(0.4rem, 1.2vw, 0.7rem);
             text-align: left;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -244,8 +305,14 @@
             transform: translateY(-1px);
         }
 
-        .level-card b { display: block; font-size: clamp(0.82rem, 1.4vw, 1rem); color: var(--primary); }
-        .level-card small { font-size: clamp(0.65rem, 1.1vw, 0.8rem); color: var(--ink-muted); line-height: 1.2; display: block; margin-top: 3px; }
+        .level-card[aria-pressed="true"] {
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.12);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        .level-card b { display: block; font-size: clamp(0.78rem, 1.3vw, 0.95rem); color: var(--primary); }
+        .level-card small { font-size: clamp(0.62rem, 1vw, 0.75rem); color: var(--ink-muted); line-height: 1.15; display: block; margin-top: 2px; }
 
         /* Task Screen Layout */
         .top-bar {
@@ -300,7 +367,7 @@
             font-size: clamp(0.82rem, 1.3vw, 0.95rem);
         }
 
-        /* Information Overlay (Modal) */
+        /* Information Overlay */
         .info-backdrop {
             position: fixed;
             top: 0;
@@ -309,7 +376,6 @@
             height: 100vh;
             height: 100dvh;
             background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(2px);
             z-index: 100;
             display: flex;
             align-items: center;
@@ -361,17 +427,10 @@
             margin-top: 0.2rem;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        @keyframes popIn {
-            from { transform: scale(0.92); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        /* Task Header mit linksbündigem "SALZ"-Label und zentriertem Salznamen */
+        /* Task Header */
         .task-header {
             position: relative;
             display: flex;
@@ -552,9 +611,9 @@
             color: var(--ink-muted);
         }
 
-        /* Formel Box & Eingabefeld */
+        /* Halbtransparente Formel Box & Eingabefeld */
         .formula-box {
-            background: var(--surface);
+            background: var(--surface-alpha);
             border: 1.5px dashed var(--primary);
             border-radius: var(--radius);
             padding: clamp(0.35rem, 1.2vw, 0.55rem) clamp(0.6rem, 2vw, 1rem);
@@ -584,7 +643,7 @@
             transform: translateY(-50%);
             font-size: clamp(0.72rem, 1.1vw, 0.85rem);
             font-weight: 700;
-            color: var(--primary); /* Lila Schriftzug */
+            color: var(--primary);
             line-height: 1.1;
             text-align: left;
             z-index: 6;
@@ -629,10 +688,7 @@
             animation: cursor-blink 1s step-start infinite;
         }
 
-        @keyframes cursor-blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        @keyframes cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         .hidden-text-input {
             position: absolute;
@@ -840,15 +896,23 @@
             cursor: pointer;
             width: 100%;
             flex-shrink: 0;
-            transition: background 0.15s ease, transform 0.1s ease;
+            transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+            position: relative;
+            z-index: 10;
         }
 
-        .action-btn:hover {
+        .action-btn:hover:not(:disabled) {
             background: var(--primary-hover);
         }
 
-        .action-btn:active {
+        .action-btn:active:not(:disabled) {
             transform: scale(0.99);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            background: var(--ink-muted);
         }
     </style>
 </head>
@@ -1022,6 +1086,7 @@ const S = {
     school: 'gym',       // 'gym' | 'real'
     level: 'basis',      // 'basis' | 'advanced'
     stage: 1,            // 1 | 2 | 3 | 4
+    selectedStartStage: null,
     screen: 'start',     // 'start' | 'task' | 'end'
     taskIdx: 0,
     tasks: [],
@@ -1238,9 +1303,21 @@ function buildFormulaHTML(catObj, anObj, cCount, aCount, school) {
 }
 
 // --- Steuerung ---
+function selectStartStage(stageNum) {
+    S.selectedStartStage = stageNum;
+    render();
+}
+
+function confirmStartLevel() {
+    if (S.selectedStartStage) {
+        startStage(S.selectedStartStage);
+    }
+}
+
 function startStage(stageNum) {
     initAudio();
     S.stage = stageNum;
+    S.selectedStartStage = stageNum;
     
     const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
@@ -1532,7 +1609,6 @@ function renderChargeVisualizer() {
 function render() {
     const app = document.getElementById('app');
     
-    // In Level 4 wird das Layout kompakt oben ausgerichtet
     if (S.screen === 'task' && S.stage === 4) {
         app.classList.add('stage-4-mode');
     } else {
@@ -1544,65 +1620,258 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
+/* 3D-GITTER: ANIONEN & ABSTÄNDE -10%, ANZAHL -10%, ZENTRUM NACH LINKS OBEN VERSCHOBEN */
+function renderLatticeSVG() {
+    const rawNodes = [];
+    
+    const minD = -1.0, maxD = 1.5;
+    const step = 0.5;
+
+    for (let x = minD; x <= maxD; x += step) {
+        for (let y = minD; y <= maxD; y += step) {
+            for (let z = minD; z <= maxD; z += step) {
+                const xIsInt = Number.isInteger(x);
+                const yIsInt = Number.isInteger(y);
+                const zIsInt = Number.isInteger(z);
+
+                let isAnion = false;
+
+                if (xIsInt && yIsInt && zIsInt) {
+                    isAnion = true;
+                } else if (!xIsInt && !yIsInt && zIsInt) {
+                    isAnion = true;
+                } else if (!xIsInt && yIsInt && !zIsInt) {
+                    isAnion = true;
+                } else if (xIsInt && !yIsInt && !zIsInt) {
+                    isAnion = true;
+                }
+
+                if (isAnion) {
+                    rawNodes.push({ x, y, z, isAnion: true });
+                }
+            }
+        }
+    }
+
+    // Kationen (Na+): Tetraederlücken
+    for (let x = Math.floor(minD); x < maxD; x += 1) {
+        for (let y = Math.floor(minD); y < maxD; y += 1) {
+            for (let z = Math.floor(minD); z < maxD; z += 1) {
+                const offsets = [0.25, 0.75];
+                for (let ox of offsets) {
+                    for (let oy of offsets) {
+                        for (let oz of offsets) {
+                            const rx = x + ox, ry = y + oy, rz = z + oz;
+                            if (rx >= minD && rx <= maxD && ry >= minD && ry <= maxD && rz >= minD && rz <= maxD) {
+                                rawNodes.push({ x: rx, y: ry, z: rz, isAnion: false });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Duplikate filtern
+    let nodes = [];
+    const seen = new Set();
+    rawNodes.forEach(n => {
+        const key = `${n.x.toFixed(2)}_${n.y.toFixed(2)}_${n.z.toFixed(2)}`;
+        if (!seen.has(key)) {
+            seen.add(key);
+            nodes.push(n);
+        }
+    });
+
+    // Anzahl der Ionen um genau 10% reduzieren (äußerste Ionen entfernen)
+    nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
+    nodes = nodes.slice(0, Math.floor(nodes.length * 0.9));
+
+    // 3D-Rotationswinkel (Yaw = 35°, Pitch = 22°)
+    const radY = 35 * Math.PI / 180;
+    const radX = 22 * Math.PI / 180;
+
+    // Abstände um 10% reduziert (scale = 252 statt 280) & Zentrierung nach links oben verschoben (440, 350)
+    const scale = 252;
+    const centerX = 440;
+    const centerY = 350;
+
+    let minDepth = Infinity;
+    let maxDepth = -Infinity;
+
+    nodes.forEach(node => {
+        const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
+        const z1 = -node.x * Math.sin(radY) + node.z * Math.cos(radY);
+
+        const y2 = node.y * Math.cos(radX) - z1 * Math.sin(radX);
+        const z2 = node.y * Math.sin(radX) + z1 * Math.cos(radX);
+
+        node.px = centerX + x1 * scale;
+        node.py = centerY - y2 * scale;
+        node.depth = z2;
+
+        if (node.depth < minDepth) minDepth = node.depth;
+        if (node.depth > maxDepth) maxDepth = node.depth;
+    });
+
+    // Tiefensortierung (Malt von hinten nach vorne)
+    nodes.sort((a, b) => a.depth - b.depth);
+
+    const depthRange = (maxDepth - minDepth) || 1;
+
+    let svgContent = '';
+    nodes.forEach((node, idx) => {
+        const depthFactor = (node.depth - minDepth) / depthRange;
+
+        const opacity = (0.40 + 0.60 * depthFactor).toFixed(2);
+
+        // Kationengröße
+        const rCation = (12.0 + 8.0 * depthFactor).toFixed(1);
+        const fontCation = (11.0 + 6.0 * depthFactor).toFixed(1);
+
+        // Anionengröße um 10% verkleinert (22.5 / 15.3 bzw. Font 15.3 / 9.0)
+        const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
+        const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
+
+        // Sanftes Wackeln
+        const dur = (0.75 + ((idx * 19) % 11) * 0.09).toFixed(2);
+        const delay = (((idx * 29) % 13) * 0.08).toFixed(2);
+        const animName = ['ionWobbleA', 'ionWobbleB', 'ionWobbleC', 'ionWobbleD'][(idx * 7) % 4];
+
+        const animStyle = `animation: ${animName} ${dur}s ease-in-out ${delay}s infinite alternate; transform-box: fill-box; transform-origin: center;`;
+
+        if (node.isAnion) {
+            svgContent += `
+            <g opacity="${opacity}" style="${animStyle}">
+                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rAnion}" fill="url(#heroAnGrad)"/>
+                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontAnion)*0.32).toFixed(1)}" font-size="${fontAnion}" font-weight="bold" fill="#ffffff" text-anchor="middle">2-</text>
+            </g>`;
+        } else {
+            svgContent += `
+            <g opacity="${opacity}" style="${animStyle}">
+                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rCation}" fill="url(#heroCatGrad)"/>
+                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontCation)*0.32).toFixed(1)}" font-size="${fontCation}" font-weight="bold" fill="#ffffff" text-anchor="middle">+</text>
+            </g>`;
+        }
+    });
+
+    return `
+    <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
+      <defs>
+        <radialGradient id="heroCatGrad" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#f87171"/>
+          <stop offset="45%" stop-color="#dc2626"/>
+          <stop offset="100%" stop-color="#991b1b"/>
+        </radialGradient>
+        <radialGradient id="heroAnGrad" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#60a5fa"/>
+          <stop offset="45%" stop-color="#2563eb"/>
+          <stop offset="100%" stop-color="#1e3a8a"/>
+        </radialGradient>
+      </defs>
+
+      <style>
+        @keyframes ionWobbleA { 0% { transform: translate(0, 0); } 100% { transform: translate(2.5px, -2.8px); } }
+        @keyframes ionWobbleB { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.8px, 2.3px); } }
+        @keyframes ionWobbleC { 0% { transform: translate(0, 0); } 100% { transform: translate(2.3px, 2.6px); } }
+        @keyframes ionWobbleD { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.5px, -2.5px); } }
+      </style>
+
+      ${svgContent}
+    </svg>
+    `;
+}
+
 function renderStart() {
+    const isReal = S.school === 'real';
+    const hasSelection = S.selectedStartStage !== null;
+    const btnLabel = hasSelection ? `Level ${S.selectedStartStage} starten!` : 'Wähle ein Level!';
+
     return `
     <div class="start-container">
-        <div>
+        <!-- Ganzflächige 3D-Hintergrundgrafik -->
+        <div class="hero-graphic-bg">
+            ${renderLatticeSVG()}
+        </div>
+
+        <!-- Oben verankerte Überschrift -->
+        <div class="hero-header-box">
             <h1 class="hero-title">Verhältnisformel-Trainer</h1>
             <p class="hero-subtitle">Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!</p>
         </div>
 
-        <div class="preset-card">
-            <div class="preset-title">⚙️ Voreinstellungen</div>
-            
-            <div>
-                <div class="section-label">Schultyp</div>
-                <div class="tiles-row">
-                    <button class="tile-btn" aria-pressed="${S.school === 'gym'}" onclick="S.school='gym'; render();">
-                        <b>Gymnasium</b>
-                        <small>Klassisch z. B. NaCl</small>
-                    </button>
-                    <button class="tile-btn" aria-pressed="${S.school === 'real'}" onclick="S.school='real'; render();">
-                        <b>Realschule</b>
-                        <small>Ionenschreibweise z. B. (Na⁺)(Cl⁻)</small>
-                    </button>
+        <!-- Freier Blickbereich in der Mitte -->
+        <div class="middle-spacer"></div>
+
+        <!-- Nach unten verschobener Bereich für Voreinstellungen & Level-Auswahl -->
+        <div class="bottom-controls-group">
+            <div class="preset-card">
+                <!-- Halbtransparente Formelkarte -->
+                <div class="formula-preview-badge">
+                    ${isReal 
+                        ? `<span class="cat-part">(Na<sup>+</sup>)<sub>2</sub></span><span class="an-part">(S<sup>2-</sup>)</span>`
+                        : `<span class="cat-part">Na<sub>2</sub></span><span class="an-part">S</span>`
+                    }
+                </div>
+
+                <div class="preset-title">⚙️ Voreinstellungen</div>
+                
+                <div>
+                    <div class="section-label">Schulform</div>
+                    <div class="tiles-row">
+                        <button class="tile-btn" aria-pressed="${S.school === 'gym'}" onclick="S.school='gym'; render();">
+                            <b>Gymnasium</b>
+                            <small>Klassisch z. B. NaCl</small>
+                        </button>
+                        <button class="tile-btn" aria-pressed="${S.school === 'real'}" onclick="S.school='real'; render();">
+                            <b>Realschule</b>
+                            <small>Ionenschreibweise z. B. (Na⁺)(Cl⁻)</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-label">Schwierigkeitsgrad</div>
+                    <div class="tiles-row">
+                        <button class="tile-btn" aria-pressed="${S.level === 'basis'}" onclick="S.level='basis'; render();">
+                            <b>Basis</b>
+                            <small>Nur einfache Hauptgruppen-Ionen</small>
+                        </button>
+                        <button class="tile-btn" aria-pressed="${S.level === 'advanced'}" onclick="S.level='advanced'; render();">
+                            <b>Fortgeschritten</b>
+                            <small>Inkl. Nebengruppen-Ionen und Molekül-Ionen</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Eigene Karte für die Level-Auswahl -->
+            <div class="preset-card">
+                <div class="preset-title">🎯 Level wählen</div>
+                <div class="level-grid">
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 1}" onclick="selectStartStage(1)">
+                        <b>Level 1: Einführung</b>
+                        <small>Grundlagen & Ladungsausgleich</small>
+                    </div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 2}" onclick="selectStartStage(2)">
+                        <b>Level 2: Lernen</b>
+                        <small>Richtige Ionen auswählen</small>
+                    </div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 3}" onclick="selectStartStage(3)">
+                        <b>Level 3: Üben</b>
+                        <small>Verhältnisformeln schreiben</small>
+                    </div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 4}" onclick="selectStartStage(4)">
+                        <b>Level 4: Check</b>
+                        <small>Ohne Hilfsmittel</small>
+                    </div>
                 </div>
             </div>
 
             <div>
-                <div class="section-label">Schwierigkeitsgrad</div>
-                <div class="tiles-row">
-                    <button class="tile-btn" aria-pressed="${S.level === 'basis'}" onclick="S.level='basis'; render();">
-                        <b>Basis</b>
-                        <small>Nur einfache Hauptgruppen-Ionen</small>
-                    </button>
-                    <button class="tile-btn" aria-pressed="${S.level === 'advanced'}" onclick="S.level='advanced'; render();">
-                        <b>Fortgeschritten</b>
-                        <small>Inkl. Nebengruppen-Ionen und Molekül-Ionen</small>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <div class="section-label" style="margin-bottom: 0.3rem;">Level wählen</div>
-            <div class="level-grid">
-                <div class="level-card" onclick="startStage(1)">
-                    <b>Level 1: Einführung</b>
-                    <small>Grundlagen & Ladungsausgleich</small>
-                </div>
-                <div class="level-card" onclick="startStage(2)">
-                    <b>Level 2: Lernen</b>
-                    <small>Richtige Ionen auswählen</small>
-                </div>
-                <div class="level-card" onclick="startStage(3)">
-                    <b>Level 3: Üben</b>
-                    <small>Verhältnisformeln schreiben</small>
-                </div>
-                <div class="level-card" onclick="startStage(4)">
-                    <b>Level 4: Check</b>
-                    <small>Ohne Hilfsmittel</small>
-                </div>
+                <button class="action-btn" ${!hasSelection ? 'disabled' : ''} onclick="confirmStartLevel()">
+                    ${btnLabel}
+                </button>
             </div>
         </div>
     </div>`;
