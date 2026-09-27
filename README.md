@@ -9,12 +9,12 @@ Die App unterstützt Schülerinnen und Schüler didaktisch gestuft beim Verstän
 ## ✨ Features & Funktionen
 
 * **🏫 Zwei Schulformen wählbar:**
-  * **Gymnasium:** Klassische Formelschreibweise (z. B. $\text{NaCl}$, $\text{Al}_2\text{O}_3$, $(\text{NH}_4)_2\text{SO}_4$).
-  * **Realschule:** Explizite Ionenschreibweise mit Ladungen in Klammern (z. B. $(\text{Na}^+)(\text{Cl}^-)$, $(\text{NH}_4^+)_2(\text{SO}_4^{2-})$).
+  * **Gymnasium:** Klassische Formelschreibweise.
+  * **Realschule:** Ionenschreibweise mit Ladungen in Klammern.
 
 * **📊 Differenzierte Schwierigkeitsgrade:**
   * **Basis:** 56 mathematisch und chemisch valide Salze aus einfachen Hauptgruppen-Ionen.
-  * **Fortgeschritten:** 109 recherchierte, reale Salze inklusive Nebengruppen-Ionen ($\text{Fe}^{2+}$, $\text{Fe}^{3+}$, $\text{Cu}^+$, $\text{Cu}^{2+}$) und mehratomigen Molekül-Ionen ($\text{NH}_4^+$, $\text{SO}_4^{2-}$, $\text{NO}_3^-$, $\text{CO}_3^{2-}$, $\text{OH}^-$, $\text{MnO}_4^-$, etc.).
+  * **Fortgeschritten:** 109 recherchierte, reale Salze inklusive Nebengruppen-Ionen und mehratomigen Molekül-Ionen.
 
 * **🎯 Didaktischer 4-Stufen-Aufbau:**
   1. **Level 1 (Einführung):** Vorgegebene Ionen. Fokus liegt rein auf dem visuellen Ladungsausgleich über dynamische Ionen-Balken.
