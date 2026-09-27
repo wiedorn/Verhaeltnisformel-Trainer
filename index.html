@@ -184,7 +184,7 @@
             }
             .ion-chip {
                 font-size: clamp(0.95rem, 1.5vw, 1.25rem);
-                padding: clamp(8px, 1.2vh, 14px) clamp(10px, 1.5vw, 16px);
+                padding: clamp(8px, 1.4vh, 12px) clamp(10px, 1.5vw, 16px);
             }
             .action-btn {
                 padding: clamp(0.7rem, 1.6vh, 1.1rem);
@@ -347,11 +347,11 @@
         }
 
         .section-label {
-            font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+            font-size: clamp(0.65rem, 1.1vw, 0.78rem);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
-            color: var(--primary);
+            letter-spacing: 0.05em;
+            color: var(--ink-muted);
             margin-bottom: 0.2rem;
         }
 
@@ -610,11 +610,11 @@
             left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(1.2rem, 2.5vw, 1.65rem); 
-            color: var(--primary); 
+            font-size: clamp(0.72rem, 1.1vw, 0.9rem); 
+            color: var(--ink-muted); 
             text-transform: uppercase; 
             font-weight: 700; 
-            letter-spacing: 0.02em;
+            letter-spacing: 0.04em;
             margin-bottom: 0;
             pointer-events: none;
             z-index: 6;
@@ -626,7 +626,7 @@
             line-height: 1.2; 
             text-align: center;
             width: 100%;
-            padding: 0 4.5rem;
+            padding: 0 3.5rem;
         }
 
         .visualizer-card {
@@ -637,7 +637,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            height: clamp(130px, 22vh, 320px);
+            height: clamp(140px, 22vh, 320px);
             position: relative;
             flex-shrink: 0;
         }
@@ -646,7 +646,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: clamp(24px, 6vw, 48px);
+            gap: clamp(28px, 6vw, 56px);
             height: 100%;
             width: 100%;
             position: relative;
@@ -657,7 +657,7 @@
         .clickable-column-wrap {
             display: flex;
             align-items: flex-end;
-            gap: clamp(10px, 1.5vw, 18px);
+            gap: clamp(8px, 1.2vw, 14px);
             cursor: pointer;
             transition: transform 0.1s ease;
         }
@@ -795,9 +795,8 @@
             left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(1.2rem, 2.5vw, 1.65rem); 
-            font-weight: 700; 
-            letter-spacing: 0.02em; 
+            font-size: clamp(0.68rem, 1.1vw, 0.9rem);
+            font-weight: 700;
             color: var(--primary);
             line-height: 1.1;
             text-align: left;
@@ -914,10 +913,10 @@
         .ion-card.anion { border-color: var(--anion-color); }
 
         .ion-header-label {
-            font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+            font-size: clamp(0.62rem, 1vw, 0.85rem);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.03em;
         }
         .cation .ion-header-label { color: var(--cation-color); }
         .anion .ion-header-label { color: var(--anion-color); }
@@ -962,7 +961,7 @@
         }
 
         .ion-name-single {
-            font-size: clamp(0.85rem, 1.4vw, 1.2rem);
+            font-size: clamp(0.7rem, 1.2vw, 1.05rem);
             font-weight: 700;
             color: var(--ink-muted);
             padding: 1rem 0;
@@ -1258,14 +1257,6 @@ function fmtIon(symbol, charge) {
     const cStr = abs === 1 ? sign : `${abs}${sign}`;
     const cleanSym = symbol.replace(/_([0-9a-z]+)/gi, '<sub>$1</sub>');
     return `${cleanSym}<sup>${cStr}</sup>`;
-}
-
-function fmtIonPlain(symbol, charge) {
-    const sign = charge > 0 ? '+' : '-';
-    const abs = Math.abs(charge);
-    const cStr = abs === 1 ? sign : `${abs}${sign}`;
-    const cleanSym = symbol.replace(/_([0-9a-z]+)/gi, '$1');
-    return `${cleanSym}${cStr}`;
 }
 
 function isPolyPrefix(prefix) {
@@ -1675,8 +1666,10 @@ function renderChargeVisualizer() {
     const catTowerH = posTotal * unitH + (posTotal - 1) * gap;
     const anTowerH = negTotal * unitH + (negTotal - 1) * gap;
 
-    const catLabelStr = S.catCount > 1 ? `${S.catCount}${fmtIonPlain(cat.s, cat.c)}` : `${fmtIonPlain(cat.s, cat.c)}`;
-    const anLabelStr = S.anCount > 1 ? `${S.anCount}${fmtIonPlain(an.s, an.c)}` : `${fmtIonPlain(an.s, an.c)}`;
+    const catFormatted = fmtIon(cat.s, cat.c);
+    const anFormatted = fmtIon(an.s, an.c);
+    const catLabelHtml = S.catCount >  1 ? `${S.catCount}${catFormatted}` : `${catFormatted}`;
+    const anLabelHtml = S.anCount > 1 ? `${S.anCount}${anFormatted}` : `${anFormatted}`;
 
     return `
         <div class="visualizer-card">
@@ -1684,7 +1677,7 @@ function renderChargeVisualizer() {
             <div class="charge-columns-wrap">
                 <div class="clickable-column-wrap" onclick="removeCation()" title="Kation entfernen">
                     <div class="badge-line-wrap" style="height: ${catTowerH}px;">
-                        <span class="charge-sum-badge pos">${catLabelStr}</span>
+                        <span class="charge-sum-badge pos">${catLabelHtml}</span>
                         <div class="indicator-line pos" style="height: 100%;"></div>
                     </div>
                     <div class="charge-col cation-col">
@@ -1698,7 +1691,7 @@ function renderChargeVisualizer() {
                     </div>
                     <div class="badge-line-wrap" style="height: ${anTowerH}px;">
                         <div class="indicator-line neg" style="height: 100%;"></div>
-                        <span class="charge-sum-badge neg">${anLabelStr}</span>
+                        <span class="charge-sum-badge neg">${anLabelHtml}</span>
                     </div>
                 </div>
 
@@ -1736,8 +1729,21 @@ function renderLatticeSVG() {
                 const xIsInt = Number.isInteger(x);
                 const yIsInt = Number.isInteger(y);
                 const zIsInt = Number.isInteger(z);
-                let isAnion = (xIsInt && yIsInt && zIsInt) || (!xIsInt && !yIsInt && zIsInt) || (!xIsInt && yIsInt && !zIsInt) || (xIsInt && !yIsInt && !zIsInt);
-                if (isAnion) { rawNodes.push({ x, y, z, isAnion: true }); }
+
+                let isAnion = false;
+                if (xIsInt && yIsInt && zIsInt) {
+                    isAnion = true;
+                } else if (!xIsInt && !yIsInt && zIsInt) {
+                    isAnion = true;
+                } else if (!xIsInt && yIsInt && !zIsInt) {
+                    isAnion = true;
+                } else if (xIsInt && !yIsInt && !zIsInt) {
+                    isAnion = true;
+                }
+
+                if (isAnion) {
+                    rawNodes.push({ x, y, z, isAnion: true });
+                }
             }
         }
     }
@@ -1764,7 +1770,10 @@ function renderLatticeSVG() {
     const seen = new Set();
     rawNodes.forEach(n => {
         const key = `${n.x.toFixed(2)}_${n.y.toFixed(2)}_${n.z.toFixed(2)}`;
-        if (!seen.has(key)) { seen.add(key); nodes.push(n); }
+        if (!seen.has(key)) {
+            seen.add(key);
+            nodes.push(n);
+        }
     });
 
     const radY = 35 * Math.PI / 180;
@@ -1772,6 +1781,7 @@ function renderLatticeSVG() {
     const rotAngle = -45 * Math.PI / 180;
     const cosA = Math.cos(rotAngle);
     const sinA = Math.sin(rotAngle);
+
     const scale = 280;
     const centerX = 500;
     const centerY = 360;
@@ -1779,30 +1789,98 @@ function renderLatticeSVG() {
     nodes.forEach(node => {
         const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
         const z1 = -node.x * Math.sin(radY) + node.z * Math.cos(radY);
+
         const y2 = node.y * Math.cos(radX) - z1 * Math.sin(radX);
         const z2 = node.y * Math.sin(radX) + z1 * Math.cos(radX);
+
         const rx = - x1 * scale;
         const ry = - y2 * scale;
+
         const rotX = rx * cosA - ry * sinA;
         const rotY = rx * sinA + ry * cosA;
+
         node.px = centerX + rotX;
         node.py = centerY + rotY;
         node.depth = z2;
     });
 
+    const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
+    if (anionDepths.length > 0) {
+        const maxAnionDepth = Math.max(...anionDepths);
+        nodes = nodes.filter(n => !(n.isAnion && n.depth > maxAnionDepth - 0.35));
+    }
+
+    nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
+    nodes = nodes.slice(0, Math.floor(nodes.length * 0.55));
+
+    let minDepth = Infinity;
+    let maxDepth = -Infinity;
+    nodes.forEach(node => {
+        if (node.depth < minDepth) minDepth = node.depth;
+        if (node.depth > maxDepth) maxDepth = node.depth;
+    });
+
     nodes.sort((a, b) => a.depth - b.depth);
+
+    const depthRange = (maxDepth - minDepth) || 1;
+
     let svgContent = '';
     nodes.forEach((node, idx) => {
-        const depthFactor = (node.depth - (-1)) / 2.5;
+        const depthFactor = (node.depth - minDepth) / depthRange;
         const opacity = (0.40 + 0.60 * depthFactor).toFixed(2);
+
+        const rCation = (12.0 + 8.0 * depthFactor).toFixed(1);
+        const fontCation = (11.0 + 6.0 * depthFactor).toFixed(1);
+
+        const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
+        const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
+
+        const dur = (0.75 + ((idx * 19) % 11) * 0.09).toFixed(2);
+        const delay = (((idx * 29) % 13) * 0.08).toFixed(2);
+        const animName = ['ionWobbleA', 'ionWobbleB', 'ionWobbleC', 'ionWobbleD'][(idx * 7) % 4];
+
+        const animStyle = `animation: ${animName} ${dur}s ease-in-out ${delay}s infinite alternate; transform-box: fill-box; transform-origin: center;`;
+
         if (node.isAnion) {
-            svgContent += `<circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="25" fill="#2563eb" opacity="${opacity}"/>`;
+            svgContent += `
+            <g opacity="${opacity}" style="${animStyle}">
+                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rAnion}" fill="url(#heroAnGrad)"/>
+                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontAnion)*0.32).toFixed(1)}" font-size="${fontAnion}" font-weight="bold" fill="#ffffff" text-anchor="middle">2-</text>
+            </g>`;
         } else {
-            svgContent += `<circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="15" fill="#dc2626" opacity="${opacity}"/>`;
+            svgContent += `
+            <g opacity="${opacity}" style="${animStyle}">
+                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rCation}" fill="url(#heroCatGrad)"/>
+                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontCation)*0.32).toFixed(1)}" font-size="${fontCation}" font-weight="bold" fill="#ffffff" text-anchor="middle">+</text>
+            </g>`;
         }
     });
 
-    return `<svg width="1000" height="1000" viewBox="0 0 1000 1000">${svgContent}</svg>`;
+    return `
+    <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
+      <defs>
+        <radialGradient id="heroCatGrad" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#f87171"/>
+          <stop offset="45%" stop-color="#dc2626"/>
+          <stop offset="100%" stop-color="#991b1b"/>
+        </radialGradient>
+        <radialGradient id="heroAnGrad" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#60a5fa"/>
+          <stop offset="45%" stop-color="#2563eb"/>
+          <stop offset="100%" stop-color="#1e3a8a"/>
+        </radialGradient>
+      </defs>
+
+      <style>
+        @keyframes ionWobbleA { 0% { transform: translate(0, 0); } 100% { transform: translate(2.5px, -2.8px); } }
+        @keyframes ionWobbleB { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.8px, 2.3px); } }
+        @keyframes ionWobbleC { 0% { transform: translate(0, 0); } 100% { transform: translate(2.3px, 2.6px); } }
+        @keyframes ionWobbleD { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.5px, -2.5px); } }
+      </style>
+
+      ${svgContent}
+    </svg>
+    `;
 }
 
 function renderPwaBanner() {
