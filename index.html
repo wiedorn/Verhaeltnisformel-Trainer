@@ -117,10 +117,10 @@
             }
         }
 
-        /* WEB-APP STANDALONE MODUS: Sicherheitsabstand unter der milchigen Statusleiste auf iOS/iPadOS */
+        /* WEB-APP STANDALONE MODUS: Erhöhter Sicherheitsabstand unter der milchigen Statusleiste */
         @media (display-mode: standalone) {
             #app {
-                padding-top: max(2.4rem, calc(env(safe-area-inset-top) + 0.8rem)) !important;
+                padding-top: max(3.8rem, calc(env(safe-area-inset-top) + 2.2rem)) !important;
                 gap: clamp(0.2rem, 0.8vh, 0.45rem);
             }
             .visualizer-card {
@@ -1040,7 +1040,6 @@ window.addEventListener('appinstalled', () => {
     render();
 });
 
-// Zuweisung & Erkennung von iOS und iPadOS (inkl. Safari Desktop-Modus auf Macs/iPads)
 function isIos() {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isMaciPad = /macintosh/.test(userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 0;
