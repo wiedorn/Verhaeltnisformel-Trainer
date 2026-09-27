@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>Verhältnisformel-Trainer</title>
     <!-- Web-App Manifest & PWA-Metadaten -->
     <link rel="manifest" href="manifest.json">
@@ -1053,7 +1053,21 @@
 <div id="app"></div>
 
 <script>
-// --- IPADOS / IOS DOUBLE-TAP ZOOM BLOCKADE ---
+// --- IPADOS / IOS DOUBLE-TAP UND PINCH-ZOOM BLOCKADE ---
+document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('gesturechange', function (e) {
+    e.preventDefault();
+}, { passive: false });
+
+document.addEventListener('touchmove', function (e) {
+    if (e.touches.length > 1) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
     if (event.target && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA')) {
@@ -2216,7 +2230,10 @@ function renderTask() {
         <div class="formula-box input-mode" onclick="document.getElementById('hiddenFormulaInput').focus();">
             <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
-            <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
+            <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
+                   oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
+                   onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); closeKeyboard(event); if(!S.done){ checkSolution(); } else { nextTask(); } }"
+                   autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
             <button type="button" class="done-btn" 
                     ontouchstart="closeKeyboard(event)" 
                     onmousedown="closeKeyboard(event)" 
