@@ -161,9 +161,12 @@
         @media (min-width: 600px) {
             #app {
                 max-width: 680px;
-                justify-content: flex-start;
-                padding: max(1rem, env(safe-area-inset-top)) 1.25rem max(1rem, env(safe-area-inset-bottom)) 1.25rem;
-                gap: clamp(0.3rem, 1vh, 0.65rem);
+                justify-content: space-between;
+                padding: max(0.8rem, env(safe-area-inset-top)) 1.25rem max(0.8rem, env(safe-area-inset-bottom)) 1.25rem;
+                gap: clamp(0.4rem, 1.3vh, 0.9rem);
+            }
+            #app.stage-4-mode {
+                gap: clamp(0.8rem, 2vh, 1.5rem);
             }
             .start-container {
                 justify-content: flex-start;
@@ -176,6 +179,17 @@
             .level-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
             }
+            .visualizer-card {
+                height: clamp(150px, 22vh, 230px);
+            }
+            .ion-card {
+                padding: clamp(0.4rem, 1.2vh, 0.75rem);
+                gap: clamp(0.3rem, 1vh, 0.6rem);
+            }
+            .stepper-arrows button {
+                height: clamp(30px, 3.8vh, 38px);
+                width: clamp(52px, 7vw, 70px);
+            }
         }
 
         /* iPad Hochformat & mittlere Tablets */
@@ -185,12 +199,30 @@
             }
             #app {
                 max-width: 840px;
-                gap: clamp(0.35rem, 1.1vh, 0.75rem);
+                gap: clamp(0.5rem, 1.8vh, 1.2rem);
                 padding-top: max(1.2rem, env(safe-area-inset-top));
                 padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
             }
             .start-container {
                 gap: 1.15rem;
+            }
+            .visualizer-card {
+                height: clamp(180px, 26vh, 290px);
+            }
+            .task-header {
+                min-height: clamp(44px, 5.5vh, 58px);
+            }
+            .formula-box {
+                min-height: clamp(48px, 6vh, 62px);
+            }
+            .ion-card {
+                padding: clamp(0.5rem, 1.5vh, 0.9rem);
+            }
+            .stepper-arrows button {
+                height: clamp(34px, 4.2vh, 44px);
+            }
+            .action-btn {
+                padding: clamp(0.65rem, 1.5vh, 1rem);
             }
         }
 
@@ -201,10 +233,13 @@
             }
             #app {
                 max-width: 920px;
-                gap: clamp(0.4rem, 1.2vh, 0.85rem);
+                gap: clamp(0.6rem, 2vh, 1.4rem);
             }
             .start-container {
                 gap: 1.3rem;
+            }
+            .visualizer-card {
+                height: clamp(200px, 28vh, 330px);
             }
         }
 
@@ -1106,6 +1141,11 @@ document.addEventListener('touchend', function (event) {
     lastTouchEnd = now;
 }, { passive: false });
 
+// Re-render bei Display-Rotation/Sichtfensteränderungen
+window.addEventListener('resize', () => {
+    render();
+});
+
 // --- PWA INSTALL LOGIK ---
 let deferredPrompt = null;
 let showIosInstallGuide = false;
@@ -1794,8 +1834,11 @@ function renderChargeVisualizer() {
     const posTotal = S.catCount * catCharge;
     const negTotal = S.anCount * anCharge;
 
-    const unitH = 19;
-    const gap = 2;
+    const isTablet = window.innerWidth >= 600;
+    const isBigTablet = window.innerWidth >= 768;
+
+    const unitH = isBigTablet ? 28 : (isTablet ? 24 : 19);
+    const gap = isTablet ? 3 : 2;
 
     function renderBlocks(count, charge, colorClass, ion) {
         let blocksHtml = '';
@@ -2077,7 +2120,7 @@ function renderPwaBanner() {
                 </div>
                 ${showIosInstallGuide ? `
                     <div style="font-size: 0.78rem; color: var(--ink-muted); line-height: 1.4; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
-                        Tippe in Safari <b>${sharePositionText}</b> auf das <b>Teilen-Symbol</b>${sfShareIcon}, wähle dann <b>„Mehr anzeigen“</b> ${sfChevronDown} (Pfeil nach unten) und tippe auf <b>„Zum Home-Bildschirm“</b>${sfAddHomeIcon}.
+                        Tippe in Safari <b>${sharePositionText}</b> auf das <b>Teilen-Symbol</b>${sfShareIcon}, wähle dann <b>„Mehr anzeigen“</b> ${sfChevronDown} und tippe auf <b>„Zum Home-Bildschirm“</b>${sfAddHomeIcon}.
                     </div>
                 ` : ''}
             </div>
