@@ -138,35 +138,22 @@
                 padding-top: max(3.8rem, calc(env(safe-area-inset-top) + 2.2rem)) !important;
                 gap: clamp(0.2rem, 0.8vh, 0.45rem);
             }
-            .visualizer-card {
-                height: clamp(120px, 18vh, 160px) !important;
-            }
             .pwa-install-card {
                 display: none !important;
             }
         }
 
-        @media (display-mode: standalone) and (min-width: 768px) {
-            #app {
-                gap: clamp(0.4rem, 1vh, 0.85rem) !important;
-            }
-        }
-
         #app.stage-4-mode {
             justify-content: flex-start;
-            gap: 0.4rem;
+            gap: 0.5rem;
         }
 
         /* Desktop & Tablet Layout Anpassungen */
         @media (min-width: 600px) {
             #app {
-                max-width: 680px;
-                justify-content: space-between;
-                padding: max(0.8rem, env(safe-area-inset-top)) 1.25rem max(0.8rem, env(safe-area-inset-bottom)) 1.25rem;
-                gap: clamp(0.4rem, 1.3vh, 0.9rem);
-            }
-            #app.stage-4-mode {
-                gap: clamp(0.8rem, 2vh, 1.5rem);
+                max-width: 720px;
+                padding: max(1rem, env(safe-area-inset-top)) 1.5rem max(1rem, env(safe-area-inset-bottom)) 1.5rem;
+                gap: clamp(0.5rem, 1.8vh, 1.2rem);
             }
             .start-container {
                 justify-content: flex-start;
@@ -180,15 +167,51 @@
                 grid-template-columns: repeat(4, 1fr) !important;
             }
             .visualizer-card {
-                height: clamp(150px, 22vh, 230px);
+                flex: 1 1 auto;
+                min-height: clamp(160px, 25vh, 320px);
+            }
+            .task-header {
+                min-height: clamp(46px, 5.5vh, 60px);
+                padding: 0.6rem 1.2rem;
+            }
+            .task-header h2 {
+                font-size: clamp(1.2rem, 2.5vw, 1.7rem);
+            }
+            .formula-box {
+                min-height: clamp(52px, 6.5vh, 68px);
+            }
+            .formula-box .formula, .formatted-display {
+                font-size: clamp(1.4rem, 3vw, 2.1rem);
             }
             .ion-card {
-                padding: clamp(0.4rem, 1.2vh, 0.75rem);
-                gap: clamp(0.3rem, 1vh, 0.6rem);
+                padding: clamp(0.6rem, 1.5vh, 1.1rem);
+                gap: clamp(0.4rem, 1vh, 0.8rem);
+            }
+            .ion-chip {
+                font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+                padding: clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px);
+            }
+            .stepper-v {
+                padding: clamp(0.35rem, 0.8vh, 0.6rem) clamp(0.6rem, 1.2vw, 1rem);
             }
             .stepper-arrows button {
-                height: clamp(30px, 3.8vh, 38px);
-                width: clamp(52px, 7vw, 70px);
+                height: clamp(34px, 4.2vh, 46px);
+                width: clamp(56px, 8vw, 76px);
+                font-size: clamp(1.1rem, 1.6vw, 1.3rem);
+            }
+            .stepper-count {
+                font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+            }
+            .stepper-formula {
+                font-size: clamp(1.2rem, 2vw, 1.6rem);
+            }
+            .action-btn {
+                padding: clamp(0.7rem, 1.6vh, 1.1rem);
+                font-size: clamp(1.05rem, 1.8vw, 1.3rem);
+            }
+            .feedback-area {
+                min-height: clamp(32px, 4vh, 44px);
+                font-size: clamp(0.88rem, 1.4vw, 1.1rem);
             }
         }
 
@@ -198,31 +221,10 @@
                 font-size: 115%;
             }
             #app {
-                max-width: 840px;
-                gap: clamp(0.5rem, 1.8vh, 1.2rem);
+                max-width: 860px;
+                gap: clamp(0.6rem, 2vh, 1.5rem);
                 padding-top: max(1.2rem, env(safe-area-inset-top));
                 padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
-            }
-            .start-container {
-                gap: 1.15rem;
-            }
-            .visualizer-card {
-                height: clamp(180px, 26vh, 290px);
-            }
-            .task-header {
-                min-height: clamp(44px, 5.5vh, 58px);
-            }
-            .formula-box {
-                min-height: clamp(48px, 6vh, 62px);
-            }
-            .ion-card {
-                padding: clamp(0.5rem, 1.5vh, 0.9rem);
-            }
-            .stepper-arrows button {
-                height: clamp(34px, 4.2vh, 44px);
-            }
-            .action-btn {
-                padding: clamp(0.65rem, 1.5vh, 1rem);
             }
         }
 
@@ -232,14 +234,8 @@
                 font-size: 120%;
             }
             #app {
-                max-width: 920px;
-                gap: clamp(0.6rem, 2vh, 1.4rem);
-            }
-            .start-container {
-                gap: 1.3rem;
-            }
-            .visualizer-card {
-                height: clamp(200px, 28vh, 330px);
+                max-width: 960px;
+                gap: clamp(0.7rem, 2.2vh, 1.6rem);
             }
         }
 
@@ -507,9 +503,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: clamp(0.8rem, 1.3vw, 1rem);
+            font-size: clamp(0.8rem, 1.3vw, 1.1rem);
             font-weight: 700;
-            min-height: 26px;
+            min-height: 28px;
             flex-shrink: 0;
         }
 
@@ -522,7 +518,7 @@
         .school-badge {
             color: var(--ink-muted);
             font-weight: 400;
-            font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+            font-size: clamp(0.72rem, 1.1vw, 0.9rem);
             margin-left: 0.2rem;
         }
 
@@ -530,11 +526,11 @@
             background: var(--info-bg);
             color: var(--info-ink);
             border: 1px solid var(--border);
-            width: clamp(22px, 3vw, 28px);
-            height: clamp(22px, 3vw, 28px);
+            width: clamp(24px, 3.2vw, 32px);
+            height: clamp(24px, 3.2vw, 32px);
             border-radius: 50%;
             font-weight: 700;
-            font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+            font-size: clamp(0.75rem, 1.2vw, 1.05rem);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -552,7 +548,7 @@
             color: var(--primary);
             font-weight: 700;
             cursor: pointer;
-            font-size: clamp(0.82rem, 1.3vw, 0.95rem);
+            font-size: clamp(0.82rem, 1.3vw, 1.05rem);
         }
 
         .info-backdrop {
@@ -578,13 +574,13 @@
             color: var(--ink);
             border: 2px solid var(--primary);
             border-radius: var(--radius);
-            padding: clamp(0.9rem, 2vw, 1.4rem);
-            max-width: 440px;
+            padding: clamp(0.9rem, 2.5vw, 1.6rem);
+            max-width: 480px;
             width: 100%;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 0.85rem;
             animation: popIn 0.2s ease;
         }
 
@@ -593,13 +589,13 @@
             align-items: center;
             gap: 0.5rem;
             font-weight: 700;
-            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            font-size: clamp(0.95rem, 1.6vw, 1.25rem);
             color: var(--primary);
         }
 
         .info-modal-body {
-            font-size: clamp(0.82rem, 1.3vw, 0.95rem);
-            line-height: 1.4;
+            font-size: clamp(0.82rem, 1.3vw, 1.05rem);
+            line-height: 1.45;
             color: var(--ink);
         }
 
@@ -608,8 +604,8 @@
             color: white;
             border: none;
             border-radius: 10px;
-            padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.8rem, 1.5vw, 1.2rem);
-            font-size: clamp(0.82rem, 1.2vw, 0.95rem);
+            padding: clamp(0.45rem, 1vw, 0.75rem) clamp(0.8rem, 1.5vw, 1.3rem);
+            font-size: clamp(0.82rem, 1.2vw, 1.05rem);
             font-weight: 700;
             cursor: pointer;
             align-self: flex-end;
@@ -634,10 +630,10 @@
 
         .task-header small { 
             position: absolute;
-            left: clamp(0.6rem, 1.5vw, 1rem);
+            left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(0.72rem, 1.1vw, 0.85rem); 
+            font-size: clamp(0.72rem, 1.1vw, 0.9rem); 
             color: var(--ink-muted); 
             text-transform: uppercase; 
             font-weight: 700; 
@@ -660,11 +656,11 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 0.3rem 0.75rem;
+            padding: 0.4rem 0.85rem;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: clamp(120px, 18vh, 165px);
+            align-items: flex-end;
+            height: clamp(120px, 20vh, 320px);
             position: relative;
             flex-shrink: 0;
         }
@@ -673,7 +669,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: clamp(16px, 4vw, 28px);
+            gap: clamp(16px, 4vw, 36px);
             height: 100%;
             width: 100%;
             position: relative;
@@ -682,7 +678,7 @@
         }
 
         .charge-sum-badge {
-            font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+            font-size: clamp(1.2rem, 2.5vw, 2.1rem);
             font-weight: 700;
             background: transparent;
             border: none;
@@ -695,8 +691,8 @@
         .charge-sum-badge.neg { color: var(--anion-color); }
 
         .indicator-line {
-            width: 4px;
-            border-radius: 2px;
+            width: clamp(4px, 0.6vw, 7px);
+            border-radius: 3px;
             transition: height 0.2s ease;
         }
 
@@ -707,20 +703,20 @@
             position: relative;
             display: flex;
             align-items: flex-end;
-            gap: clamp(24px, 5vw, 48px);
+            gap: clamp(24px, 6vw, 64px);
             height: 100%;
         }
 
         .side-col-wrapper {
             display: flex;
             align-items: flex-end;
-            gap: 8px;
+            gap: clamp(8px, 1.2vw, 14px);
         }
 
         .badge-line-wrap {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: clamp(5px, 0.8vw, 9px);
             transition: height 0.2s ease;
         }
 
@@ -728,16 +724,16 @@
             display: flex;
             flex-direction: column-reverse;
             gap: 2px;
-            width: clamp(65px, 13vw, 92px);
+            width: clamp(65px, 14vw, 120px);
         }
 
         .ion-group-block {
             position: relative;
-            border-radius: 6px;
+            border-radius: clamp(6px, 1vw, 10px);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.15);
             transition: all 0.2s ease;
         }
 
@@ -758,7 +754,7 @@
             transform: translate(-50%, -50%);
             color: #ffffff;
             font-weight: 700;
-            font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+            font-size: clamp(0.78rem, 1.4vw, 1.25rem);
             white-space: nowrap;
             pointer-events: none;
             text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -779,21 +775,21 @@
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: clamp(0.68rem, 1vw, 0.8rem);
+            font-size: clamp(0.68rem, 1.2vw, 1.05rem);
             font-weight: 700;
             color: var(--balance-color);
             background: var(--surface);
-            padding: 0 6px;
+            padding: 0 8px;
             border-radius: 6px;
         }
 
         .balance-unbalanced-text {
             position: absolute;
-            top: 4px;
+            top: 6px;
             left: 50%;
             transform: translateX(-50%);
             white-space: nowrap;
-            font-size: clamp(0.68rem, 1vw, 0.8rem);
+            font-size: clamp(0.68rem, 1.1vw, 0.95rem);
             font-weight: 700;
             color: var(--ink-muted);
         }
@@ -824,10 +820,10 @@
 
         .formula-label {
             position: absolute;
-            left: clamp(0.6rem, 1.5vw, 1rem);
+            left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(0.68rem, 1vw, 0.8rem);
+            font-size: clamp(0.68rem, 1.1vw, 0.9rem);
             font-weight: 700;
             color: var(--primary);
             line-height: 1.1;
@@ -904,8 +900,8 @@
             color: var(--primary);
             border: 1.5px solid var(--border);
             border-radius: 10px;
-            padding: clamp(3px, 0.6vw, 5px) clamp(8px, 1.2vw, 14px);
-            font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+            padding: clamp(3px, 0.6vw, 6px) clamp(8px, 1.2vw, 16px);
+            font-size: clamp(0.72rem, 1.1vw, 0.92rem);
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -925,7 +921,7 @@
         .ion-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: clamp(0.3rem, 1vw, 0.65rem);
+            gap: clamp(0.3rem, 1vw, 0.8rem);
             flex-shrink: 0;
         }
 
@@ -946,7 +942,7 @@
         .ion-card.anion { border-color: var(--anion-color); }
 
         .ion-header-label {
-            font-size: clamp(0.62rem, 0.9vw, 0.75rem);
+            font-size: clamp(0.62rem, 1vw, 0.85rem);
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.03em;
@@ -957,7 +953,7 @@
         .ion-chip-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: clamp(4px, 0.8vw, 8px);
             justify-content: center;
             width: 100%;
         }
@@ -992,7 +988,7 @@
         }
 
         .ion-name-single {
-            font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+            font-size: clamp(0.7rem, 1.2vw, 1.05rem);
             font-weight: 700;
             color: var(--ink-muted);
         }
@@ -1111,6 +1107,16 @@
 <div id="app"></div>
 
 <script>
+// Globaler Keydown-Listener für die Enter-Taste
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter' || event.keyCode === 13) {
+        if (S.screen === 'task' && S.done) {
+            event.preventDefault();
+            nextTask();
+        }
+    }
+});
+
 // --- IPADOS / IOS DOUBLE-TAP UND PINCH-ZOOM BLOCKADE ---
 document.addEventListener('gesturestart', function (e) {
     e.preventDefault();
@@ -1837,7 +1843,10 @@ function renderChargeVisualizer() {
     const isTablet = window.innerWidth >= 600;
     const isBigTablet = window.innerWidth >= 768;
 
-    const unitH = isBigTablet ? 28 : (isTablet ? 24 : 19);
+    // Dynamische Berechnung der Segmenthöhe basierend auf der verfügbaren Displayhöhe
+    const maxChargeInCol = Math.max(posTotal, negTotal, 3);
+    const containerMaxHeight = isBigTablet ? 260 : (isTablet ? 210 : 135);
+    const unitH = Math.min(Math.floor(containerMaxHeight / maxChargeInCol), isBigTablet ? 38 : (isTablet ? 30 : 22));
     const gap = isTablet ? 3 : 2;
 
     function renderBlocks(count, charge, colorClass, ion) {
