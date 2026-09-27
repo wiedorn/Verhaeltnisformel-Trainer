@@ -378,17 +378,20 @@
             color: var(--primary);
         }
 
-        /* STYLES FÜR DEN PWA-INSTALL-BANNER */
+        /* VOLLFARBIGER / OPAKER PWA-INSTALL-BANNER */
         .pwa-install-card {
-            background: rgba(124, 58, 237, 0.08);
-            border: 1.5px dashed var(--primary);
+            background: var(--surface);
+            border: 1.5px solid var(--border);
             border-radius: var(--radius);
             padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.65rem, 1.5vw, 0.9rem);
+            box-shadow: var(--shadow);
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 0.6rem;
             animation: fadeIn 0.3s ease;
+            position: relative;
+            z-index: 10;
         }
 
         .pwa-install-text {
@@ -1030,11 +1033,10 @@
 let deferredPrompt = null;
 let showIosInstallGuide = false;
 
-// Event-Listener für Chrome/Android/Desktop
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    render(); // Startseite neu rendern, um Install-Button zu zeigen
+    render();
 });
 
 window.addEventListener('appinstalled', () => {
