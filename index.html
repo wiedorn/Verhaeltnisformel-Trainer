@@ -1197,36 +1197,62 @@ const EXPERT_ANIONS = [
 const getCat = (sym, charge) => EXPERT_CATIONS.find(c => c.s === sym && (charge === undefined || c.c === charge));
 const getAn = (sym) => EXPERT_ANIONS.find(a => a.s === sym) || BASIS_ANIONS.find(a => a.s === sym);
 
-const BASIS_SALTS = [
-    { name: "Natriumchlorid", cat: getCat("Na"), an: getAn("Cl") },
-    { name: "Magnesiumoxid", cat: getCat("Mg"), an: getAn("O") },
-    { name: "Calciumfluorid", cat: getCat("Ca"), an: getAn("F") },
-    { name: "Aluminiumfluorid", cat: getCat("Al"), an: getAn("F") },
-    { name: "Natriumoxid", cat: getCat("Na"), an: getAn("O") },
-    { name: "Aluminiumoxid", cat: getCat("Al"), an: getAn("O") },
-    { name: "Kaliumbromid", cat: getCat("K"), an: getAn("Br") },
-    { name: "Bariumchlorid", cat: getCat("Ba"), an: getAn("Cl") },
-    { name: "Lithiumnitrid", cat: getCat("Li"), an: getAn("N") },
-    { name: "Calciumphosphid", cat: getCat("Ca"), an: getAn("P") }
-];
+// --- Dynamischer Aufbau des Aufgaben-Pools ---
 
-const ADVANCED_SALTS = [
-    { name: "Eisen(III)-sulfid", cat: getCat("Fe", 3), an: getAn("S") },
-    { name: "Eisen(II)-sulfat", cat: getCat("Fe", 2), an: getAn("SO_4") },
-    { name: "Kupfer(II)-sulfat", cat: getCat("Cu", 2), an: getAn("SO_4") },
-    { name: "Kupfer(I)-sulfid", cat: getCat("Cu", 1), an: getAn("S") },
-    { name: "Calciumhydroxid", cat: getCat("Ca"), an: getAn("OH") },
-    { name: "Natriumsulfat", cat: getCat("Na"), an: getAn("SO_4") },
-    { name: "Ammoniumnitrat", cat: getCat("NH_4"), an: getAn("NO_3") },
-    { name: "Aluminiumsulfat", cat: getCat("Al"), an: getAn("SO_4") },
-    { name: "Calciumphosphat", cat: getCat("Ca"), an: getAn("PO_4") },
-    { name: "Kaliumnitrat", cat: getCat("K"), an: getAn("NO_3") },
-    { name: "Magnesiumcarbonat", cat: getCat("Mg"), an: getAn("CO_3") },
-    { name: "Natriumhydrogencarbonat", cat: getCat("Na"), an: getAn("HCO_3") },
-    { name: "Kaliumpermanganat", cat: getCat("K"), an: getAn("MnO_4") },
-    { name: "Natriumsulfit", cat: getCat("Na"), an: getAn("SO_3") },
-    { name: "Ammoniumsulfat", cat: getCat("NH_4"), an: getAn("SO_4") }
-];
+// 1. BASIS_SALTS (Alle 56 mathematisch möglichen Kombinationen aus BASIS_CATIONS × BASIS_ANIONS)
+const BASIS_SALTS = [];
+BASIS_CATIONS.forEach(cat => {
+    BASIS_ANIONS.forEach(an => {
+        const catName = cat.n.replace("-Ion", "");
+        const anName = an.n.replace("-Ion", "").toLowerCase();
+        BASIS_SALTS.push({
+            name: catName + anName,
+            cat: cat,
+            an: an
+        });
+    });
+});
+
+// 2. ADVANCED_SALTS (109 recherchierte, reale Salze mit deutschem Wikipedia-Eintrag)
+const ADVANCED_SALTS = [];
+
+function addAdv(catSym, catCharge, anSym) {
+    const cat = getCat(catSym, catCharge);
+    const an = getAn(anSym);
+    if (!cat || !an) return;
+
+    const catRaw = cat.n.replace("-Ion", "");
+    const anRaw = an.n.replace("-Ion", "").toLowerCase();
+    
+    let name;
+    if (catRaw.includes("(")) {
+        name = `${catRaw}-${anRaw}`;
+    } else {
+        name = catRaw + anRaw;
+    }
+
+    ADVANCED_SALTS.push({ name, cat, an });
+}
+
+// Hauptgruppen-Kationen mit mehratomigen / erweiterten Anionen
+const hgAnionsAll = ["S", "N", "P", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "HCO_3", "OH", "MnO_4"];
+
+// Li (alle außer Lithiumhydrogencarbonat)
+hgAnionsAll.filter(a => a !== "HCO_3").forEach(a => addAdv("Li", 1, a));
+
+// Na, K, Ca, Mg, Ba (alle 12 Anionen)
+["Na", "K"].forEach(c => hgAnionsAll.forEach(a => addAdv(c, 1, a)));
+["Ca", "Mg", "Ba"].forEach(c => hgAnionsAll.forEach(a => addAdv(c, 2, a)));
+
+// Al (8 reale Salze)
+["S", "N", "P", "SO_3", "SO_4", "NO_3", "PO_4", "OH"].forEach(a => addAdv("Al", 3, a));
+
+// Nebengruppen & Ammonium
+["S", "N", "P", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "OH"].forEach(a => addAdv("Fe", 2, a));
+["S", "SO_4", "NO_3", "PO_4", "OH"].forEach(a => addAdv("Fe", 3, a));
+["S", "N", "P", "SO_4", "OH"].forEach(a => addAdv("Cu", 1, a));
+["S", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "OH"].forEach(a => addAdv("Cu", 2, a));
+["S", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "HCO_3", "OH", "MnO_4"].forEach(a => addAdv("NH_4", 1, a));
 
 // --- App-Status ---
 const S = {
@@ -1475,7 +1501,7 @@ function startStage(stageNum) {
     );
     
     const taskCount = S.stage === 1 ? 3 : Math.min(10, pool.length);
-    S.tasks = pool.sort(() => Math.random() - 0.5).slice(0, taskCount);
+    S.tasks = [...pool].sort(() => Math.random() - 0.5).slice(0, taskCount);
     S.taskIdx = 0;
     S.score = 0;
 
