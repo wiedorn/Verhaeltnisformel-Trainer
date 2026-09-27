@@ -122,7 +122,7 @@
 
         #app.stage-4-mode {
             justify-content: flex-start;
-            gap: 0.5rem;
+            gap: 0.8rem;
         }
 
         /* Desktop & Tablet Layout Anpassungen */
@@ -530,6 +530,14 @@
             font-size: clamp(0.9rem, 1.4vw, 1.15rem);
             line-height: 1.45;
             color: var(--ink);
+        }
+
+        .info-modal-body p {
+            margin-bottom: 0.6rem;
+        }
+
+        .info-modal-body p:last-child {
+            margin-bottom: 0;
         }
 
         .info-modal-btn {
@@ -1001,6 +1009,11 @@
             animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        /* Wenn in Level 4 das Input-Feld aktiv ist, verschiebe das Feedback weiter nach oben, um nichts zu verdecken */
+        .stage-4-mode .action-btn-container .feedback-tooltip {
+            bottom: calc(100% + 14px);
+        }
+
         .feedback-tooltip.bad {
             background: #fee2e2;
             color: #991b1b;
@@ -1099,10 +1112,7 @@
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(registration => {
-            // Beim Start der App sofort nach Updates suchen
             registration.update();
-
-            // Zusätzlich stündlich im Hintergrund nach Aktualisierungen suchen
             setInterval(() => {
                 registration.update();
             }, 60 * 60 * 1000);
@@ -1111,7 +1121,6 @@ if ('serviceWorker' in navigator) {
         });
     });
 
-    // Neu laden, sobald ein neuer Service Worker die Steuerung übernimmt
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!refreshing) {
@@ -1642,8 +1651,36 @@ function startStage(stageNum) {
         anList.some(a => a.s === salt.an.s)
     );
     
-    const taskCount = S.stage === 1 ? 3 : Math.min(10, pool.length);
-    S.tasks = [...pool].sort(() => Math.random() - 0.5).slice(0, taskCount);
+    if (S.stage === 1) {
+        // Pool nach Teilungsverhältnis der ausgeglichenen Formel filtern
+        const pool12 = pool.filter(salt => {
+            const g = gcd(salt.cat.c, Math.abs(salt.an.c));
+            const cCount = Math.abs(salt.an.c) / g;
+            const aCount = salt.cat.c / g;
+            return (cCount === 1 && aCount === 2) || (cCount === 2 && aCount === 1);
+        });
+
+        const pool23 = pool.filter(salt => {
+            const g = gcd(salt.cat.c, Math.abs(salt.an.c));
+            const cCount = Math.abs(salt.an.c) / g;
+            const aCount = salt.cat.c / g;
+            return (cCount === 2 && aCount === 3) || (cCount === 3 && aCount === 2);
+        });
+
+        const shuffled12 = [...pool12].sort(() => Math.random() - 0.5);
+        const shuffled23 = [...pool23].sort(() => Math.random() - 0.5);
+
+        // Die ersten zwei Salze mit 1:2 / 2:1 Verhältnis, das dritte zwingend mit 2:3 / 3:2
+        S.tasks = [
+            shuffled12[0],
+            shuffled12[1] || shuffled12[0],
+            shuffled23[0]
+        ].filter(Boolean);
+    } else {
+        const taskCount = Math.min(10, pool.length);
+        S.tasks = [...pool].sort(() => Math.random() - 0.5).slice(0, taskCount);
+    }
+
     S.taskIdx = 0;
     S.score = 0;
 
@@ -1663,6 +1700,16 @@ function loadTask() {
     
     S.infoOpen = (S.taskIdx === 0);
     render();
+
+    // Automatisch das Eingabefeld fokussieren in Level 3 und 4, damit die Tastatur offen bleibt
+    if (S.stage >= 3) {
+        setTimeout(() => {
+            const inp = document.getElementById('hiddenFormulaInput');
+            if (inp) {
+                inp.focus();
+            }
+        }, 50);
+    }
 }
 
 function incCat() {
@@ -1869,6 +1916,14 @@ function checkSolution() {
         }
     }
     render();
+
+    // Tastatur in Level 3 und 4 im Input-Feld belassen
+    if (S.stage >= 3) {
+        const inp = document.getElementById('hiddenFormulaInput');
+        if (inp) {
+            inp.focus();
+        }
+    }
 }
 
 function nextTask() {
@@ -1968,7 +2023,7 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
-/* 3D-GITTER SVG (Formel um genau 1 Schrifthöhe [52px] nach unten auf y=382 verschoben) */
+/* 3D-GITTER SVG */
 function renderLatticeSVG() {
     const rawNodes = [];
     const minD = -1.0, maxD = 1.5;
@@ -2114,7 +2169,6 @@ function renderLatticeSVG() {
         }
     });
 
-    // Formel um eine Schrifthöhe (52px) weiter unten positioniert (y=382)
     const isReal = S.school === 'real';
     const catText = isReal ? '(Na⁺)' : 'Na';
     const catSub = '2';
@@ -2289,10 +2343,18 @@ function renderStart() {
 
 function getInfoText(stage) {
     switch(stage) {
-        case 1: return "Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen der Kationen (+) und der Anionen (-) aus. Tippe auf die Ionen, um weitere hinzuzufügen, bis beide Balken gleich hoch sind. Nutze das ✕, um zu viele Ionen zu entfernen.";
-        case 2: return "Wähle zuerst die passenden Ionen für das Salz aus und gleiche dann die Ladungen aus. Tippe ein Ion mehrfach an, um mehr davon hinzuzufügen!";
-        case 3: return "Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.";
-        case 4: return "Du bist nun auf dich allein gestellt! Tippe die fertige Verhältnisformel direkt ein.";
+        case 1: 
+            return `
+                <p>Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen der <span style="color: #dc2626; font-weight: bold;">Kationen (+)</span> und der <span style="color: #2563eb; font-weight: bold;">Anionen (-)</span> aus.</p>
+                <p>Tippe auf die Ionen, um weitere hinzuzufügen, bis beide Balken gleich hoch sind.</p>
+                <p>Nutze das ✕, um Ionen zu entfernen.</p>
+            `;
+        case 2: 
+            return "<p>Wähle zuerst die passenden Ionen für das Salz aus und gleiche dann die Ladungen aus.</p>";
+        case 3: 
+            return "<p>Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.</p>";
+        case 4: 
+            return "<p>Du bist nun auf dich allein gestellt! Tippe die fertige Verhältnisformel direkt ein.</p>";
     }
 }
 
@@ -2372,7 +2434,7 @@ function renderTask() {
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
                    oninput="S.typedFormula = this.value; S.fb = null; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
-                   onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); closeKeyboard(event); if(!S.done){ checkSolution(); } else { nextTask(); } }"
+                   onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
             <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
         </div>
