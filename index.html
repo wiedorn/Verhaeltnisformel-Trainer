@@ -20,8 +20,8 @@
             --surface: #ffffff; 
             --surface-alpha: rgba(255, 255, 255, 0.75);
             --ink: #0f172a;
-            --ink-muted: #334155; /* Dunklerer Grauton für höheren Kontrast */
-            --primary: #6b21a8; /* Etwas dunkleres, weniger leuchtendes Lila */
+            --ink-muted: #334155; 
+            --primary: #6b21a8; 
             --primary-hover: #581c87;
             --cation-color: #dc2626; 
             --anion-color: #2563eb;  
@@ -600,7 +600,6 @@
             padding: 0 4.2rem;
         }
 
-        /* Minimierter Abstand für maximale Ausnutzung kleiner Bildschirme */
         .visualizer-card {
             background: transparent;
             border: none;
@@ -725,12 +724,6 @@
             border-radius: 2px;
             pointer-events: none;
             transition: bottom 0.2s ease;
-        }
-
-        .formula-box-wrap {
-            position: relative;
-            width: 100%;
-            flex-shrink: 0;
         }
 
         .formula-box {
@@ -1015,9 +1008,22 @@
             animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* In Level 4 liegt das Feedback oberhalb des Eingabefelds */
-        .stage-4-mode .feedback-tooltip {
-            bottom: calc(100% + 10px);
+        /* In Level 4 klappt der Tooltip nach unten vom Prüfbutton aus aus */
+        .stage-4-mode .action-btn-container .feedback-tooltip {
+            bottom: auto;
+            top: calc(100% + 10px);
+            animation: tooltipPopDown 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .stage-4-mode .action-btn-container .tooltip-arrow {
+            top: auto;
+            bottom: 100%;
+            border-top: none;
+            border-bottom: 7px solid #fca5a5;
+        }
+
+        .stage-4-mode .action-btn-container .feedback-tooltip.ok .tooltip-arrow {
+            border-bottom-color: #86efac;
         }
 
         .feedback-tooltip.bad {
@@ -1025,6 +1031,10 @@
             color: #991b1b;
             border: 1.5px solid #fca5a5;
             animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), tooltipShake 0.4s ease;
+        }
+
+        .stage-4-mode .feedback-tooltip.bad {
+            animation: tooltipPopDown 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), tooltipShake 0.4s ease;
         }
 
         .feedback-tooltip.ok {
@@ -1051,6 +1061,11 @@
 
         @keyframes tooltipPop {
             from { opacity: 0; transform: translate(-50%, 8px) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+
+        @keyframes tooltipPopDown {
+            from { opacity: 0; transform: translate(-50%, -8px) scale(0.95); }
             to { opacity: 1; transform: translate(-50%, 0) scale(1); }
         }
 
@@ -1135,6 +1150,17 @@ if ('serviceWorker' in navigator) {
         }
     });
 }
+
+// Globaler Klick-Listener zum Schließen des Tooltips in allen Leveln
+document.addEventListener('click', function(event) {
+    if (S.fb && S.screen === 'task') {
+        // Nicht schließen, wenn gerade auf den Prüfbutton selbst geklickt wurde
+        if (!event.target.closest('.action-btn')) {
+            S.fb = null;
+            render();
+        }
+    }
+});
 
 // Globaler Keydown-Listener für die Enter-Taste
 document.addEventListener('keydown', function(event) {
@@ -1658,7 +1684,6 @@ function startStage(stageNum) {
     );
     
     if (S.stage === 1) {
-        // Pool nach Teilungsverhältnis der ausgeglichenen Formel filtern
         const pool12 = pool.filter(salt => {
             const g = gcd(salt.cat.c, Math.abs(salt.an.c));
             const cCount = Math.abs(salt.an.c) / g;
@@ -1676,7 +1701,6 @@ function startStage(stageNum) {
         const shuffled12 = [...pool12].sort(() => Math.random() - 0.5);
         const shuffled23 = [...pool23].sort(() => Math.random() - 0.5);
 
-        // Die ersten zwei Salze mit 1:2 / 2:1 Verhältnis, das dritte zwingend mit 2:3 / 3:2
         S.tasks = [
             shuffled12[0],
             shuffled12[1] || shuffled12[0],
@@ -1707,12 +1731,12 @@ function loadTask() {
     S.infoOpen = (S.taskIdx === 0);
     render();
 
-    // Automatisch das Eingabefeld NUR ab der ZWEITEN Aufgabe in Level 4 fokussieren
     if (S.stage === 4 && S.taskIdx > 0) {
         setTimeout(() => {
             const inp = document.getElementById('hiddenFormulaInput');
             if (inp) {
                 inp.focus();
+                inp.setSelectionRange(inp.value.length, inp.value.length);
             }
         }, 50);
     }
@@ -1923,11 +1947,11 @@ function checkSolution() {
     }
     render();
 
-    // Tastatur NUR in Level 4 fokussieren
     if (S.stage === 4) {
         const inp = document.getElementById('hiddenFormulaInput');
         if (inp) {
             inp.focus();
+            inp.setSelectionRange(inp.value.length, inp.value.length);
         }
     }
 }
@@ -2089,7 +2113,6 @@ function renderLatticeSVG() {
         }
     });
 
-    // Entfernen der obersten 3D-Ionen-Schicht
     nodes = nodes.filter(n => n.y < 1.2);
 
     const radY = 35 * Math.PI / 180;
@@ -2120,7 +2143,6 @@ function renderLatticeSVG() {
         node.depth = z2;
     });
 
-    // Vertikaler Filterbereich entsprechend der Zentrierung
     nodes = nodes.filter(n => n.py >= 60 && n.py <= 510);
 
     const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
@@ -2266,21 +2288,17 @@ function renderStart() {
 
     return `
     <div class="start-container">
-        <!-- Ganzflächige 3D-Hintergrundgrafik mit integrierter Formel -->
         <div class="hero-graphic-bg">
             ${renderLatticeSVG()}
         </div>
 
-        <!-- Oben verankerte Überschrift -->
         <div class="hero-header-box">
             <h1 class="hero-title">Verhältnisformel-Trainer</h1>
             <p class="hero-subtitle">Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!</p>
         </div>
 
-        <!-- Zentrierter Freiraum -->
         <div class="middle-spacer"></div>
 
-        <!-- Unten verankerte Voreinstellungen, PWA-Banner & Level-Auswahl -->
         <div class="bottom-controls-group">
             ${renderPwaBanner()}
 
@@ -2435,22 +2453,14 @@ function renderTask() {
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
-        <div class="formula-box-wrap">
-            <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp && document.activeElement !== inp) { inp.focus(); }">
-                <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
-                <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
-                <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
-                       oninput="S.typedFormula = this.value; S.fb = null; const tooltip = document.querySelector('.feedback-tooltip'); if(tooltip) tooltip.remove(); document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
-                       onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
-                       autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
-                <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
-            </div>
-            ${S.stage === 4 && S.fb ? `
-                <div class="feedback-tooltip ${S.fb.type}">
-                    ${S.fb.msg}
-                    <div class="tooltip-arrow"></div>
-                </div>
-            ` : ''}
+        <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }">
+            <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
+            <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
+            <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
+                   oninput="S.typedFormula = this.value; S.fb = null; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
+                   onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
+                   autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
+            <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
         </div>
     `}
 
@@ -2495,7 +2505,7 @@ function renderTask() {
     ` : ''}
 
     <div class="action-btn-container">
-        ${S.stage < 4 && S.fb ? `
+        ${S.fb ? `
             <div class="feedback-tooltip ${S.fb.type}">
                 ${S.fb.msg}
                 <div class="tooltip-arrow"></div>
