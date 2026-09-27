@@ -1095,6 +1095,32 @@
 <div id="app"></div>
 
 <script>
+// --- SERVICE WORKER AUTO-UPDATE REGISTRIERUNG ---
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(registration => {
+            // Beim Start der App sofort nach Updates suchen
+            registration.update();
+
+            // Zusätzlich stündlich im Hintergrund nach Aktualisierungen suchen
+            setInterval(() => {
+                registration.update();
+            }, 60 * 60 * 1000);
+        }).catch(err => {
+            console.log('ServiceWorker Registrierung fehlgeschlagen:', err);
+        });
+    });
+
+    // Neu laden, sobald ein neuer Service Worker die Steuerung übernimmt
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+        }
+    });
+}
+
 // Globaler Keydown-Listener für die Enter-Taste
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.keyCode === 13) {
@@ -1942,7 +1968,7 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
-/* 3D-GITTER SVG (Halber Weg zurückverschoben, Formel im freien Bereich zwischen Überschrift und Hinweisbox) */
+/* 3D-GITTER SVG (Formel um genau 1 Schrifthöhe [52px] nach unten auf y=382 verschoben) */
 function renderLatticeSVG() {
     const rawNodes = [];
     const minD = -1.0, maxD = 1.5;
@@ -2012,8 +2038,8 @@ function renderLatticeSVG() {
     const sinA = Math.sin(rotAngle);
 
     const scale = 280;
-    const centerX = 445; // Halber Weg zurück zwischen 390 und 500
-    const centerY = 240; // Halber Weg zurück zwischen 190 und 290
+    const centerX = 445; 
+    const centerY = 240; 
 
     nodes.forEach(node => {
         const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
@@ -2088,14 +2114,14 @@ function renderLatticeSVG() {
         }
     });
 
-    // Formel im freien Bereich rechts im Gitter (perfekt im Sichtfeld zwischen Überschrift und Einstellungsbox)
+    // Formel um eine Schrifthöhe (52px) weiter unten positioniert (y=382)
     const isReal = S.school === 'real';
     const catText = isReal ? '(Na⁺)' : 'Na';
     const catSub = '2';
     const anText = isReal ? '(S²⁻)' : 'S';
 
     const formulaSVG = `
-        <text x="660" y="330" font-size="52" font-weight="800" opacity="0.45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">
+        <text x="660" y="382" font-size="52" font-weight="800" opacity="0.45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">
             <tspan fill="#dc2626">${catText}</tspan><tspan fill="#dc2626" font-size="34" dy="12">${catSub}</tspan><tspan fill="#2563eb" font-size="52" dy="-12">${anText}</tspan>
         </text>
     `;
