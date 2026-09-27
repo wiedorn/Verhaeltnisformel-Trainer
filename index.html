@@ -79,7 +79,6 @@
             user-select: none;
         }
 
-        /* Falls die Displayhöhe doch einmal knapp wird */
         @media (max-height: 720px) {
             html, body {
                 overflow-y: auto !important;
@@ -91,7 +90,6 @@
             }
         }
 
-        /* Responsive Container */
         #app {
             height: 100%;
             height: 100dvh;
@@ -108,7 +106,6 @@
             z-index: 2;
         }
 
-        /* Querformat & kleine Bildschirmhöhen: Scrollen erlauben */
         @media (max-height: 600px), (max-height: 500px) and (orientation: landscape) {
             html, body {
                 overflow-y: auto !important;
@@ -132,7 +129,6 @@
             }
         }
 
-        /* WEB-APP STANDALONE MODUS: Erhöhter Sicherheitsabstand unter der milchigen Statusleiste */
         @media (display-mode: standalone) {
             #app {
                 padding-top: max(3.8rem, calc(env(safe-area-inset-top) + 2.2rem)) !important;
@@ -148,7 +144,6 @@
             gap: 0.5rem;
         }
 
-        /* Desktop & Tablet Layout Anpassungen */
         @media (min-width: 600px) {
             #app {
                 max-width: 720px;
@@ -189,21 +184,7 @@
             }
             .ion-chip {
                 font-size: clamp(0.95rem, 1.5vw, 1.25rem);
-                padding: clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 16px);
-            }
-            .stepper-v {
-                padding: clamp(0.35rem, 0.8vh, 0.6rem) clamp(0.6rem, 1.2vw, 1rem);
-            }
-            .stepper-arrows button {
-                height: clamp(34px, 4.2vh, 46px);
-                width: clamp(56px, 8vw, 76px);
-                font-size: clamp(1.1rem, 1.6vw, 1.3rem);
-            }
-            .stepper-count {
-                font-size: clamp(1.3rem, 2.2vw, 1.8rem);
-            }
-            .stepper-formula {
-                font-size: clamp(1.2rem, 2vw, 1.6rem);
+                padding: clamp(8px, 1.2vh, 14px) clamp(10px, 1.5vw, 16px);
             }
             .action-btn {
                 padding: clamp(0.7rem, 1.6vh, 1.1rem);
@@ -215,7 +196,6 @@
             }
         }
 
-        /* iPad Hochformat & mittlere Tablets */
         @media (min-width: 768px) {
             html {
                 font-size: 115%;
@@ -228,7 +208,6 @@
             }
         }
 
-        /* iPad Querformat & große Displays */
         @media (min-width: 1024px) {
             html {
                 font-size: 120%;
@@ -368,11 +347,11 @@
         }
 
         .section-label {
-            font-size: clamp(0.65rem, 1.1vw, 0.78rem);
+            font-size: clamp(1.2rem, 2.5vw, 1.65rem);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--ink-muted);
+            letter-spacing: 0.02em;
+            color: var(--primary);
             margin-bottom: 0.2rem;
         }
 
@@ -460,14 +439,13 @@
             z-index: 10;
         }
 
-        /* Einmalige Sanfte Einblendung beim allerersten Öffnen */
         @keyframes pwaFadeIn {
             from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .pwa-install-card.initial-fade-in {
-            animation: pwaFadeIn 0.5s ease 0.3s both;
+            animation: pwaFadeIn 0.6s ease 1.5s both;
         }
 
         .pwa-install-text {
@@ -498,7 +476,6 @@
             background: var(--primary-hover);
         }
 
-        /* Task Screen Layout */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -633,11 +610,11 @@
             left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(0.72rem, 1.1vw, 0.9rem); 
-            color: var(--ink-muted); 
+            font-size: clamp(1.2rem, 2.5vw, 1.65rem); 
+            color: var(--primary); 
             text-transform: uppercase; 
             font-weight: 700; 
-            letter-spacing: 0.04em;
+            letter-spacing: 0.02em;
             margin-bottom: 0;
             pointer-events: none;
             z-index: 6;
@@ -649,7 +626,7 @@
             line-height: 1.2; 
             text-align: center;
             width: 100%;
-            padding: 0 3.5rem;
+            padding: 0 4.5rem;
         }
 
         .visualizer-card {
@@ -660,7 +637,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            height: clamp(120px, 20vh, 320px);
+            height: clamp(130px, 22vh, 320px);
             position: relative;
             flex-shrink: 0;
         }
@@ -669,7 +646,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: clamp(16px, 4vw, 36px);
+            gap: clamp(24px, 6vw, 48px);
             height: 100%;
             width: 100%;
             position: relative;
@@ -677,54 +654,51 @@
             border-bottom: 2px solid var(--border);
         }
 
-        .charge-sum-badge {
-            font-size: clamp(1.2rem, 2.5vw, 2.1rem);
-            font-weight: 700;
-            background: transparent;
-            border: none;
-            padding: 0 2px;
-            text-align: center;
-            line-height: 1;
-        }
-
-        .charge-sum-badge.pos { color: var(--cation-color); }
-        .charge-sum-badge.neg { color: var(--anion-color); }
-
-        .indicator-line {
-            width: clamp(4px, 0.6vw, 7px);
-            border-radius: 3px;
-            transition: height 0.2s ease;
-        }
-
-        .indicator-line.pos { background-color: rgba(220, 38, 38, 0.35); }
-        .indicator-line.neg { background-color: rgba(37, 99, 235, 0.35); }
-
-        .columns-inner-wrap {
-            position: relative;
+        .clickable-column-wrap {
             display: flex;
             align-items: flex-end;
-            gap: clamp(24px, 6vw, 64px);
-            height: 100%;
+            gap: clamp(10px, 1.5vw, 18px);
+            cursor: pointer;
+            transition: transform 0.1s ease;
         }
 
-        .side-col-wrapper {
-            display: flex;
-            align-items: flex-end;
-            gap: clamp(8px, 1.2vw, 14px);
+        .clickable-column-wrap:hover {
+            transform: scale(1.02);
         }
 
         .badge-line-wrap {
             display: flex;
             align-items: center;
-            gap: clamp(5px, 0.8vw, 9px);
+            gap: clamp(4px, 0.6vw, 8px);
+            transition: height 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .charge-sum-badge {
+            font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+            font-weight: 700;
+            background: transparent;
+            border: none;
+            padding: 0;
+            text-align: right;
+            line-height: 1;
+        }
+        .charge-sum-badge.pos { color: var(--cation-color); }
+        .charge-sum-badge.neg { color: var(--anion-color); }
+
+        .indicator-line {
+            width: clamp(3px, 0.5vw, 6px);
+            border-radius: 3px;
             transition: height 0.2s ease;
         }
+        .indicator-line.pos { background-color: rgba(220, 38, 38, 0.35); }
+        .indicator-line.neg { background-color: rgba(37, 99, 235, 0.35); }
 
         .charge-col {
             display: flex;
             flex-direction: column-reverse;
             gap: 2px;
-            width: clamp(65px, 14vw, 120px);
+            width: clamp(60px, 13vw, 100px);
         }
 
         .ion-group-block {
@@ -736,7 +710,6 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.15);
             transition: all 0.2s ease;
         }
-
         .ion-group-block.cat-block { background-color: var(--cation-color); }
         .ion-group-block.an-block { background-color: var(--anion-color); }
 
@@ -744,7 +717,6 @@
             flex: 1;
             border-bottom: 2px solid rgba(255, 255, 255, 0.4);
         }
-
         .unit-segment:last-child { border-bottom: none; }
 
         .ion-group-label {
@@ -823,8 +795,9 @@
             left: clamp(0.6rem, 1.5vw, 1.2rem);
             top: 50%;
             transform: translateY(-50%);
-            font-size: clamp(0.68rem, 1.1vw, 0.9rem);
-            font-weight: 700;
+            font-size: clamp(1.2rem, 2.5vw, 1.65rem); 
+            font-weight: 700; 
+            letter-spacing: 0.02em; 
             color: var(--primary);
             line-height: 1.1;
             text-align: left;
@@ -929,23 +902,22 @@
             background: var(--surface);
             border: 2px solid var(--border);
             border-radius: var(--radius);
-            padding: clamp(0.25rem, 0.8vw, 0.5rem);
+            padding: clamp(0.35rem, 1vw, 0.65rem);
             text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            gap: clamp(0.15rem, 0.6vw, 0.4rem);
+            gap: clamp(0.3rem, 0.8vw, 0.6rem);
         }
-
         .ion-card.cation { border-color: var(--cation-color); }
         .ion-card.anion { border-color: var(--anion-color); }
 
         .ion-header-label {
-            font-size: clamp(0.62rem, 1vw, 0.85rem);
+            font-size: clamp(1.2rem, 2.5vw, 1.65rem);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.02em;
         }
         .cation .ion-header-label { color: var(--cation-color); }
         .anion .ion-header-label { color: var(--anion-color); }
@@ -956,31 +928,33 @@
             gap: clamp(4px, 0.8vw, 8px);
             justify-content: center;
             width: 100%;
+            flex: 1;
+            align-content: center;
         }
 
         .ion-chip {
-            font-size: clamp(0.8rem, 1.2vw, 0.98rem);
+            font-size: clamp(0.9rem, 1.4vw, 1.15rem);
             font-weight: 700;
-            padding: clamp(4px, 0.8vw, 6px) clamp(6px, 1.2vw, 10px);
-            border-radius: 8px;
+            padding: clamp(8px, 1.4vh, 12px) clamp(10px, 1.5vw, 14px);
+            border-radius: 10px;
             border: 1.5px solid var(--border);
             background: var(--bg);
             color: var(--ink);
             cursor: pointer;
             line-height: 1.15;
             transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
         .ion-chip:hover {
             border-color: var(--primary);
         }
-
         .cation .ion-chip[aria-selected="true"] {
             background: var(--cation-color);
             color: #ffffff;
             border-color: var(--cation-color);
         }
-
         .anion .ion-chip[aria-selected="true"] {
             background: var(--anion-color);
             color: #ffffff;
@@ -988,69 +962,10 @@
         }
 
         .ion-name-single {
-            font-size: clamp(0.7rem, 1.2vw, 1.05rem);
+            font-size: clamp(0.85rem, 1.4vw, 1.2rem);
             font-weight: 700;
             color: var(--ink-muted);
-        }
-
-        .stepper-v {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(0.5rem, 1.2vw, 0.8rem);
-            background: var(--bg);
-            border: 1px solid var(--border);
-            padding: clamp(0.2rem, 0.6vw, 0.4rem) clamp(0.4rem, 1vw, 0.7rem);
-            border-radius: 10px;
-            width: 100%;
-        }
-
-        .stepper-arrows {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .stepper-arrows button {
-            width: clamp(48px, 7vw, 64px);
-            height: clamp(26px, 3.2vh, 32px);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--ink);
-            font-weight: 700;
-            font-size: clamp(0.9rem, 1.3vw, 1.1rem);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1;
-            transition: background 0.1s ease;
-        }
-
-        .stepper-arrows button:hover {
-            background: var(--border);
-        }
-
-        .stepper-val-wrap {
-            display: flex;
-            align-items: center;
-            gap: clamp(0.35rem, 0.8vw, 0.55rem);
-        }
-
-        .stepper-count {
-            font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-            font-weight: 700;
-            min-width: 1.1rem;
-            text-align: center;
-        }
-
-        .cation .stepper-count { color: var(--cation-color); }
-        .anion .stepper-count { color: var(--anion-color); }
-
-        .stepper-formula {
-            font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-            font-weight: 700;
+            padding: 1rem 0;
         }
 
         .feedback-area {
@@ -1066,7 +981,6 @@
             line-height: 1.3;
             flex-shrink: 0;
         }
-
         .feedback-area.ok { background: var(--ok-bg); color: var(--ok-ink); }
         .feedback-area.bad { background: var(--bad-bg); color: var(--bad-ink); }
         .feedback-area.empty { background: transparent; }
@@ -1086,20 +1000,9 @@
             position: relative;
             z-index: 10;
         }
-
-        .action-btn:hover:not(:disabled) {
-            background: var(--primary-hover);
-        }
-
-        .action-btn:active:not(:disabled) {
-            transform: scale(0.99);
-        }
-
-        .action-btn:disabled {
-            opacity: 0.55;
-            cursor: not-allowed;
-            background: var(--ink-muted);
-        }
+        .action-btn:hover:not(:disabled) { background: var(--primary-hover); }
+        .action-btn:active:not(:disabled) { transform: scale(0.99); }
+        .action-btn:disabled { opacity: 0.55; cursor: not-allowed; background: var(--ink-muted); }
     </style>
 </head>
 <body>
@@ -1107,7 +1010,6 @@
 <div id="app"></div>
 
 <script>
-// Globaler Keydown-Listener für die Enter-Taste
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter' || event.keyCode === 13) {
         if (S.screen === 'task' && S.done) {
@@ -1117,42 +1019,25 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-// --- IPADOS / IOS DOUBLE-TAP UND PINCH-ZOOM BLOCKADE ---
-document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
-}, { passive: false });
-
-document.addEventListener('gesturechange', function (e) {
-    e.preventDefault();
-}, { passive: false });
-
+document.addEventListener('gesturestart', function (e) { e.preventDefault(); }, { passive: false });
+document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
 document.addEventListener('touchmove', function (e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
+    if (e.touches.length > 1) { e.preventDefault(); }
 }, { passive: false });
 
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
-    if (event.target && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA')) {
-        return;
-    }
+    if (event.target && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA')) { return; }
     const now = Date.now();
     if (now - lastTouchEnd <= 300) {
         event.preventDefault();
-        if (event.target && typeof event.target.click === 'function') {
-            event.target.click();
-        }
+        if (event.target && typeof event.target.click === 'function') { event.target.click(); }
     }
     lastTouchEnd = now;
 }, { passive: false });
 
-// Re-render bei Display-Rotation/Sichtfensteränderungen
-window.addEventListener('resize', () => {
-    render();
-});
+window.addEventListener('resize', () => { render(); });
 
-// --- PWA INSTALL LOGIK ---
 let deferredPrompt = null;
 let showIosInstallGuide = false;
 
@@ -1187,9 +1072,7 @@ function triggerPwaInstall() {
     if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-                deferredPrompt = null;
-            }
+            if (choiceResult.outcome === 'accepted') { deferredPrompt = null; }
             render();
         });
     } else if (isIos()) {
@@ -1199,36 +1082,24 @@ function triggerPwaInstall() {
 }
 
 function closeKeyboard(e) {
-    if (e) {
-        e.stopPropagation();
-        e.preventDefault();
-    }
+    if (e) { e.stopPropagation(); e.preventDefault(); }
     const inp = document.getElementById('hiddenFormulaInput');
-    if (inp) {
-        inp.blur();
-    }
+    if (inp) { inp.blur(); }
     if (document.activeElement && typeof document.activeElement.blur === 'function') {
         document.activeElement.blur();
     }
 }
 
-// --- Web Audio API Feedback-Sounds ---
 let audioCtx = null;
-
 function initAudio() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
+    if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    if (audioCtx.state === 'suspended') { audioCtx.resume(); }
 }
 
 function playSound(type) {
     try {
         initAudio();
         if (!audioCtx) return;
-        
         const now = audioCtx.currentTime;
 
         if (type === 'correct') {
@@ -1239,10 +1110,8 @@ function playSound(type) {
             osc.frequency.setValueAtTime(783.99, now + 0.1);
             gain.gain.setValueAtTime(0.15, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.35);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.35);
         } else if (type === 'wrong') {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -1251,10 +1120,8 @@ function playSound(type) {
             osc.frequency.exponentialRampToValueAtTime(110, now + 0.25);
             gain.gain.setValueAtTime(0.12, now);
             gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(now);
-            osc.stop(now + 0.25);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.25);
         } else if (type === 'fanfare') {
             const notes = [523.25, 659.25, 783.99, 1046.50];
             notes.forEach((freq, idx) => {
@@ -1265,18 +1132,15 @@ function playSound(type) {
                 osc.frequency.setValueAtTime(freq, startTime);
                 gain.gain.setValueAtTime(0.18, startTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(startTime);
-                osc.stop(startTime + 0.4);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(startTime); osc.stop(startTime + 0.4);
             });
         }
     } catch (e) {
-        console.log("Audio nicht unterstützt oder blockiert", e);
+        console.log("Audio nicht unterstützt", e);
     }
 }
 
-// --- Exakter Ionen-Stamm ---
 const BASIS_CATIONS = [
     { s: "Li", c: 1, n: "Lithium-Ion" },
     { s: "Na", c: 1, n: "Natrium-Ion" },
@@ -1325,64 +1189,37 @@ const EXPERT_ANIONS = [
 const getCat = (sym, charge) => EXPERT_CATIONS.find(c => c.s === sym && (charge === undefined || c.c === charge));
 const getAn = (sym) => EXPERT_ANIONS.find(a => a.s === sym) || BASIS_ANIONS.find(a => a.s === sym);
 
-// --- Dynamischer Aufbau des Aufgaben-Pools ---
-
-// 1. BASIS_SALTS (Alle 56 mathematisch möglichen Kombinationen aus BASIS_CATIONS × BASIS_ANIONS)
 const BASIS_SALTS = [];
 BASIS_CATIONS.forEach(cat => {
     BASIS_ANIONS.forEach(an => {
         const catName = cat.n.replace("-Ion", "");
         const anName = an.n.replace("-Ion", "").toLowerCase();
-        BASIS_SALTS.push({
-            name: catName + anName,
-            cat: cat,
-            an: an
-        });
+        BASIS_SALTS.push({ name: catName + anName, cat: cat, an: an });
     });
 });
 
-// 2. ADVANCED_SALTS (109 recherchierte, reale Salze mit deutschem Wikipedia-Eintrag)
 const ADVANCED_SALTS = [];
-
 function addAdv(catSym, catCharge, anSym) {
     const cat = getCat(catSym, catCharge);
     const an = getAn(anSym);
     if (!cat || !an) return;
-
     const catRaw = cat.n.replace("-Ion", "");
     const anRaw = an.n.replace("-Ion", "").toLowerCase();
-    
-    let name;
-    if (catRaw.includes("(")) {
-        name = `${catRaw}-${anRaw}`;
-    } else {
-        name = catRaw + anRaw;
-    }
-
+    let name = catRaw.includes("(") ? `${catRaw}-${anRaw}` : catRaw + anRaw;
     ADVANCED_SALTS.push({ name, cat, an });
 }
 
-// Hauptgruppen-Kationen mit mehratomigen / erweiterten Anionen
 const hgAnionsAll = ["S", "N", "P", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "HCO_3", "OH", "MnO_4"];
-
-// Li (alle außer Lithiumhydrogencarbonat)
 hgAnionsAll.filter(a => a !== "HCO_3").forEach(a => addAdv("Li", 1, a));
-
-// Na, K, Ca, Mg, Ba (alle 12 Anionen)
 ["Na", "K"].forEach(c => hgAnionsAll.forEach(a => addAdv(c, 1, a)));
 ["Ca", "Mg", "Ba"].forEach(c => hgAnionsAll.forEach(a => addAdv(c, 2, a)));
-
-// Al (8 reale Salze)
 ["S", "N", "P", "SO_3", "SO_4", "NO_3", "PO_4", "OH"].forEach(a => addAdv("Al", 3, a));
-
-// Nebengruppen & Ammonium
 ["S", "N", "P", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "OH"].forEach(a => addAdv("Fe", 2, a));
 ["S", "SO_4", "NO_3", "PO_4", "OH"].forEach(a => addAdv("Fe", 3, a));
 ["S", "N", "P", "SO_4", "OH"].forEach(a => addAdv("Cu", 1, a));
 ["S", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "OH"].forEach(a => addAdv("Cu", 2, a));
 ["S", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "HCO_3", "OH", "MnO_4"].forEach(a => addAdv("NH_4", 1, a));
 
-// --- App-Status ---
 const S = {
     school: 'gym',
     level: 'basis',
@@ -1401,13 +1238,10 @@ const S = {
     fb: null,
     done: false,
     score: 0,
-    pwaAnimated: false // Einmaliges Einblenden des PWA-Hinweises beim Erstaufruf
+    pwaAnimated: false
 };
 
-function gcd(a, b) {
-    return b === 0 ? a : gcd(b, a % b);
-}
-
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
 function getStageName(stage) {
     switch(stage) {
         case 1: return "Einführung";
@@ -1426,6 +1260,14 @@ function fmtIon(symbol, charge) {
     return `${cleanSym}<sup>${cStr}</sup>`;
 }
 
+function fmtIonPlain(symbol, charge) {
+    const sign = charge > 0 ? '+' : '-';
+    const abs = Math.abs(charge);
+    const cStr = abs === 1 ? sign : `${abs}${sign}`;
+    const cleanSym = symbol.replace(/_([0-9a-z]+)/gi, '$1');
+    return `${cleanSym}${cStr}`;
+}
+
 function isPolyPrefix(prefix) {
     const polyPrefixes = ["NH", "NO", "HCO", "MnO", "SO", "PO", "CO", "OH"];
     return polyPrefixes.some(p => p.toLowerCase() === prefix.toLowerCase());
@@ -1435,14 +1277,12 @@ function formatiereIonInhalt(inner) {
     if (!inner) return "";
     var clean = inner.replace(/\s+/g, '');
     if (!clean) return "";
-
     var formulaStr = "";
     var chargeStr = "";
 
     if (/[+-]$/.test(clean)) {
         var sign = clean.slice(-1);
         var rest = clean.slice(0, -1);
-
         var doubleDigitMatch = rest.match(/^(.*)(\d)(\d)$/);
         if (doubleDigitMatch) {
             formulaStr = doubleDigitMatch[1] + doubleDigitMatch[2];
@@ -1452,7 +1292,6 @@ function formatiereIonInhalt(inner) {
             if (singleDigitMatch) {
                 var prefix = singleDigitMatch[1];
                 var digit = singleDigitMatch[2];
-
                 if (isPolyPrefix(prefix)) {
                     formulaStr = prefix + digit;
                     chargeStr = sign;
@@ -1475,7 +1314,6 @@ function formatiereIonInhalt(inner) {
             if (singleDigitMatch) {
                 var prefix = singleDigitMatch[1];
                 var digit = singleDigitMatch[2];
-
                 if (isPolyPrefix(prefix)) {
                     formulaStr = prefix + digit;
                     chargeStr = "";
@@ -1489,17 +1327,14 @@ function formatiereIonInhalt(inner) {
             }
         }
     }
-
     var formattedFormula = formulaStr.replace(/\d+/g, function(d) { return "<sub>" + d + "</sub>"; });
     var formattedCharge = chargeStr ? "<sup>" + chargeStr + "</sup>" : "";
-
     return formattedFormula + formattedCharge;
 }
 
 function formatierteFormelRealschule(val) {
     if (!val) return "";
     val = val.replace(/[–—−]/g, '-');
-
     var result = "";
     var i = 0;
     var len = val.length;
@@ -1508,7 +1343,6 @@ function formatierteFormelRealschule(val) {
         if (val.charAt(i) === '(') {
             var closeIdx = val.indexOf(')', i + 1);
             var nextOpenIdx = val.indexOf('(', i + 1);
-
             if (closeIdx !== -1 && (nextOpenIdx === -1 || closeIdx < nextOpenIdx)) {
                 var inner = val.substring(i + 1, closeIdx);
                 result += "(" + formatiereIonInhalt(inner) + ")";
@@ -1526,7 +1360,6 @@ function formatierteFormelRealschule(val) {
             i = (nextParen !== -1) ? nextParen : len;
         }
     }
-
     return result;
 }
 
@@ -1553,21 +1386,17 @@ function buildRawTargetFormula(catObj, anObj, cCount, aCount, school) {
     if (school === 'gym') {
         let cPart = cleanSym(catObj.s);
         if (cCount > 1) cPart = catObj.poly ? `(${cPart})${cCount}` : `${cPart}${cCount}`;
-
         let aPart = cleanSym(anObj.s);
         if (aCount > 1) aPart = anObj.poly ? `(${aPart})${aCount}` : `${aPart}${aCount}`;
-
         return cPart + aPart;
     } else {
         const cChargeStr = catObj.c === 1 ? '+' : `${catObj.c}+`;
         const cIon = `(${cleanSym(catObj.s)}${cChargeStr})`;
         const cPart = cCount > 1 ? `${cIon}${cCount}` : cIon;
-
         const absA = Math.abs(anObj.c);
         const aChargeStr = absA === 1 ? '-' : `${absA}-`;
         const aIon = `(${cleanSym(anObj.s)}${aChargeStr})`;
         const aPart = aCount > 1 ? `${aIon}${aCount}` : aIon;
-
         return cPart + aPart;
     }
 }
@@ -1575,35 +1404,29 @@ function buildRawTargetFormula(catObj, anObj, cCount, aCount, school) {
 function buildFormulaHTML(catObj, anObj, cCount, aCount, school) {
     if (!catObj || !anObj) return '—';
     const clean = s => s.replace(/_([0-9a-z]+)/gi, '<sub>$1</sub>');
-
     const cSub = cCount > 1 ? `<sub style="color: var(--cation-color); font-weight: bold;">${cCount}</sub>` : '';
     const aSub = aCount > 1 ? `<sub style="color: var(--anion-color); font-weight: bold;">${aCount}</sub>` : '';
 
     if (school === 'gym') {
         let cSym = clean(catObj.s);
         if (cCount > 1) cSym = catObj.poly ? `(${cSym})${cSub}` : `${cSym}${cSub}`;
-
         let aSym = clean(anObj.s);
         if (aCount > 1) aSym = anObj.poly ? `(${aSym})${aSub}` : `${aSym}${aSub}`;
-
         return cSym + aSym;
     } else {
         const cChargeStr = catObj.c === 1 ? '+' : `${catObj.c}+`;
         const cSym = clean(catObj.s);
         const cIon = `(${cSym}<sup>${cChargeStr}</sup>)`;
         const cPart = cCount > 1 ? `${cIon}${cSub}` : cIon;
-
         const absA = Math.abs(anObj.c);
         const aChargeStr = absA === 1 ? '-' : `${absA}-`;
         const aSym = clean(anObj.s);
         const aIon = `(${aSym}<sup>${aChargeStr}</sup>)`;
         const aPart = aCount > 1 ? `${aIon}${aSub}` : aIon;
-
         return cPart + aPart;
     }
 }
 
-// --- Steuerung ---
 function selectStartStage(stageNum) {
     S.selectedStartStage = stageNum;
     render();
@@ -1647,25 +1470,52 @@ function loadTask() {
     S.fb = null;
     S.done = false;
     S.easterEggOpen = false;
-    
     S.infoOpen = (S.taskIdx === 0);
     render();
 }
 
-function incCat() {
-    S.catCount++;
-    if (S.catCount >= 10) {
-        triggerEasterEgg();
+function handleCationClick(idx) {
+    if (S.stage === 1) return;
+    const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
+    const clickedCat = catList[idx];
+    const currentActiveCat = catList[S.selectedCatIdx];
+
+    if (currentActiveCat.s === clickedCat.s && currentActiveCat.c === clickedCat.c) {
+        S.catCount++;
+        if (S.catCount >= 10) triggerEasterEgg();
     } else {
+        S.selectedCatIdx = idx;
+        S.catCount = 1;
+    }
+    render();
+}
+
+function handleAnionClick(idx) {
+    if (S.stage === 1) return;
+    const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
+    const clickedAn = anList[idx];
+    const currentActiveAn = anList[S.selectedAnIdx];
+
+    if (currentActiveAn.s === clickedAn.s) {
+        S.anCount++;
+        if (S.anCount >= 10) triggerEasterEgg();
+    } else {
+        S.selectedAnIdx = idx;
+        S.anCount = 1;
+    }
+    render();
+}
+
+function removeCation() {
+    if (S.catCount > 1) {
+        S.catCount--;
         render();
     }
 }
 
-function incAn() {
-    S.anCount++;
-    if (S.anCount >= 10) {
-        triggerEasterEgg();
-    } else {
+function removeAnion() {
+    if (S.anCount > 1) {
+        S.anCount--;
         render();
     }
 }
@@ -1700,14 +1550,11 @@ function getActiveIons() {
 
 function checkTypedSolution(userInput, targetSalt) {
     const input = userInput.replace(/\s+/g, '');
-    if (!input) {
-        return { ok: false, msg: '⚠️ Bitte gib eine Verhältnisformel ein.' };
-    }
+    if (!input) { return { ok: false, msg: '⚠️ Bitte gib eine Verhältnisformel ein.' }; }
 
     const g = gcd(targetSalt.cat.c, Math.abs(targetSalt.an.c));
     const correctCatCount = Math.abs(targetSalt.an.c) / g;
     const correctAnCount = targetSalt.cat.c / g;
-
     const rawTarget = buildRawTargetFormula(targetSalt.cat, targetSalt.an, correctCatCount, correctAnCount, S.school);
 
     if (input === rawTarget) {
@@ -1715,13 +1562,8 @@ function checkTypedSolution(userInput, targetSalt) {
     }
 
     if (input.includes('1')) {
-        const exampleMsg = S.school === 'real' 
-            ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' 
-            : 'NaCl statt Na₁Cl₁';
-        return { 
-            ok: false, 
-            msg: `⚠️ Der Index 1 wird in chemischen Formeln nicht geschrieben und muss weggelassen werden (z. B. ${exampleMsg}).` 
-        };
+        const exampleMsg = S.school === 'real' ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' : 'NaCl statt Na₁Cl₁';
+        return { ok: false, msg: `⚠️ Der Index 1 wird in chemischen Formeln nicht geschrieben und muss weggelassen werden (z. B. ${exampleMsg}).` };
     }
 
     if (input.toLowerCase() === rawTarget.toLowerCase()) {
@@ -1732,42 +1574,8 @@ function checkTypedSolution(userInput, targetSalt) {
     const anBase = targetSalt.an.s.replace(/_/g, '').toLowerCase();
     const inputLower = input.toLowerCase();
 
-    const catName = targetSalt.cat.n;
-    const anName = targetSalt.an.n;
-    const saltName = targetSalt.name;
-
-    const toPlural = (name) => name.endsWith('Ion') ? `${name}en` : `${name} Ionen`;
-    const catNamePlural = toPlural(catName);
-    const anNamePlural = toPlural(anName);
-
     if (!inputLower.includes(catBase) || !inputLower.includes(anBase)) {
-        return { 
-            ok: false, 
-            msg: `⚠️ Die Formel enthält nicht die passenden Ionen für ${saltName}. Benötigt werden ${catNamePlural} und ${anNamePlural}.` 
-        };
-    }
-
-    if (S.school === 'real') {
-        if (!input.includes('(') || !input.includes(')') || (!input.includes('+') && !input.includes('-'))) {
-            return { 
-                ok: false, 
-                msg: '⚠️ Nutze im Realschulmodus die Ionenschreibweise: Setze die Ionen mit ihren Ladungen in Klammern, z. B. (NH₄⁺)₂(SO₄²⁻).' 
-            };
-        }
-    }
-
-    if (S.school === 'gym') {
-        if ((targetSalt.cat.poly && correctCatCount > 1) || (targetSalt.an.poly && correctAnCount > 1)) {
-            if (!input.includes('(') || !input.includes(')')) {
-                return { ok: false, msg: '⚠️ Denke an die Klammern bei mehratomigen Ionen, z. B. (OH)₂.' };
-            }
-        }
-    }
-
-    const inputNoDigits = input.replace(/[0-9]/g, '');
-    const targetNoDigits = rawTarget.replace(/[0-9]/g, '');
-    if (inputNoDigits.toLowerCase() === targetNoDigits.toLowerCase()) {
-        return { ok: false, msg: '⚠️ Die Indizes (Anzahl der Ionen) stimmen noch nicht.' };
+        return { ok: false, msg: `⚠️ Die Formel enthält nicht die passenden Ionen für ${targetSalt.name}.` };
     }
 
     return { ok: false, msg: '⚠️ Die Formel ist noch nicht korrekt. Überprüfe Symbole, Klammern und Indizes.' };
@@ -1795,9 +1603,7 @@ function checkSolution() {
                 S.fb = { type: 'bad', msg: '⚠️ Formel bitte noch kürzen (z. B. 1:1 statt 2:2).' };
                 playSound('wrong');
             } else {
-                const okText = S.stage === 2 
-                    ? 'Richtig! Schau dir die Verhältnisformel noch einmal an. In Level 3 musst du sie selbst eintippen!' 
-                    : '✓ Richtig! Ladungen vollständig ausgeglichen.';
+                const okText = S.stage === 2 ? 'Richtig! Schau dir die Verhältnisformel noch einmal an. In Level 3 musst du sie selbst eintippen!' : '✓ Richtig! Ladungen vollständig ausgeglichen.';
                 S.fb = { type: 'ok', msg: okText };
                 S.done = true;
                 S.score += 100;
@@ -1829,7 +1635,6 @@ function nextTask() {
     }
 }
 
-// --- Visualisierung der Ionenbalken ---
 function renderChargeVisualizer() {
     const { cat, an } = getActiveIons();
     if (!cat || !an) return '';
@@ -1843,7 +1648,6 @@ function renderChargeVisualizer() {
     const isTablet = window.innerWidth >= 600;
     const isBigTablet = window.innerWidth >= 768;
 
-    // Dynamische Berechnung der Segmenthöhe basierend auf der verfügbaren Displayhöhe
     const maxChargeInCol = Math.max(posTotal, negTotal, 3);
     const containerMaxHeight = isBigTablet ? 260 : (isTablet ? 210 : 135);
     const unitH = Math.min(Math.floor(containerMaxHeight / maxChargeInCol), isBigTablet ? 38 : (isTablet ? 30 : 22));
@@ -1868,41 +1672,41 @@ function renderChargeVisualizer() {
     }
 
     const isBalanced = (posTotal === negTotal) && posTotal > 0;
-    
     const catTowerH = posTotal * unitH + (posTotal - 1) * gap;
     const anTowerH = negTotal * unitH + (negTotal - 1) * gap;
+
+    const catLabelStr = S.catCount > 1 ? `${S.catCount}${fmtIonPlain(cat.s, cat.c)}` : `${fmtIonPlain(cat.s, cat.c)}`;
+    const anLabelStr = S.anCount > 1 ? `${S.anCount}${fmtIonPlain(an.s, an.c)}` : `${fmtIonPlain(an.s, an.c)}`;
 
     return `
         <div class="visualizer-card">
             ${!isBalanced ? `<div class="balance-unbalanced-text">⚠️ Verbindung ist noch nicht elektrisch neutral.</div>` : ''}
             <div class="charge-columns-wrap">
-                <div class="columns-inner-wrap">
-                    <div class="side-col-wrapper">
-                        <div class="badge-line-wrap" style="height: ${catTowerH}px;">
-                            <div class="charge-sum-badge pos">${S.catCount}</div>
-                            <div class="indicator-line pos" style="height: 100%;"></div>
-                        </div>
-                        <div class="charge-col cation-col">
-                            ${renderBlocks(S.catCount, catCharge, 'cat-block', cat)}
-                        </div>
+                <div class="clickable-column-wrap" onclick="removeCation()" title="Kation entfernen">
+                    <div class="badge-line-wrap" style="height: ${catTowerH}px;">
+                        <span class="charge-sum-badge pos">${catLabelStr}</span>
+                        <div class="indicator-line pos" style="height: 100%;"></div>
                     </div>
-
-                    <div class="side-col-wrapper">
-                        <div class="charge-col anion-col">
-                            ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
-                        </div>
-                        <div class="badge-line-wrap" style="height: ${anTowerH}px;">
-                            <div class="indicator-line neg" style="height: 100%;"></div>
-                            <div class="charge-sum-badge neg">${S.anCount}</div>
-                        </div>
+                    <div class="charge-col cation-col">
+                        ${renderBlocks(S.catCount, catCharge, 'cat-block', cat)}
                     </div>
-
-                    ${isBalanced ? `
-                        <div class="balance-line" style="bottom: ${catTowerH + 3}px;">
-                            <span class="balance-line-text">✓ Ladungen sind ausgeglichen!</span>
-                        </div>
-                    ` : ''}
                 </div>
+
+                <div class="clickable-column-wrap" onclick="removeAnion()" title="Anion entfernen">
+                    <div class="charge-col anion-col">
+                        ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
+                    </div>
+                    <div class="badge-line-wrap" style="height: ${anTowerH}px;">
+                        <div class="indicator-line neg" style="height: 100%;"></div>
+                        <span class="charge-sum-badge neg">${anLabelStr}</span>
+                    </div>
+                </div>
+
+                ${isBalanced ? `
+                    <div class="balance-line" style="bottom: ${catTowerH + 3}px;">
+                        <span class="balance-line-text">✓ Ladungen sind ausgeglichen!</span>
+                    </div>
+                ` : ''}
             </div>
         </div>
     `;
@@ -1910,7 +1714,6 @@ function renderChargeVisualizer() {
 
 function render() {
     const app = document.getElementById('app');
-    
     if (S.screen === 'task' && S.stage === 4) {
         app.classList.add('stage-4-mode');
     } else {
@@ -1922,7 +1725,6 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
-/* 3D-GITTER SVG */
 function renderLatticeSVG() {
     const rawNodes = [];
     const minD = -1.0, maxD = 1.5;
@@ -1934,22 +1736,8 @@ function renderLatticeSVG() {
                 const xIsInt = Number.isInteger(x);
                 const yIsInt = Number.isInteger(y);
                 const zIsInt = Number.isInteger(z);
-
-                let isAnion = false;
-
-                if (xIsInt && yIsInt && zIsInt) {
-                    isAnion = true;
-                } else if (!xIsInt && !yIsInt && zIsInt) {
-                    isAnion = true;
-                } else if (!xIsInt && yIsInt && !zIsInt) {
-                    isAnion = true;
-                } else if (xIsInt && !yIsInt && !zIsInt) {
-                    isAnion = true;
-                }
-
-                if (isAnion) {
-                    rawNodes.push({ x, y, z, isAnion: true });
-                }
+                let isAnion = (xIsInt && yIsInt && zIsInt) || (!xIsInt && !yIsInt && zIsInt) || (!xIsInt && yIsInt && !zIsInt) || (xIsInt && !yIsInt && !zIsInt);
+                if (isAnion) { rawNodes.push({ x, y, z, isAnion: true }); }
             }
         }
     }
@@ -1976,10 +1764,7 @@ function renderLatticeSVG() {
     const seen = new Set();
     rawNodes.forEach(n => {
         const key = `${n.x.toFixed(2)}_${n.y.toFixed(2)}_${n.z.toFixed(2)}`;
-        if (!seen.has(key)) {
-            seen.add(key);
-            nodes.push(n);
-        }
+        if (!seen.has(key)) { seen.add(key); nodes.push(n); }
     });
 
     const radY = 35 * Math.PI / 180;
@@ -1987,7 +1772,6 @@ function renderLatticeSVG() {
     const rotAngle = -45 * Math.PI / 180;
     const cosA = Math.cos(rotAngle);
     const sinA = Math.sin(rotAngle);
-
     const scale = 280;
     const centerX = 500;
     const centerY = 360;
@@ -1995,147 +1779,45 @@ function renderLatticeSVG() {
     nodes.forEach(node => {
         const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
         const z1 = -node.x * Math.sin(radY) + node.z * Math.cos(radY);
-
         const y2 = node.y * Math.cos(radX) - z1 * Math.sin(radX);
         const z2 = node.y * Math.sin(radX) + z1 * Math.cos(radX);
-
         const rx = - x1 * scale;
         const ry = - y2 * scale;
-
         const rotX = rx * cosA - ry * sinA;
         const rotY = rx * sinA + ry * cosA;
-
         node.px = centerX + rotX;
         node.py = centerY + rotY;
         node.depth = z2;
     });
 
-    const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
-    if (anionDepths.length > 0) {
-        const maxAnionDepth = Math.max(...anionDepths);
-        nodes = nodes.filter(n => !(n.isAnion && n.depth > maxAnionDepth - 0.35));
-    }
-
-    nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
-    nodes = nodes.slice(0, Math.floor(nodes.length * 0.55));
-
-    let minDepth = Infinity;
-    let maxDepth = -Infinity;
-    nodes.forEach(node => {
-        if (node.depth < minDepth) minDepth = node.depth;
-        if (node.depth > maxDepth) maxDepth = node.depth;
-    });
-
     nodes.sort((a, b) => a.depth - b.depth);
-
-    const depthRange = (maxDepth - minDepth) || 1;
-
     let svgContent = '';
     nodes.forEach((node, idx) => {
-        const depthFactor = (node.depth - minDepth) / depthRange;
+        const depthFactor = (node.depth - (-1)) / 2.5;
         const opacity = (0.40 + 0.60 * depthFactor).toFixed(2);
-
-        const rCation = (12.0 + 8.0 * depthFactor).toFixed(1);
-        const fontCation = (11.0 + 6.0 * depthFactor).toFixed(1);
-
-        const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
-        const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
-
-        const dur = (0.75 + ((idx * 19) % 11) * 0.09).toFixed(2);
-        const delay = (((idx * 29) % 13) * 0.08).toFixed(2);
-        const animName = ['ionWobbleA', 'ionWobbleB', 'ionWobbleC', 'ionWobbleD'][(idx * 7) % 4];
-
-        const animStyle = `animation: ${animName} ${dur}s ease-in-out ${delay}s infinite alternate; transform-box: fill-box; transform-origin: center;`;
-
         if (node.isAnion) {
-            svgContent += `
-            <g opacity="${opacity}" style="${animStyle}">
-                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rAnion}" fill="url(#heroAnGrad)"/>
-                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontAnion)*0.32).toFixed(1)}" font-size="${fontAnion}" font-weight="bold" fill="#ffffff" text-anchor="middle">2-</text>
-            </g>`;
+            svgContent += `<circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="25" fill="#2563eb" opacity="${opacity}"/>`;
         } else {
-            svgContent += `
-            <g opacity="${opacity}" style="${animStyle}">
-                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rCation}" fill="url(#heroCatGrad)"/>
-                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontCation)*0.32).toFixed(1)}" font-size="${fontCation}" font-weight="bold" fill="#ffffff" text-anchor="middle">+</text>
-            </g>`;
+            svgContent += `<circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="15" fill="#dc2626" opacity="${opacity}"/>`;
         }
     });
 
-    return `
-    <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
-      <defs>
-        <radialGradient id="heroCatGrad" cx="35%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#f87171"/>
-          <stop offset="45%" stop-color="#dc2626"/>
-          <stop offset="100%" stop-color="#991b1b"/>
-        </radialGradient>
-        <radialGradient id="heroAnGrad" cx="35%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#60a5fa"/>
-          <stop offset="45%" stop-color="#2563eb"/>
-          <stop offset="100%" stop-color="#1e3a8a"/>
-        </radialGradient>
-      </defs>
-
-      <style>
-        @keyframes ionWobbleA { 0% { transform: translate(0, 0); } 100% { transform: translate(2.5px, -2.8px); } }
-        @keyframes ionWobbleB { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.8px, 2.3px); } }
-        @keyframes ionWobbleC { 0% { transform: translate(0, 0); } 100% { transform: translate(2.3px, 2.6px); } }
-        @keyframes ionWobbleD { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.5px, -2.5px); } }
-      </style>
-
-      ${svgContent}
-    </svg>
-    `;
+    return `<svg width="1000" height="1000" viewBox="0 0 1000 1000">${svgContent}</svg>`;
 }
 
 function renderPwaBanner() {
     if (isStandalone()) return '';
-
-    // Beim allerersten Aufruf Klasse für Einblendung anhängen und nach 1s auf erledigt setzen
     const animClass = !S.pwaAnimated ? ' initial-fade-in' : '';
-    if (!S.pwaAnimated) {
-        setTimeout(() => { S.pwaAnimated = true; }, 1000);
-    }
+    if (!S.pwaAnimated) { setTimeout(() => { S.pwaAnimated = true; }, 2200); }
 
-    // Android/Desktop Chrome Banner
     if (deferredPrompt) {
         return `
             <div class="pwa-install-card${animClass}">
-                <div class="pwa-install-text">
-                    <b>📲 Als App installieren</b>
-                    Direkt auf dem Startbildschirm nutzen
-                </div>
+                <div class="pwa-install-text"><b>📲 Als App installieren</b> Direkt auf dem Startbildschirm nutzen</div>
                 <button class="pwa-btn-sm" onclick="triggerPwaInstall()">Installieren</button>
             </div>
         `;
     }
-
-    // Offizielle SF Symbols / iOS System-Icons als Vektor-SVG
-    const sfShareIcon = `<svg width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.2em; display: inline-block; color: var(--primary);"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`;
-    const sfChevronDown = `<svg width="1.0em" height="1.0em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.15em; display: inline-block; color: var(--primary);"><polyline points="6 9 12 15 18 9"/></svg>`;
-    const sfAddHomeIcon = `<svg width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.2em; display: inline-block; color: var(--primary);"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
-
-    // iOS/iPadOS Safari Banner
-    if (isIos()) {
-        const sharePositionText = isIpad() ? 'rechts oben' : 'unten';
-        return `
-            <div class="pwa-install-card${animClass}" style="flex-direction: column; align-items: stretch; gap: 0.35rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div class="pwa-install-text">
-                        <b>📲 Als App zum Home-Bildschirm hinzufügen</b>
-                    </div>
-                    <button class="pwa-btn-sm" onclick="triggerPwaInstall()">${showIosInstallGuide ? 'Einklappen' : 'Anleitung'}</button>
-                </div>
-                ${showIosInstallGuide ? `
-                    <div style="font-size: 0.78rem; color: var(--ink-muted); line-height: 1.4; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
-                        Tippe in Safari <b>${sharePositionText}</b> auf das <b>Teilen-Symbol</b>${sfShareIcon}, wähle dann <b>„Mehr anzeigen“</b> ${sfChevronDown} und tippe auf <b>„Zum Home-Bildschirm“</b>${sfAddHomeIcon}.
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    }
-
     return '';
 }
 
@@ -2146,89 +1828,46 @@ function renderStart() {
 
     return `
     <div class="start-container">
-        <!-- Ganzflächige 3D-Hintergrundgrafik -->
-        <div class="hero-graphic-bg">
-            ${renderLatticeSVG()}
-        </div>
-
-        <!-- Oben verankerte Überschrift -->
+        <div class="hero-graphic-bg">${renderLatticeSVG()}</div>
         <div class="hero-header-box">
             <h1 class="hero-title">Verhältnisformel-Trainer</h1>
             <p class="hero-subtitle">Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!</p>
         </div>
-
-        <!-- Zentrierter Freiraum zwischen Überschrift und Einstellungsbox -->
         <div class="middle-spacer">
             <div class="formula-preview-badge">
-                ${isReal 
-                    ? `<span class="cat-part">(Na<sup>+</sup>)<sub>2</sub></span><span class="an-part">(S<sup>2-</sup>)</span>`
-                    : `<span class="cat-part">Na<sub>2</sub></span><span class="an-part">S</span>`
-                }
+                ${isReal ? `<span class="cat-part">(Na<sup>+</sup>)<sub>2</sub></span><span class="an-part">(S<sup>2-</sup>)</span>` : `<span class="cat-part">Na<sub>2</sub></span><span class="an-part">S</span>`}
             </div>
         </div>
-
-        <!-- Unten verankerte Voreinstellungen, PWA-Banner & Level-Auswahl -->
         <div class="bottom-controls-group">
             ${renderPwaBanner()}
-
             <div class="preset-card">
                 <div class="preset-title">⚙️ Voreinstellungen</div>
-                
                 <div>
                     <div class="section-label">Schulform</div>
                     <div class="tiles-row">
-                        <button class="tile-btn" aria-pressed="${S.school === 'gym'}" onclick="S.school='gym'; render();">
-                            <b>Gymnasium</b>
-                            <small>Klassisch z. B. NaCl</small>
-                        </button>
-                        <button class="tile-btn" aria-pressed="${S.school === 'real'}" onclick="S.school='real'; render();">
-                            <b>Realschule</b>
-                            <small>Ionenschreibweise z. B. (Na⁺)(Cl⁻)</small>
-                        </button>
+                        <button class="tile-btn" aria-pressed="${S.school === 'gym'}" onclick="S.school='gym'; render();"><b>Gymnasium</b><small>Klassisch z. B. NaCl</small></button>
+                        <button class="tile-btn" aria-pressed="${S.school === 'real'}" onclick="S.school='real'; render();"><b>Realschule</b><small>Ionenschreibweise z. B. (Na⁺)(Cl⁻)</small></button>
                     </div>
                 </div>
-
                 <div>
                     <div class="section-label">Schwierigkeitsgrad</div>
                     <div class="tiles-row">
-                        <button class="tile-btn" aria-pressed="${S.level === 'basis'}" onclick="S.level='basis'; render();">
-                            <b>Basis</b>
-                            <small>Nur einfache Hauptgruppen-Ionen</small>
-                        </button>
-                        <button class="tile-btn" aria-pressed="${S.level === 'advanced'}" onclick="S.level='advanced'; render();">
-                            <b>Fortgeschritten</b>
-                            <small>Inkl. Nebengruppen-Ionen und Molekül-Ionen</small>
-                        </button>
+                        <button class="tile-btn" aria-pressed="${S.level === 'basis'}" onclick="S.level='basis'; render();"><b>Basis</b><small>Nur einfache Hauptgruppen-Ionen</small></button>
+                        <button class="tile-btn" aria-pressed="${S.level === 'advanced'}" onclick="S.level='advanced'; render();"><b>Fortgeschritten</b><small>Inkl. Nebengruppen- & Molekül-Ionen</small></button>
                     </div>
                 </div>
             </div>
-
             <div class="preset-card">
                 <div class="preset-title">🎯 Level wählen</div>
                 <div class="level-grid">
-                    <div class="level-card" aria-pressed="${S.selectedStartStage === 1}" onclick="selectStartStage(1)">
-                        <b>Level 1: Einführung</b>
-                        <small>Grundlagen & Ladungsausgleich</small>
-                    </div>
-                    <div class="level-card" aria-pressed="${S.selectedStartStage === 2}" onclick="selectStartStage(2)">
-                        <b>Level 2: Lernen</b>
-                        <small>Richtige Ionen auswählen</small>
-                    </div>
-                    <div class="level-card" aria-pressed="${S.selectedStartStage === 3}" onclick="selectStartStage(3)">
-                        <b>Level 3: Üben</b>
-                        <small>Verhältnisformeln schreiben</small>
-                    </div>
-                    <div class="level-card" aria-pressed="${S.selectedStartStage === 4}" onclick="selectStartStage(4)">
-                        <b>Level 4: Check</b>
-                        <small>Ohne Hilfsmittel</small>
-                    </div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 1}" onclick="selectStartStage(1)"><b>Level 1: Einführung</b><small>Grundlagen & Ladungsausgleich</small></div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 2}" onclick="selectStartStage(2)"><b>Level 2: Lernen</b><small>Richtige Ionen auswählen</small></div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 3}" onclick="selectStartStage(3)"><b>Level 3: Üben</b><small>Verhältnisformeln schreiben</small></div>
+                    <div class="level-card" aria-pressed="${S.selectedStartStage === 4}" onclick="selectStartStage(4)"><b>Level 4: Check</b><small>Ohne Hilfsmittel</small></div>
                 </div>
             </div>
-
             <div>
-                <button class="action-btn" ${!hasSelection ? 'disabled' : ''} onclick="confirmStartLevel()">
-                    ${btnLabel}
-                </button>
+                <button class="action-btn" ${!hasSelection ? 'disabled' : ''} onclick="confirmStartLevel()">${btnLabel}</button>
             </div>
         </div>
     </div>`;
@@ -2236,8 +1875,8 @@ function renderStart() {
 
 function getInfoText(stage) {
     switch(stage) {
-        case 1: return "Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen der Kationen (+) und der Anionen (-) aus. Passe die Anzahl der Ionen mit ▲ und ▼ an, bis beide Balken gleich hoch sind und damit die Ladungen ausgeglichen sind.";
-        case 2: return "Wähle zuerst die passenden Ionen für das Salz aus und gleiche dann die Ladungen aus.";
+        case 1: return "Salze sind elektrisch neutral. Im Ionengitter gleichen sich die Ladungen aus. Das richtige Salz ist vorgegeben.";
+        case 2: return "Tippe auf ein Ion in der Auswahlliste, um es hinzuzufügen. Bei erneutem Tippen wird ein weiteres hinzugefügt. Ein Tipp auf den Ionenbalken oben entfernt das Ion wieder. Wenn du eine andere Ionenart antippst, werden alle bisherigen Ionen dieser Art zurückgesetzt und das neue Ion wird hinzugefügt.";
         case 3: return "Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.";
         case 4: return "Du bist nun auf dich allein gestellt! Tippe die fertige Verhältnisformel direkt ein.";
     }
@@ -2248,13 +1887,8 @@ function renderInfoOverlay() {
     return `
         <div class="info-backdrop">
             <div class="info-modal" onclick="event.stopPropagation();">
-                <div class="info-modal-header">
-                    <span style="font-size: 1.1rem;">💡</span>
-                    <span>Anleitung – Level ${S.stage}: ${getStageName(S.stage)}</span>
-                </div>
-                <div class="info-modal-body">
-                    ${getInfoText(S.stage)}
-                </div>
+                <div class="info-modal-header"><span style="font-size: 1.1rem;">💡</span><span>Anleitung – Level ${S.stage}: ${getStageName(S.stage)}</span></div>
+                <div class="info-modal-body">${getInfoText(S.stage)}</div>
                 <button class="info-modal-btn" onclick="S.infoOpen = false; render();">Verstanden</button>
             </div>
         </div>
@@ -2266,13 +1900,8 @@ function renderEasterEggOverlay() {
     return `
         <div class="info-backdrop">
             <div class="info-modal" onclick="event.stopPropagation();">
-                <div class="info-modal-header">
-                    <span style="font-size: 1.1rem;">💡</span>
-                    <span>Ionengitter-Hinweis</span>
-                </div>
-                <div class="info-modal-body">
-                    Ja, du hast Recht! In einem Ionengitter kommen unzählige Ionen vor. Die Verhältnisformel soll jedoch nur das Verhältnis von Kationen zu Anionen darstellen. Versuch es noch einmal!
-                </div>
+                <div class="info-modal-header"><span style="font-size: 1.1rem;">💡</span><span>Ionengitter-Hinweis</span></div>
+                <div class="info-modal-body">Ja, im Gitter gibt es unzählige Ionen, aber die Verhältnisformel zeigt nur das einfachste Zahlenverhältnis!</div>
                 <button class="info-modal-btn" onclick="closeEasterEgg()">Verstanden</button>
             </div>
         </div>
@@ -2283,10 +1912,8 @@ function renderTask() {
     const targetSalt = S.tasks[S.taskIdx];
     const saltName = targetSalt.name;
     const { cat, an } = getActiveIons();
-
     const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
-
     const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
 
     return `
@@ -2302,7 +1929,7 @@ function renderTask() {
     </div>
 
     <div class="task-header">
-        <small>SALZ</small>
+        <small>Salz</small>
         <h2>${saltName}</h2>
     </div>
 
@@ -2310,12 +1937,12 @@ function renderTask() {
 
     ${S.stage < 3 ? `
         <div class="formula-box">
-            <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
+            <span class="formula-label">Verhältnisformel</span>
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
         <div class="formula-box input-mode" onclick="document.getElementById('hiddenFormulaInput').focus();">
-            <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
+            <span class="formula-label">Verhältnisformel</span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
                    oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
@@ -2323,61 +1950,36 @@ function renderTask() {
                    onclick="const l=this.value.length; this.setSelectionRange(l,l);"
                    onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); closeKeyboard(event); if(!S.done){ checkSolution(); } else { nextTask(); } }"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
-            <button type="button" class="done-btn" 
-                    ontouchstart="closeKeyboard(event)" 
-                    onmousedown="closeKeyboard(event)" 
-                    onclick="closeKeyboard(event)">Fertig</button>
+            <button type="button" class="done-btn" ontouchstart="closeKeyboard(event)" onmousedown="closeKeyboard(event)" onclick="closeKeyboard(event)">Fertig</button>
         </div>
     `}
 
     ${S.stage < 4 ? `
         <div class="ion-controls">
             <div class="ion-card cation">
-                <div class="ion-header-label">Kationen (positiv)</div>
+                <div class="ion-header-label">Kationen</div>
                 ${S.stage > 1 ? `
                     <div class="ion-chip-grid">
                         ${catList.map((c, i) => `
-                            <button class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="S.selectedCatIdx=${i}; render();">
+                            <button class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="handleCationClick(${i})">
                                 ${fmtIon(c.s, c.c)}
                             </button>
                         `).join('')}
                     </div>
                 ` : `<span class="ion-name-single">${cat.n}</span>`}
-                
-                <div class="stepper-v">
-                    <div class="stepper-arrows">
-                        <button onclick="incCat()">▲</button>
-                        <button onclick="S.catCount = Math.max(1, S.catCount - 1); render();">▼</button>
-                    </div>
-                    <div class="stepper-val-wrap">
-                        <span class="stepper-count">${S.catCount}</span>
-                        <span class="stepper-formula">${fmtIon(cat.s, cat.c)}</span>
-                    </div>
-                </div>
             </div>
 
             <div class="ion-card anion">
-                <div class="ion-header-label">Anionen (negativ)</div>
+                <div class="ion-header-label">Anionen</div>
                 ${S.stage > 1 ? `
                     <div class="ion-chip-grid">
                         ${anList.map((a, i) => `
-                            <button class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="S.selectedAnIdx=${i}; render();">
+                            <button class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="handleAnionClick(${i})">
                                 ${fmtIon(a.s, a.c)}
                             </button>
                         `).join('')}
                     </div>
                 ` : `<span class="ion-name-single">${an.n}</span>`}
-                
-                <div class="stepper-v">
-                    <div class="stepper-arrows">
-                        <button onclick="incAn()">▲</button>
-                        <button onclick="S.anCount = Math.max(1, S.anCount - 1); render();">▼</button>
-                    </div>
-                    <div class="stepper-val-wrap">
-                        <span class="stepper-count">${S.anCount}</span>
-                        <span class="stepper-formula">${fmtIon(an.s, an.c)}</span>
-                    </div>
-                </div>
             </div>
         </div>
     ` : ''}
@@ -2395,13 +1997,10 @@ function renderTask() {
 }
 
 function renderEnd() {
-    let title = "";
-    let msg = "";
-    let buttons = "";
-
+    let title = ""; let msg = ""; let buttons = "";
     if (S.stage === 1) {
         title = "Grundprinzip verstanden! 🎉";
-        msg = "Du weißt jetzt, wie Ladungen ausgeglichen werden. Weiter geht’s mit mehr Ionen zur Auswahl!";
+        msg = "Du weißt jetzt, wie Ladungen ausgeglichen werden.";
         buttons = `<button class="action-btn" onclick="startStage(2)">Weiter zu Level 2 →</button>`;
     } else if (S.stage === 2) {
         title = "Stark gemacht!";
@@ -2420,9 +2019,6 @@ function renderEnd() {
     } else {
         title = "Challenge gemeistert! 🎉";
         msg = "Du beherrschst die Verhältnisformeln sicher.";
-        if (S.level === 'basis') {
-            msg += "<br><br><small style='color: var(--primary); font-weight: bold;'>Tipp: Versuche das Ganze jetzt im Schwierigkeitsgrad 'Fortgeschritten' mit Nebengruppen- und Molekül-Ionen!</small>";
-        }
         buttons = `<button class="action-btn" onclick="S.screen='start'; render();">Hauptmenü</button>`;
     }
 
@@ -2432,10 +2028,7 @@ function renderEnd() {
             <h1 class="hero-title">${title}</h1>
             <p class="hero-subtitle" style="margin-top: 0.4rem;">${msg}</p>
         </div>
-
-        <div style="width: 100%;">
-            ${buttons}
-        </div>
+        <div style="width: 100%;">${buttons}</div>
     </div>`;
 }
 
