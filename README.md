@@ -44,4 +44,4 @@ Die Anwendung ist als schlanke, performante **Single-File Web App** (HTML5, CSS3
 ## 👏 Credits & Danksagung
 
 * **Idee & Grundkonzept:** Diese App basiert auf der ursprünglichen Idee von Rainer Hille vom Gymnasium Waldkraiburg [GitHub: Hi2272](https://github.com/Hi2272/)). Vielen Dank für die Inspiration!
-* **Design-Inspiration:** Ein großer Dank für die Inspiration beim Design geht an [herrweigt (GitHub)](https://github.com/herrweigt). Es lohnt sich sehr, sich seine Apps für den Unterricht dort anzuschauen!
+* **Design-Inspiration:** Ein großer Dank für die Inspiration beim Design geht an [GitHub: herrweigt](https://github.com/herrweigt). Es lohnt sich sehr, sich seine Apps für den Unterricht dort anzuschauen!
