@@ -727,6 +727,12 @@
             transition: bottom 0.2s ease;
         }
 
+        .formula-box-wrap {
+            position: relative;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
         .formula-box {
             background: var(--surface-alpha);
             border: 1.5px dashed var(--primary);
@@ -1009,9 +1015,9 @@
             animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Wenn in Level 4 das Input-Feld aktiv ist, verschiebe das Feedback weiter nach oben, um nichts zu verdecken */
-        .stage-4-mode .action-btn-container .feedback-tooltip {
-            bottom: calc(100% + 14px);
+        /* In Level 4 liegt das Feedback oberhalb des Eingabefelds */
+        .stage-4-mode .feedback-tooltip {
+            bottom: calc(100% + 10px);
         }
 
         .feedback-tooltip.bad {
@@ -1701,8 +1707,8 @@ function loadTask() {
     S.infoOpen = (S.taskIdx === 0);
     render();
 
-    // Automatisch das Eingabefeld fokussieren in Level 3 und 4, damit die Tastatur offen bleibt
-    if (S.stage >= 3) {
+    // Automatisch das Eingabefeld NUR ab der ZWEITEN Aufgabe in Level 4 fokussieren
+    if (S.stage === 4 && S.taskIdx > 0) {
         setTimeout(() => {
             const inp = document.getElementById('hiddenFormulaInput');
             if (inp) {
@@ -1917,8 +1923,8 @@ function checkSolution() {
     }
     render();
 
-    // Tastatur in Level 3 und 4 im Input-Feld belassen
-    if (S.stage >= 3) {
+    // Tastatur NUR in Level 4 fokussieren
+    if (S.stage === 4) {
         const inp = document.getElementById('hiddenFormulaInput');
         if (inp) {
             inp.focus();
@@ -2429,14 +2435,22 @@ function renderTask() {
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
-        <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp && document.activeElement !== inp) { inp.focus(); }">
-            <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
-            <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
-            <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
-                   oninput="S.typedFormula = this.value; S.fb = null; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
-                   onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
-                   autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
-            <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
+        <div class="formula-box-wrap">
+            <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp && document.activeElement !== inp) { inp.focus(); }">
+                <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
+                <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
+                <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
+                       oninput="S.typedFormula = this.value; S.fb = null; const tooltip = document.querySelector('.feedback-tooltip'); if(tooltip) tooltip.remove(); document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
+                       onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
+                       autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
+                <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
+            </div>
+            ${S.stage === 4 && S.fb ? `
+                <div class="feedback-tooltip ${S.fb.type}">
+                    ${S.fb.msg}
+                    <div class="tooltip-arrow"></div>
+                </div>
+            ` : ''}
         </div>
     `}
 
@@ -2481,7 +2495,7 @@ function renderTask() {
     ` : ''}
 
     <div class="action-btn-container">
-        ${S.fb ? `
+        ${S.stage < 4 && S.fb ? `
             <div class="feedback-tooltip ${S.fb.type}">
                 ${S.fb.msg}
                 <div class="tooltip-arrow"></div>
