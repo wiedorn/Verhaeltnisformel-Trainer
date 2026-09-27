@@ -18,7 +18,7 @@
         :root {
             --bg: #f8fafc;
             --surface: #ffffff; 
-            --surface-alpha: rgba(255, 255, 255, 0.65); /* Halbtransparent für Formelkarten */
+            --surface-alpha: rgba(255, 255, 255, 0.75);
             --ink: #0f172a;
             --ink-muted: #64748b;
             --primary: #7c3aed; 
@@ -41,7 +41,7 @@
             :root {
                 --bg: #0f172a;
                 --surface: #1e293b; 
-                --surface-alpha: rgba(30, 41, 59, 0.65);
+                --surface-alpha: rgba(30, 41, 59, 0.75);
                 --ink: #f8fafc;
                 --ink-muted: #94a3b8;
                 --primary: #a855f7;
@@ -93,12 +93,40 @@
             z-index: 2;
         }
 
+        /* Querformat & kleine Bildschirmhöhen: Scrollen erlauben */
+        @media (max-height: 600px), (max-height: 500px) and (orientation: landscape) {
+            html, body {
+                overflow-y: auto !important;
+                height: auto !important;
+            }
+            #app {
+                height: auto !important;
+                min-height: 100vh !important;
+                justify-content: flex-start !important;
+                padding-top: 0.5rem;
+                padding-bottom: 1.5rem;
+                gap: 0.75rem !important;
+            }
+            .hero-graphic-bg {
+                position: absolute !important;
+                height: 100% !important;
+                min-height: 100vh !important;
+            }
+            .middle-spacer {
+                min-height: 120px !important;
+            }
+        }
+
         @media (display-mode: standalone) {
             #app {
                 gap: clamp(0.2rem, 0.8vh, 0.45rem);
             }
             .visualizer-card {
                 height: clamp(140px, 22vh, 190px) !important;
+            }
+            /* Verberge den Install-Banner, wenn bereits installiert */
+            .pwa-install-card {
+                display: none !important;
             }
         }
 
@@ -107,12 +135,22 @@
             gap: 0.4rem;
         }
 
+        /* Desktop Layout Anpassungen */
         @media (min-width: 600px) {
             #app {
                 max-width: 680px;
                 justify-content: flex-start;
                 padding: 1.25rem 1.5rem;
                 gap: 1rem;
+            }
+            .start-container {
+                justify-content: flex-start;
+                gap: 1rem;
+                max-height: 820px;
+            }
+            .middle-spacer {
+                flex: 0 1 120px !important;
+                min-height: 100px !important;
             }
             .level-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
@@ -125,6 +163,10 @@
                 justify-content: flex-start;
                 padding: 1.5rem 2rem;
                 gap: 1.25rem;
+            }
+            .middle-spacer {
+                flex: 0 1 130px !important;
+                min-height: 110px !important;
             }
         }
 
@@ -147,20 +189,22 @@
             position: relative;
         }
 
-        /* VOLLBILD-GRAFIK HINTERGRUND */
         .hero-graphic-bg {
             position: fixed;
             top: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100vw;
             height: 100vh;
             height: 100dvh;
             pointer-events: none;
             z-index: 1;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Header Box oben */
         .hero-header-box {
             background: var(--surface);
             border: 1.5px solid var(--border);
@@ -187,12 +231,44 @@
             margin-top: 0.2rem;
         }
 
-        /* Freier Sichtbereich zwischen Überschrift und Steuerung */
         .middle-spacer {
             flex: 1;
-            min-height: 100px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
             pointer-events: none;
         }
+
+        .formula-preview-badge {
+            position: relative;
+            background: rgba(255, 255, 255, 0.38);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem 1.4rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            font-size: clamp(2.5rem, 6.4vw, 3.4rem);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            z-index: 12;
+            pointer-events: auto;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .formula-preview-badge {
+                background: rgba(30, 41, 59, 0.38);
+            }
+        }
+
+        .formula-preview-badge .cat-part { color: var(--cation-color); }
+        .formula-preview-badge .an-part { color: var(--anion-color); }
 
         .bottom-controls-group {
             display: flex;
@@ -201,28 +277,6 @@
             position: relative;
             z-index: 10;
         }
-
-        /* Halbtransparente Formelkarte (Formel-Badge) */
-        .formula-preview-badge {
-            position: absolute;
-            right: 0;
-            bottom: calc(100% + 6px);
-            background: var(--surface-alpha);
-            border: 1.5px solid var(--border);
-            border-radius: var(--radius);
-            padding: 0.35rem 0.85rem;
-            box-shadow: var(--shadow);
-            font-size: clamp(1.25rem, 3.2vw, 1.65rem);
-            font-weight: 800;
-            letter-spacing: 0.02em;
-            display: flex;
-            align-items: center;
-            white-space: nowrap;
-            z-index: 12;
-        }
-
-        .formula-preview-badge .cat-part { color: var(--cation-color); }
-        .formula-preview-badge .an-part { color: var(--anion-color); }
 
         .preset-card {
             position: relative;
@@ -280,16 +334,17 @@
         .tile-btn:hover, .level-card:hover,
         .tile-btn:focus, .level-card:focus {
             border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.05);
             transform: translateY(-1px);
         }
 
-        .tile-btn b, .level-card b { 
+        .tile-btn b { 
             display: block; 
-            font-size: clamp(0.78rem, 1.3vw, 0.92rem); 
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem); 
             color: var(--ink); 
         }
 
-        .tile-btn small, .level-card small { 
+        .tile-btn small { 
             font-size: clamp(0.62rem, 1vw, 0.75rem); 
             color: var(--ink-muted); 
             line-height: 1.15; 
@@ -297,23 +352,71 @@
             margin-top: 2px; 
         }
 
-        /* Ausgewählter Zustand (Aktiv) mit weißer Schrift auf Lila-Hintergrund */
+        .level-card b { 
+            display: block; 
+            font-size: clamp(0.78rem, 1.3vw, 0.95rem); 
+            color: var(--primary); 
+        }
+
+        .level-card small { 
+            font-size: clamp(0.62rem, 1vw, 0.75rem); 
+            color: var(--ink-muted); 
+            line-height: 1.15; 
+            display: block; 
+            margin-top: 2px; 
+        }
+
         .tile-btn[aria-pressed="true"],
         .level-card[aria-pressed="true"] {
             border-color: var(--primary);
-            background: var(--primary);
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+            background: rgba(124, 58, 237, 0.12);
+            box-shadow: 0 0 0 1px var(--primary);
         }
 
         .tile-btn[aria-pressed="true"] b,
         .level-card[aria-pressed="true"] b {
-            color: #ffffff;
+            color: var(--primary);
         }
 
-        .tile-btn[aria-pressed="true"] small,
-        .level-card[aria-pressed="true"] small {
-            color: rgba(255, 255, 255, 0.88);
+        /* STYLES FÜR DEN PWA-INSTALL-BANNER */
+        .pwa-install-card {
+            background: rgba(124, 58, 237, 0.08);
+            border: 1.5px dashed var(--primary);
+            border-radius: var(--radius);
+            padding: clamp(0.45rem, 1vw, 0.65rem) clamp(0.65rem, 1.5vw, 0.9rem);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .pwa-install-text {
+            font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+            color: var(--ink);
+            line-height: 1.25;
+        }
+
+        .pwa-install-text b {
+            color: var(--primary);
+            display: block;
+        }
+
+        .pwa-btn-sm {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.4rem 0.75rem;
+            font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s ease;
+        }
+
+        .pwa-btn-sm:hover {
+            background: var(--primary-hover);
         }
 
         /* Task Screen Layout */
@@ -369,7 +472,7 @@
             font-size: clamp(0.82rem, 1.3vw, 0.95rem);
         }
 
-        /* Information Overlay mit wiederhergestelltem Blur-Effekt */
+        /* Information Overlay */
         .info-backdrop {
             position: fixed;
             top: 0;
@@ -615,7 +718,6 @@
             color: var(--ink-muted);
         }
 
-        /* Halbtransparente Formel Box & Eingabefeld */
         .formula-box {
             background: var(--surface-alpha);
             border: 1.5px dashed var(--primary);
@@ -870,7 +972,6 @@
             font-weight: 700;
         }
 
-        /* Feedback Area */
         .feedback-area {
             min-height: clamp(28px, 3.5vh, 36px);
             display: flex;
@@ -925,6 +1026,47 @@
 <div id="app"></div>
 
 <script>
+// --- PWA INSTALL LOGIK ---
+let deferredPrompt = null;
+let showIosInstallGuide = false;
+
+// Event-Listener für Chrome/Android/Desktop
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    render(); // Startseite neu rendern, um Install-Button zu zeigen
+});
+
+window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    showIosInstallGuide = false;
+    render();
+});
+
+function isIos() {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
+}
+
+function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
+function triggerPwaInstall() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                deferredPrompt = null;
+            }
+            render();
+        });
+    } else if (isIos()) {
+        showIosInstallGuide = !showIosInstallGuide;
+        render();
+    }
+}
+
 // --- Hilfsfunktion zum Einklappen der Tastatur ---
 function closeKeyboard(e) {
     if (e) {
@@ -1050,7 +1192,6 @@ const EXPERT_ANIONS = [
     { s: "MnO_4", c: -1, n: "Permanganat-Ion", poly: true } 
 ];
 
-// Dynamische Hilfsfunktionen
 const getCat = (sym, charge) => EXPERT_CATIONS.find(c => c.s === sym && (charge === undefined || c.c === charge));
 const getAn = (sym) => EXPERT_ANIONS.find(a => a.s === sym) || BASIS_ANIONS.find(a => a.s === sym);
 
@@ -1087,11 +1228,11 @@ const ADVANCED_SALTS = [
 
 // --- App-Status ---
 const S = {
-    school: 'gym',       // 'gym' | 'real'
-    level: 'basis',      // 'basis' | 'advanced'
-    stage: 1,            // 1 | 2 | 3 | 4
+    school: 'gym',
+    level: 'basis',
+    stage: 1,
     selectedStartStage: null,
-    screen: 'start',     // 'start' | 'task' | 'end'
+    screen: 'start',
     taskIdx: 0,
     tasks: [],
     catCount: 1,
@@ -1106,7 +1247,6 @@ const S = {
     score: 0
 };
 
-// --- Hilfsfunktionen ---
 function gcd(a, b) {
     return b === 0 ? a : gcd(b, a % b);
 }
@@ -1574,8 +1714,6 @@ function renderChargeVisualizer() {
             ${!isBalanced ? `<div class="balance-unbalanced-text">⚠️ Verbindung ist noch nicht elektrisch neutral.</div>` : ''}
             <div class="charge-columns-wrap">
                 <div class="columns-inner-wrap">
-                    
-                    <!-- Kationen (Rot) -->
                     <div class="side-col-wrapper">
                         <div class="badge-line-wrap" style="height: ${catTowerH}px;">
                             <div class="charge-sum-badge pos">${S.catCount}</div>
@@ -1586,7 +1724,6 @@ function renderChargeVisualizer() {
                         </div>
                     </div>
 
-                    <!-- Anionen (Blau) -->
                     <div class="side-col-wrapper">
                         <div class="charge-col anion-col">
                             ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
@@ -1597,7 +1734,6 @@ function renderChargeVisualizer() {
                         </div>
                     </div>
 
-                    <!-- Ausgleichslinie -->
                     ${isBalanced ? `
                         <div class="balance-line" style="bottom: ${catTowerH + 3}px;">
                             <span class="balance-line-text">✓ Ladungen sind ausgeglichen!</span>
@@ -1609,7 +1745,6 @@ function renderChargeVisualizer() {
     `;
 }
 
-// --- Render-Logik ---
 function render() {
     const app = document.getElementById('app');
     
@@ -1624,10 +1759,9 @@ function render() {
     else app.innerHTML = renderEnd();
 }
 
-/* 3D-GITTER: PERFORMANCE-OPTIMIERT & VORDERSTE ANIONEN-SCHICHT ENTFERNT */
+/* 3D-GITTER SVG */
 function renderLatticeSVG() {
     const rawNodes = [];
-    
     const minD = -1.0, maxD = 1.5;
     const step = 0.5;
 
@@ -1657,7 +1791,6 @@ function renderLatticeSVG() {
         }
     }
 
-    // Kationen (Na+): Tetraederlücken
     for (let x = Math.floor(minD); x < maxD; x += 1) {
         for (let y = Math.floor(minD); y < maxD; y += 1) {
             for (let z = Math.floor(minD); z < maxD; z += 1) {
@@ -1676,7 +1809,6 @@ function renderLatticeSVG() {
         }
     }
 
-    // Duplikate filtern
     let nodes = [];
     const seen = new Set();
     rawNodes.forEach(n => {
@@ -1687,15 +1819,16 @@ function renderLatticeSVG() {
         }
     });
 
-    // 3D-Rotationswinkel (Yaw = 35°, Pitch = 22°)
     const radY = 35 * Math.PI / 180;
     const radX = 22 * Math.PI / 180;
+    const rotAngle = -45 * Math.PI / 180;
+    const cosA = Math.cos(rotAngle);
+    const sinA = Math.sin(rotAngle);
 
-    const scale = 252;
-    const centerX = 440;
-    const centerY = 350;
+    const scale = 280;
+    const centerX = 500;
+    const centerY = 360;
 
-    // Tiefenberechnung für Ausblendung der vordersten Anionen
     nodes.forEach(node => {
         const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
         const z1 = -node.x * Math.sin(radY) + node.z * Math.cos(radY);
@@ -1703,23 +1836,26 @@ function renderLatticeSVG() {
         const y2 = node.y * Math.cos(radX) - z1 * Math.sin(radX);
         const z2 = node.y * Math.sin(radX) + z1 * Math.cos(radX);
 
-        node.px = centerX + x1 * scale;
-        node.py = centerY - y2 * scale;
+        const rx = - x1 * scale;
+        const ry = - y2 * scale;
+
+        const rotX = rx * cosA - ry * sinA;
+        const rotY = rx * sinA + ry * cosA;
+
+        node.px = centerX + rotX;
+        node.py = centerY + rotY;
         node.depth = z2;
     });
 
-    // Vorderste Anionen-Schicht identifizieren & entfernen (Macht Kationen sichtbarer)
     const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
     if (anionDepths.length > 0) {
         const maxAnionDepth = Math.max(...anionDepths);
         nodes = nodes.filter(n => !(n.isAnion && n.depth > maxAnionDepth - 0.35));
     }
 
-    // Gesamtanzahl für flüssige Performance spürbar reduzieren (ca. 75% der zentralen Ionen behalten)
     nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
-    nodes = nodes.slice(0, Math.floor(nodes.length * 0.75));
+    nodes = nodes.slice(0, Math.floor(nodes.length * 0.55));
 
-    // Tiefensortierung (Malt von hinten nach vorne)
     let minDepth = Infinity;
     let maxDepth = -Infinity;
     nodes.forEach(node => {
@@ -1734,18 +1870,14 @@ function renderLatticeSVG() {
     let svgContent = '';
     nodes.forEach((node, idx) => {
         const depthFactor = (node.depth - minDepth) / depthRange;
-
         const opacity = (0.40 + 0.60 * depthFactor).toFixed(2);
 
-        // Kationengröße
         const rCation = (12.0 + 8.0 * depthFactor).toFixed(1);
         const fontCation = (11.0 + 6.0 * depthFactor).toFixed(1);
 
-        // Anionengröße
         const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
         const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
 
-        // Sanftes Wackeln
         const dur = (0.75 + ((idx * 19) % 11) * 0.09).toFixed(2);
         const delay = (((idx * 29) % 13) * 0.08).toFixed(2);
         const animName = ['ionWobbleA', 'ionWobbleB', 'ionWobbleC', 'ionWobbleD'][(idx * 7) % 4];
@@ -1794,6 +1926,44 @@ function renderLatticeSVG() {
     `;
 }
 
+function renderPwaBanner() {
+    if (isStandalone()) return '';
+
+    // Android/Desktop Chrome Banner
+    if (deferredPrompt) {
+        return `
+            <div class="pwa-install-card">
+                <div class="pwa-install-text">
+                    <b>📲 Als App installieren</b>
+                    Direkt auf dem Startbildschirm nutzen
+                </div>
+                <button class="pwa-btn-sm" onclick="triggerPwaInstall()">Installieren</button>
+            </div>
+        `;
+    }
+
+    // iOS/iPadOS Safari Banner
+    if (isIos()) {
+        return `
+            <div class="pwa-install-card" style="flex-direction: column; align-items: stretch; gap: 0.35rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="pwa-install-text">
+                        <b>📲 Als App zum Home-Bildschirm hinzufügen</b>
+                    </div>
+                    <button class="pwa-btn-sm" onclick="triggerPwaInstall()">${showIosInstallGuide ? 'Einklappen' : 'Anleitung'}</button>
+                </div>
+                ${showIosInstallGuide ? `
+                    <div style="font-size: 0.78rem; color: var(--ink-muted); line-height: 1.35; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
+                        Tippe in Safari unten auf das <b>Teilen-Symbol ⎘</b> (Quadrat mit Pfeil) und wähle dann <b>„Zum Home-Bildschirm“ ➕</b>.
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    return '';
+}
+
 function renderStart() {
     const isReal = S.school === 'real';
     const hasSelection = S.selectedStartStage !== null;
@@ -1812,20 +1982,21 @@ function renderStart() {
             <p class="hero-subtitle">Lerne Schritt für Schritt, wie man die korrekte Verhältnisformel von Salzen aufstellt!</p>
         </div>
 
-        <!-- Freier Blickbereich in der Mitte -->
-        <div class="middle-spacer"></div>
+        <!-- Zentrierter Freiraum zwischen Überschrift und Einstellungsbox -->
+        <div class="middle-spacer">
+            <div class="formula-preview-badge">
+                ${isReal 
+                    ? `<span class="cat-part">(Na<sup>+</sup>)<sub>2</sub></span><span class="an-part">(S<sup>2-</sup>)</span>`
+                    : `<span class="cat-part">Na<sub>2</sub></span><span class="an-part">S</span>`
+                }
+            </div>
+        </div>
 
-        <!-- Nach unten verschobener Bereich für Voreinstellungen & Level-Auswahl -->
+        <!-- Unten verankerte Voreinstellungen, PWA-Banner & Level-Auswahl -->
         <div class="bottom-controls-group">
-            <div class="preset-card">
-                <!-- Halbtransparente Formelkarte -->
-                <div class="formula-preview-badge">
-                    ${isReal 
-                        ? `<span class="cat-part">(Na<sup>+</sup>)<sub>2</sub></span><span class="an-part">(S<sup>2-</sup>)</span>`
-                        : `<span class="cat-part">Na<sub>2</sub></span><span class="an-part">S</span>`
-                    }
-                </div>
+            ${renderPwaBanner()}
 
+            <div class="preset-card">
                 <div class="preset-title">⚙️ Voreinstellungen</div>
                 
                 <div>
@@ -1857,7 +2028,6 @@ function renderStart() {
                 </div>
             </div>
 
-            <!-- Eigene Karte für die Level-Auswahl -->
             <div class="preset-card">
                 <div class="preset-title">🎯 Level wählen</div>
                 <div class="level-grid">
@@ -1969,7 +2139,6 @@ function renderTask() {
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
-        <!-- Live-Formatierte Direkteingabe -->
         <div class="formula-box input-mode" onclick="document.getElementById('hiddenFormulaInput').focus();">
             <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
@@ -1983,7 +2152,6 @@ function renderTask() {
 
     ${S.stage < 4 ? `
         <div class="ion-controls">
-            <!-- Kation Karte -->
             <div class="ion-card cation">
                 <div class="ion-header-label">Kationen (positiv)</div>
                 ${S.stage > 1 ? `
@@ -2008,7 +2176,6 @@ function renderTask() {
                 </div>
             </div>
 
-            <!-- Anion Karte -->
             <div class="ion-card anion">
                 <div class="ion-header-label">Anionen (negativ)</div>
                 ${S.stage > 1 ? `
@@ -2092,7 +2259,6 @@ function renderEnd() {
     </div>`;
 }
 
-// Startaufruf
 render();
 </script>
 </body>
