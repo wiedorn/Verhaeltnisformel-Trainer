@@ -132,7 +132,7 @@
             }
         }
 
-        /* WEB-APP STANDALONE MODUS: Erhöhter Sicherheitsabstand unter der milchigen Statusleiste */
+        /* WEB-APP STANDALONE MODUS */
         @media (display-mode: standalone) {
             #app {
                 padding-top: max(3.8rem, calc(env(safe-area-inset-top) + 2.2rem)) !important;
@@ -460,7 +460,6 @@
             z-index: 10;
         }
 
-        /* Sanfte Einblendung mit leichtem Delay beim Start */
         @keyframes pwaFadeIn {
             from { opacity: 0; transform: translateY(-4px); }
             to { opacity: 1; transform: translateY(0); }
@@ -850,8 +849,7 @@
             padding: 0 0.5rem;
             display: inline-block;
             line-height: 1.3;
-            -webkit-user-select: text;
-            user-select: text;
+            pointer-events: none;
         }
 
         .formatted-display:empty::before {
@@ -883,12 +881,10 @@
             opacity: 0;
             z-index: 5;
             cursor: text;
-            -webkit-user-select: text !important;
-            user-select: text !important;
+            -webkit-user-select: text;
+            user-select: text;
             text-align: center;
             font-size: 1.2rem;
-            -webkit-appearance: none;
-            border-radius: 0;
         }
 
         .done-btn {
@@ -1121,14 +1117,17 @@ document.addEventListener('keydown', function(event) {
 
 // --- IPADOS / IOS DOUBLE-TAP UND PINCH-ZOOM BLOCKADE ---
 document.addEventListener('gesturestart', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return;
     e.preventDefault();
 }, { passive: false });
 
 document.addEventListener('gesturechange', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return;
     e.preventDefault();
 }, { passive: false });
 
 document.addEventListener('touchmove', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return;
     if (e.touches.length > 1) {
         e.preventDefault();
     }
@@ -1149,9 +1148,14 @@ document.addEventListener('touchend', function (event) {
     lastTouchEnd = now;
 }, { passive: false });
 
-// Re-render bei Display-Rotation/Sichtfensteränderungen
+// Re-render NUR bei tatsächlicher Breitenänderung (z. B. Display-Rotation).
+// Bei Höhenänderungen (wie Aufklappen der Smartphone-Tastatur) darf KEIN Re-Render ausgelöst werden.
+let lastWindowWidth = window.innerWidth;
 window.addEventListener('resize', () => {
-    render();
+    if (window.innerWidth !== lastWindowWidth) {
+        lastWindowWidth = window.innerWidth;
+        render();
+    }
 });
 
 // --- PWA INSTALL LOGIK ---
@@ -1203,7 +1207,6 @@ function triggerPwaInstall() {
 function closeKeyboard(e) {
     if (e) {
         e.stopPropagation();
-        e.preventDefault();
     }
     const inp = document.getElementById('hiddenFormulaInput');
     if (inp) {
@@ -1329,7 +1332,6 @@ const getAn = (sym) => EXPERT_ANIONS.find(a => a.s === sym) || BASIS_ANIONS.find
 
 // --- Dynamischer Aufbau des Aufgaben-Pools ---
 
-// 1. BASIS_SALTS (Alle 56 mathematisch möglichen Kombinationen aus BASIS_CATIONS × BASIS_ANIONS)
 const BASIS_SALTS = [];
 BASIS_CATIONS.forEach(cat => {
     BASIS_ANIONS.forEach(an => {
@@ -1343,7 +1345,6 @@ BASIS_CATIONS.forEach(cat => {
     });
 });
 
-// 2. ADVANCED_SALTS (109 recherchierte, reale Salze mit deutschem Wikipedia-Eintrag)
 const ADVANCED_SALTS = [];
 
 function addAdv(catSym, catCharge, anSym) {
@@ -1364,20 +1365,15 @@ function addAdv(catSym, catCharge, anSym) {
     ADVANCED_SALTS.push({ name, cat, an });
 }
 
-// Hauptgruppen-Kationen mit mehratomigen / erweiterten Anionen
 const hgAnionsAll = ["S", "N", "P", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "HCO_3", "OH", "MnO_4"];
 
-// Li (alle außer Lithiumhydrogencarbonat)
 hgAnionsAll.filter(a => a !== "HCO_3").forEach(a => addAdv("Li", 1, a));
 
-// Na, K, Ca, Mg, Ba (alle 12 Anionen)
 ["Na", "K"].forEach(c => hgAnionsAll.forEach(a => addAdv(c, 1, a)));
 ["Ca", "Mg", "Ba"].forEach(c => hgAnionsAll.forEach(a => addAdv(c, 2, a)));
 
-// Al (8 reale Salze)
 ["S", "N", "P", "SO_3", "SO_4", "NO_3", "PO_4", "OH"].forEach(a => addAdv("Al", 3, a));
 
-// Nebengruppen & Ammonium
 ["S", "N", "P", "SO_3", "SO_4", "NO_2", "NO_3", "PO_4", "CO_3", "OH"].forEach(a => addAdv("Fe", 2, a));
 ["S", "SO_4", "NO_3", "PO_4", "OH"].forEach(a => addAdv("Fe", 3, a));
 ["S", "N", "P", "SO_4", "OH"].forEach(a => addAdv("Cu", 1, a));
@@ -1403,7 +1399,7 @@ const S = {
     fb: null,
     done: false,
     score: 0,
-    pwaAnimated: false // Einmaliges Einblenden des PWA-Hinweises beim Erstaufruf
+    pwaAnimated: false
 };
 
 function gcd(a, b) {
@@ -1863,7 +1859,6 @@ function renderChargeVisualizer() {
     const isTablet = window.innerWidth >= 600;
     const isBigTablet = window.innerWidth >= 768;
 
-    // Dynamische Berechnung der Segmenthöhe basierend auf der verfügbaren Displayhöhe
     const maxChargeInCol = Math.max(posTotal, negTotal, 3);
     const containerMaxHeight = isBigTablet ? 260 : (isTablet ? 210 : 135);
     const unitH = Math.min(Math.floor(containerMaxHeight / maxChargeInCol), isBigTablet ? 38 : (isTablet ? 30 : 22));
@@ -2112,13 +2107,11 @@ function renderLatticeSVG() {
 function renderPwaBanner() {
     if (isStandalone()) return '';
 
-    // Sanfte Einblendung erst nach 1.5 Sekunden beim Erstaufruf
     const animClass = !S.pwaAnimated ? ' initial-fade-in' : '';
     if (!S.pwaAnimated) {
         setTimeout(() => { S.pwaAnimated = true; }, 2200);
     }
 
-    // Android/Desktop Chrome Banner
     if (deferredPrompt) {
         return `
             <div class="pwa-install-card${animClass}">
@@ -2131,12 +2124,10 @@ function renderPwaBanner() {
         `;
     }
 
-    // Offizielle SF Symbols / iOS System-Icons als Vektor-SVG
     const sfShareIcon = `<svg width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.2em; display: inline-block; color: var(--primary);"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`;
     const sfChevronDown = `<svg width="1.0em" height="1.0em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.15em; display: inline-block; color: var(--primary);"><polyline points="6 9 12 15 18 9"/></svg>`;
     const sfAddHomeIcon = `<svg width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -0.2em; display: inline-block; color: var(--primary);"><rect x="3" y="3" width="18" height="18" rx="4" ry="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>`;
 
-    // iOS/iPadOS Safari Banner
     if (isIos()) {
         const sharePositionText = isIpad() ? 'rechts oben' : 'unten';
         return `
@@ -2334,12 +2325,11 @@ function renderTask() {
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
-        <div class="formula-box input-mode">
+        <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp && document.activeElement !== inp) { inp.focus(); }">
             <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
                    oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
-                   onfocus="setTimeout(() => { try { const l=this.value.length; this.setSelectionRange(l,l); } catch(e){} }, 50);"
                    onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); closeKeyboard(event); if(!S.done){ checkSolution(); } else { nextTask(); } }"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
             <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
