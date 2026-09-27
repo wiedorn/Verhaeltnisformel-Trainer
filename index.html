@@ -134,12 +134,18 @@
             }
         }
 
+        @media (display-mode: standalone) and (min-width: 768px) {
+            #app {
+                gap: 1.1rem !important;
+            }
+        }
+
         #app.stage-4-mode {
             justify-content: flex-start;
             gap: 0.4rem;
         }
 
-        /* Desktop Layout Anpassungen */
+        /* Desktop & Tablet Layout Anpassungen */
         @media (min-width: 600px) {
             #app {
                 max-width: 680px;
@@ -150,27 +156,43 @@
             .start-container {
                 justify-content: flex-start;
                 gap: 1rem;
-                max-height: 820px;
             }
             .middle-spacer {
-                flex: 0 1 120px !important;
-                min-height: 100px !important;
+                flex: 1 1 auto;
+                min-height: 80px !important;
             }
             .level-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
             }
         }
 
-        @media (min-width: 960px) {
-            #app {
-                max-width: 760px;
-                justify-content: flex-start;
-                padding: max(1.5rem, env(safe-area-inset-top)) 2rem 1.5rem 2rem;
-                gap: 1.25rem;
+        /* iPad Hochformat & mittlere Tablets */
+        @media (min-width: 768px) {
+            html {
+                font-size: 118%;
             }
-            .middle-spacer {
-                flex: 0 1 130px !important;
-                min-height: 110px !important;
+            #app {
+                max-width: 840px;
+                gap: 1.15rem;
+                padding-top: max(1.5rem, env(safe-area-inset-top));
+                padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+            }
+            .start-container {
+                gap: 1.15rem;
+            }
+        }
+
+        /* iPad Querformat & große Displays */
+        @media (min-width: 1024px) {
+            html {
+                font-size: 125%;
+            }
+            #app {
+                max-width: 920px;
+                gap: 1.3rem;
+            }
+            .start-container {
+                gap: 1.3rem;
             }
         }
 
