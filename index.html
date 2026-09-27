@@ -883,10 +883,12 @@
             opacity: 0;
             z-index: 5;
             cursor: text;
-            -webkit-user-select: text;
-            user-select: text;
+            -webkit-user-select: text !important;
+            user-select: text !important;
             text-align: center;
             font-size: 1.2rem;
+            -webkit-appearance: none;
+            border-radius: 0;
         }
 
         .done-btn {
@@ -2332,19 +2334,15 @@ function renderTask() {
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
-        <div class="formula-box input-mode" onclick="document.getElementById('hiddenFormulaInput').focus();">
+        <div class="formula-box input-mode">
             <span class="formula-label">VERHÄLTNIS-<br>FORMEL</span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
                    oninput="S.typedFormula = this.value; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
-                   onfocus="const l=this.value.length; this.setSelectionRange(l,l);"
-                   onclick="const l=this.value.length; this.setSelectionRange(l,l);"
+                   onfocus="setTimeout(() => { try { const l=this.value.length; this.setSelectionRange(l,l); } catch(e){} }, 50);"
                    onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); closeKeyboard(event); if(!S.done){ checkSolution(); } else { nextTask(); } }"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
-            <button type="button" class="done-btn" 
-                    ontouchstart="closeKeyboard(event)" 
-                    onmousedown="closeKeyboard(event)" 
-                    onclick="closeKeyboard(event)">Fertig</button>
+            <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
         </div>
     `}
 
