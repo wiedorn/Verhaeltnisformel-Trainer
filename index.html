@@ -837,35 +837,6 @@
             font-size: 1.2rem;
         }
 
-        .done-btn {
-            display: none;
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            background: var(--bg);
-            color: var(--primary);
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            padding: clamp(3px, 0.6vw, 6px) clamp(8px, 1.2vw, 16px);
-            font-size: clamp(0.8rem, 1.2vw, 1.0rem);
-            font-weight: 800;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        }
-
-        .formula-box.input-mode:focus-within .done-btn {
-            display: block;
-        }
-
-        .done-btn:hover, .done-btn:active {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-        }
-
         .ion-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1256,19 +1227,6 @@ function triggerPwaInstall() {
     } else if (isIos()) {
         showIosInstallGuide = !showIosInstallGuide;
         render();
-    }
-}
-
-function closeKeyboard(e) {
-    if (e) {
-        e.stopPropagation();
-    }
-    const inp = document.getElementById('hiddenFormulaInput');
-    if (inp) {
-        inp.blur();
-    }
-    if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
     }
 }
 
@@ -1863,7 +1821,15 @@ function checkTypedSolution(userInput, targetSalt) {
         return { ok: false, msg: '⚠️ Das Aluminium-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
     }
 
-    // 2. Index '1' fälschlicherweise geschrieben
+    // 2. Prüfung auf ungekürzte Vielfache (z. B. Mg2Cl4 statt MgCl2 oder Na2Cl2 statt NaCl)
+    for (let k = 2; k <= 6; k++) {
+        const scaledTarget = buildRawTargetFormula(targetSalt.cat, targetSalt.an, k * correctCatCount, k * correctAnCount, S.school);
+        if (input === scaledTarget) {
+            return { ok: false, msg: '⚠️ Formel bitte noch kürzen (z. B. MgCl₂ statt Mg₂Cl₄).' };
+        }
+    }
+
+    // 3. Index '1' fälschlicherweise geschrieben
     if (input.includes('1')) {
         const exampleMsg = S.school === 'real' 
             ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' 
@@ -1874,12 +1840,12 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
-    // 3. Falsche Groß-/Kleinschreibung
+    // 4. Falsche Groß-/Kleinschreibung
     if (input.toLowerCase() === rawTarget.toLowerCase()) {
         return { ok: false, msg: '⚠️ Achte auf die Groß- und Kleinschreibung (z. B. Al statt al).' };
     }
 
-    // 4. Falsche oder fehlende Element-Symbole
+    // 5. Falsche oder fehlende Element-Symbole
     const catBase = targetSalt.cat.s.replace(/_/g, '').toLowerCase();
     const anBase = targetSalt.an.s.replace(/_/g, '').toLowerCase();
     const inputLower = input.toLowerCase();
@@ -1899,7 +1865,7 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
-    // 5. Fehlende Klammern / Ionenschreibweise
+    // 6. Fehlende Klammern / Ionenschreibweise
     if (S.school === 'real') {
         if (!input.includes('(') || !input.includes(')') || (!input.includes('+') && !input.includes('-'))) {
             return { 
@@ -1917,14 +1883,14 @@ function checkTypedSolution(userInput, targetSalt) {
         }
     }
 
-    // 6. Stimmen nur die Indizes (Anzahl der Ionen) nicht?
+    // 7. Stimmen nur die Indizes (Anzahl der Ionen) nicht?
     const inputNoDigits = input.replace(/[0-9]/g, '');
     const targetNoDigits = rawTarget.replace(/[0-9]/g, '');
     if (inputNoDigits.toLowerCase() === targetNoDigits.toLowerCase()) {
         return { ok: false, msg: '⚠️ Die Indizes (Anzahl der Ionen) stimmen noch nicht.' };
     }
 
-    // 7. Allgemeines Fallback
+    // 8. Allgemeines Fallback
     return { ok: false, msg: '⚠️ Die Formel ist noch nicht korrekt. Überprüfe Symbole, Klammern und Indizes.' };
 }
 
@@ -1947,7 +1913,7 @@ function checkSolution() {
                 S.fb = { type: 'bad', msg: '⚠️ Ladungen noch nicht ausgeglichen.' };
                 playSound('wrong');
             } else if (gcd(S.catCount, S.anCount) > 1) {
-                S.fb = { type: 'bad', msg: '⚠️ Formel bitte noch kürzen (z. B. 1:1 statt 2:2).' };
+                S.fb = { type: 'bad', msg: '⚠️ Formel bitte noch kürzen (z. B. MgCl₂ statt Mg₂Cl₄).' };
                 playSound('wrong');
             } else {
                 const okText = S.stage === 2 
@@ -2482,10 +2448,13 @@ function renderTask() {
             <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
-                   oninput="S.typedFormula = this.value; S.fb = null; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value);" 
-                   onkeydown="if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
+                   oninput="S.typedFormula = this.value; S.fb = null; document.getElementById('formattedDisplay').innerHTML = formatTypedInput(this.value); this.setSelectionRange(this.value.length, this.value.length);" 
+                   onkeydown="if(event.key === 'ArrowLeft' || event.key === 'ArrowRight' || event.key === 'ArrowUp' || event.key === 'ArrowDown') { event.preventDefault(); } if(event.key === 'Enter' || event.keyCode === 13) { event.preventDefault(); if(!S.done){ checkSolution(); } else { nextTask(); } }"
+                   onclick="this.setSelectionRange(this.value.length, this.value.length);"
+                   onkeyup="this.setSelectionRange(this.value.length, this.value.length);"
+                   onselect="this.setSelectionRange(this.value.length, this.value.length);"
+                   onfocus="this.setSelectionRange(this.value.length, this.value.length);"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
-            <button type="button" class="done-btn" onclick="closeKeyboard(event)">Fertig</button>
         </div>
     `}
 
