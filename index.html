@@ -1154,7 +1154,6 @@ if ('serviceWorker' in navigator) {
 // Globaler Klick-Listener zum Schließen des Tooltips in allen Leveln
 document.addEventListener('click', function(event) {
     if (S.fb && S.screen === 'task') {
-        // Nicht schließen, wenn gerade auf den Prüfbutton selbst geklickt wurde
         if (!event.target.closest('.action-btn')) {
             S.fb = null;
             render();
@@ -1684,6 +1683,7 @@ function startStage(stageNum) {
     );
     
     if (S.stage === 1) {
+        // Pool für 1:2 / 2:1
         const pool12 = pool.filter(salt => {
             const g = gcd(salt.cat.c, Math.abs(salt.an.c));
             const cCount = Math.abs(salt.an.c) / g;
@@ -1691,6 +1691,15 @@ function startStage(stageNum) {
             return (cCount === 1 && aCount === 2) || (cCount === 2 && aCount === 1);
         });
 
+        // Pool für 1:3 / 3:1
+        const pool13 = pool.filter(salt => {
+            const g = gcd(salt.cat.c, Math.abs(salt.an.c));
+            const cCount = Math.abs(salt.an.c) / g;
+            const aCount = salt.cat.c / g;
+            return (cCount === 1 && aCount === 3) || (cCount === 3 && aCount === 1);
+        });
+
+        // Pool für 2:3 / 3:2
         const pool23 = pool.filter(salt => {
             const g = gcd(salt.cat.c, Math.abs(salt.an.c));
             const cCount = Math.abs(salt.an.c) / g;
@@ -1699,11 +1708,13 @@ function startStage(stageNum) {
         });
 
         const shuffled12 = [...pool12].sort(() => Math.random() - 0.5);
+        const shuffled13 = [...pool13].sort(() => Math.random() - 0.5);
         const shuffled23 = [...pool23].sort(() => Math.random() - 0.5);
 
+        // Exakte Abfolge: 1. 1:2/2:1 -> 2. 1:3/3:1 -> 3. 2:3/3:2
         S.tasks = [
             shuffled12[0],
-            shuffled12[1] || shuffled12[0],
+            shuffled13[0],
             shuffled23[0]
         ].filter(Boolean);
     } else {
@@ -1844,6 +1855,15 @@ function checkTypedSolution(userInput, targetSalt) {
         return { ok: true, msg: `✓ Richtig! Die Verhältnisformel lautet ${formatTypedInput(rawTarget)}.` };
     }
 
+    // 1. Höchste Priorität: Spezifische Verwechslung von kleinem 'l' mit großem 'I' (CI statt Cl / AI statt Al)
+    if (input.includes('CI')) {
+        return { ok: false, msg: '⚠️ Das Chlorid-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
+    }
+    if (input.includes('AI')) {
+        return { ok: false, msg: '⚠️ Das Aluminium-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
+    }
+
+    // 2. Index '1' fälschlicherweise geschrieben
     if (input.includes('1')) {
         const exampleMsg = S.school === 'real' 
             ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' 
@@ -1854,10 +1874,12 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
+    // 3. Falsche Groß-/Kleinschreibung
     if (input.toLowerCase() === rawTarget.toLowerCase()) {
         return { ok: false, msg: '⚠️ Achte auf die Groß- und Kleinschreibung (z. B. Al statt al).' };
     }
 
+    // 4. Falsche oder fehlende Element-Symbole
     const catBase = targetSalt.cat.s.replace(/_/g, '').toLowerCase();
     const anBase = targetSalt.an.s.replace(/_/g, '').toLowerCase();
     const inputLower = input.toLowerCase();
@@ -1877,6 +1899,7 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
+    // 5. Fehlende Klammern / Ionenschreibweise
     if (S.school === 'real') {
         if (!input.includes('(') || !input.includes(')') || (!input.includes('+') && !input.includes('-'))) {
             return { 
@@ -1894,12 +1917,14 @@ function checkTypedSolution(userInput, targetSalt) {
         }
     }
 
+    // 6. Stimmen nur die Indizes (Anzahl der Ionen) nicht?
     const inputNoDigits = input.replace(/[0-9]/g, '');
     const targetNoDigits = rawTarget.replace(/[0-9]/g, '');
     if (inputNoDigits.toLowerCase() === targetNoDigits.toLowerCase()) {
         return { ok: false, msg: '⚠️ Die Indizes (Anzahl der Ionen) stimmen noch nicht.' };
     }
 
+    // 7. Allgemeines Fallback
     return { ok: false, msg: '⚠️ Die Formel ist noch nicht korrekt. Überprüfe Symbole, Klammern und Indizes.' };
 }
 
