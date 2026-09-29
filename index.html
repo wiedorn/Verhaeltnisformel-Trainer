@@ -46,32 +46,21 @@
         }
         
         html, body {
-            height: 100%;
-            height: 100dvh;
+            min-height: 100%;
+            min-height: 100dvh;
             width: 100vw;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
             background-color: var(--bg);
             color: var(--ink);
             -webkit-user-select: none;
             user-select: none;
         }
 
-        /* Falls die Displayhöhe knapp wird */
-        @media (max-height: 720px) {
-            html, body {
-                overflow-y: auto !important;
-            }
-            #app {
-                height: auto !important;
-                min-height: 100vh !important;
-                min-height: 100dvh !important;
-            }
-        }
-
         /* Responsive Container */
         #app {
-            height: 100%;
-            height: 100dvh;
+            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -83,30 +72,6 @@
             position: relative;
             box-sizing: border-box;
             z-index: 2;
-        }
-
-        /* Querformat & kleine Bildschirmhöhen: Scrollen erlauben */
-        @media (max-height: 600px), (max-height: 500px) and (orientation: landscape) {
-            html, body {
-                overflow-y: auto !important;
-                height: auto !important;
-            }
-            #app {
-                height: auto !important;
-                min-height: 100vh !important;
-                justify-content: flex-start !important;
-                padding-top: 0.5rem;
-                padding-bottom: 1.5rem;
-                gap: 0.6rem !important;
-            }
-            .hero-graphic-bg {
-                position: absolute !important;
-                height: 100% !important;
-                min-height: 100vh !important;
-            }
-            .middle-spacer {
-                min-height: 100px !important;
-            }
         }
 
         /* WEB-APP STANDALONE MODUS */
@@ -211,7 +176,7 @@
         .start-container {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            min-height: 100%;
             justify-content: space-between;
             padding: 0.1rem 0;
             position: relative;
@@ -264,8 +229,8 @@
         }
 
         .middle-spacer {
-            flex: 1;
-            min-height: 100px;
+            flex: 1 1 auto;
+            min-height: 60px;
             display: flex;
             align-items: flex-end;
             justify-content: flex-end;
@@ -391,7 +356,34 @@
             justify-content: space-between;
             gap: 0.6rem;
             position: relative;
-            z-index: 10;
+            z-index: 15;
+        }
+
+        .pwa-guide-popover {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1.5px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 0.75rem 0.9rem;
+            font-size: clamp(0.82rem, 1.25vw, 0.98rem);
+            color: var(--ink);
+            line-height: 1.4;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            z-index: 30;
+            animation: popIn 0.2s ease;
+        }
+
+        .pwa-guide-popover::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 24px;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 7px solid var(--primary);
         }
 
         @keyframes pwaFadeIn {
@@ -453,6 +445,21 @@
             font-weight: 600;
             font-size: clamp(0.85rem, 1.3vw, 1.1rem);
             margin-left: 0.1rem;
+        }
+
+        .challenge-badge-bar {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            color: #92400e;
+            padding: 0.35rem 0.75rem;
+            border-radius: 12px;
+            font-size: clamp(0.85rem, 1.3vw, 1.05rem);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.12);
         }
 
         .info-toggle-btn {
@@ -1093,10 +1100,77 @@
             cursor: not-allowed;
             background: var(--ink-muted);
         }
+
+        /* CHALLENGE RESULT CARD */
+        .challenge-reward-card {
+            background: var(--surface);
+            border: 2px solid #f59e0b;
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 0.5rem 0;
+            animation: popIn 0.3s ease;
+        }
+
+        .reward-badge-icon {
+            font-size: 4rem;
+            line-height: 1;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        }
+
+        .reward-title {
+            font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            font-weight: 900;
+            color: #b45309;
+        }
+
+        .reward-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            width: 100%;
+            margin-top: 0.4rem;
+        }
+
+        .reward-stat-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.6rem;
+            text-align: center;
+        }
+
+        .reward-stat-val {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .reward-stat-lbl {
+            font-size: 0.8rem;
+            color: var(--ink-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        #confettiCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 200;
+        }
     </style>
 </head>
 <body>
 
+<canvas id="confettiCanvas"></canvas>
 <div id="app"></div>
 
 <script>
@@ -1294,6 +1368,53 @@ function playSound(type) {
     }
 }
 
+// --- KONFETTI REGEN ANIMATION ---
+function triggerConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = [];
+    const colors = ['#dc2626', '#2563eb', '#6b21a8', '#f59e0b', '#10b981', '#ec4899'];
+    for (let i = 0; i < 90; i++) {
+        pieces.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 8 + 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vy: Math.random() * 3 + 2.5,
+            vx: Math.random() * 2 - 1,
+            rot: Math.random() * 360,
+            vRot: Math.random() * 8 - 4
+        });
+    }
+
+    let frame = 0;
+    function animate() {
+        if (frame > 180) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+            p.y += p.vy;
+            p.x += p.vx;
+            p.rot += p.vRot;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rot * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+        });
+        frame++;
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
 // --- Exakter Ionen-Stamm ---
 const BASIS_CATIONS = [
     { s: "Li", c: 1, n: "Lithium-Ion" },
@@ -1412,7 +1533,13 @@ const S = {
     fb: null,
     done: false,
     score: 0,
-    pwaAnimated: false
+    pwaAnimated: false,
+    // Level 4 Challenge Status
+    challengeStartTime: null,
+    challengeElapsedTime: 0,
+    challengeTimerId: null,
+    firstTryCount: 0,
+    taskAttemptCount: 0
 };
 
 function gcd(a, b) {
@@ -1424,7 +1551,7 @@ function getStageName(stage) {
         case 1: return "Einführung";
         case 2: return "Lernen";
         case 3: return "Üben";
-        case 4: return "Check";
+        case 4: return "Challenge";
         default: return "";
     }
 }
@@ -1614,6 +1741,22 @@ function buildFormulaHTML(catObj, anObj, cCount, aCount, school) {
     }
 }
 
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateChallengeTimer() {
+    if (S.screen === 'task' && S.stage === 4 && S.challengeStartTime) {
+        S.challengeElapsedTime = Math.floor((Date.now() - S.challengeStartTime) / 1000);
+        const displayEl = document.getElementById('challengeTimerDisplay');
+        if (displayEl) {
+            displayEl.textContent = formatTime(S.challengeElapsedTime);
+        }
+    }
+}
+
 // --- Steuerung ---
 function selectStartStage(stageNum) {
     S.selectedStartStage = stageNum;
@@ -1626,8 +1769,17 @@ function confirmStartLevel() {
     }
 }
 
+function stopChallengeTimer() {
+    if (S.challengeTimerId) {
+        clearInterval(S.challengeTimerId);
+        S.challengeTimerId = null;
+    }
+}
+
 function startStage(stageNum) {
     initAudio();
+    stopChallengeTimer();
+
     S.stage = stageNum;
     S.selectedStartStage = stageNum;
     
@@ -1641,7 +1793,6 @@ function startStage(stageNum) {
     );
     
     if (S.stage === 1) {
-        // Pool für 1:2 / 2:1
         const pool12 = pool.filter(salt => {
             const g = gcd(salt.cat.c, Math.abs(salt.an.c));
             const cCount = Math.abs(salt.an.c) / g;
@@ -1649,7 +1800,6 @@ function startStage(stageNum) {
             return (cCount === 1 && aCount === 2) || (cCount === 2 && aCount === 1);
         });
 
-        // Pool für 1:3 / 3:1
         const pool13 = pool.filter(salt => {
             const g = gcd(salt.cat.c, Math.abs(salt.an.c));
             const cCount = Math.abs(salt.an.c) / g;
@@ -1657,7 +1807,6 @@ function startStage(stageNum) {
             return (cCount === 1 && aCount === 3) || (cCount === 3 && aCount === 1);
         });
 
-        // Pool für 2:3 / 3:2
         const pool23 = pool.filter(salt => {
             const g = gcd(salt.cat.c, Math.abs(salt.an.c));
             const cCount = Math.abs(salt.an.c) / g;
@@ -1669,7 +1818,6 @@ function startStage(stageNum) {
         const shuffled13 = [...pool13].sort(() => Math.random() - 0.5);
         const shuffled23 = [...pool23].sort(() => Math.random() - 0.5);
 
-        // Exakte Abfolge: 1. 1:2/2:1 -> 2. 1:3/3:1 -> 3. 2:3/3:2
         S.tasks = [
             shuffled12[0],
             shuffled13[0],
@@ -1682,6 +1830,13 @@ function startStage(stageNum) {
 
     S.taskIdx = 0;
     S.score = 0;
+    S.firstTryCount = 0;
+
+    if (S.stage === 4) {
+        S.challengeStartTime = Date.now();
+        S.challengeElapsedTime = 0;
+        S.challengeTimerId = setInterval(updateChallengeTimer, 1000);
+    }
 
     loadTask();
 }
@@ -1696,6 +1851,7 @@ function loadTask() {
     S.fb = null;
     S.done = false;
     S.easterEggOpen = false;
+    S.taskAttemptCount = 0;
     
     S.infoOpen = (S.taskIdx === 0);
     render();
@@ -1813,7 +1969,7 @@ function checkTypedSolution(userInput, targetSalt) {
         return { ok: true, msg: `✓ Richtig! Die Verhältnisformel lautet ${formatTypedInput(rawTarget)}.` };
     }
 
-    // 1. Höchste Priorität: Spezifische Verwechslung von kleinem 'l' mit großem 'I' (CI statt Cl / AI statt Al)
+    // 1. Spezifische Verwechslung von kleinem 'l' mit großem 'I' (CI statt Cl / AI statt Al)
     if (input.includes('CI')) {
         return { ok: false, msg: '⚠️ Das Chlorid-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
     }
@@ -1895,6 +2051,7 @@ function checkTypedSolution(userInput, targetSalt) {
 }
 
 function checkSolution() {
+    S.taskAttemptCount++;
     const targetSalt = S.tasks[S.taskIdx];
     const { cat, an } = getActiveIons();
 
@@ -1931,6 +2088,9 @@ function checkSolution() {
         if (res.ok) {
             S.done = true;
             S.score += 100;
+            if (S.taskAttemptCount === 1) {
+                S.firstTryCount++;
+            }
             playSound('correct');
         } else {
             playSound('wrong');
@@ -1952,8 +2112,12 @@ function nextTask() {
     if (S.taskIdx < S.tasks.length) {
         loadTask();
     } else {
+        stopChallengeTimer();
         S.screen = 'end';
         playSound('fanfare');
+        if (S.stage === 4) {
+            setTimeout(triggerConfetti, 100);
+        }
         render();
     }
 }
@@ -2254,15 +2418,15 @@ function renderPwaBanner() {
     if (isIos()) {
         const sharePositionText = isIpad() ? 'rechts oben' : 'unten';
         return `
-            <div class="pwa-install-card${animClass}" style="flex-direction: column; align-items: stretch; gap: 0.35rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="pwa-install-card${animClass}" style="position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                     <div class="pwa-install-text">
                         <b>📲 Als App zum Home-Bildschirm hinzufügen</b>
                     </div>
-                    <button class="pwa-btn-sm" onclick="triggerPwaInstall()">${showIosInstallGuide ? 'Einklappen' : 'Anleitung'}</button>
+                    <button class="pwa-btn-sm" onclick="triggerPwaInstall()">${showIosInstallGuide ? 'Schließen' : 'Anleitung'}</button>
                 </div>
                 ${showIosInstallGuide ? `
-                    <div style="font-size: 0.82rem; color: var(--ink-muted); line-height: 1.4; margin-top: 0.2rem; border-top: 1px solid var(--border); padding-top: 0.35rem;">
+                    <div class="pwa-guide-popover">
                         Tippe in Safari <b>${sharePositionText}</b> auf das <b>Teilen-Symbol</b>${sfShareIcon}, wähle dann <b>„Mehr anzeigen“</b> ${sfChevronDown} und tippe auf <b>„Zum Home-Bildschirm“</b>${sfAddHomeIcon}.
                     </div>
                 ` : ''}
@@ -2341,8 +2505,8 @@ function renderStart() {
                         <small>Verhältnisformeln schreiben</small>
                     </div>
                     <div class="level-card" aria-pressed="${S.selectedStartStage === 4}" onclick="selectStartStage(4)">
-                        <b>Level 4: Check</b>
-                        <small>Ohne Hilfsmittel</small>
+                        <b>Level 4: Challenge</b>
+                        <small>Ohne Hilfsmittel auf Zeit</small>
                     </div>
                 </div>
             </div>
@@ -2369,7 +2533,7 @@ function getInfoText(stage) {
         case 3: 
             return "<p>Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.</p>";
         case 4: 
-            return "<p>Du bist nun auf dich allein gestellt! Tippe die fertige Verhältnisformel direkt ein.</p>";
+            return "<p><b>Willkommen zur Challenge! 🏆</b></p><p>Du bist nun auf dich allein gestellt! Tippe die Verhältnisformeln ohne Hilfsmittel ein. Versuche, so viele Aufgaben wie möglich auf Anhieb fehlerfrei zu lösen. Die Stoppuhr läuft mit – viel Erfolg!</p>";
     }
 }
 
@@ -2428,8 +2592,15 @@ function renderTask() {
             <button class="info-toggle-btn" onclick="S.infoOpen = !S.infoOpen; render();">i</button>
             <span>Level ${S.stage}: ${getStageName(S.stage)} (${S.taskIdx + 1}/${S.tasks.length})<span class="school-badge"> · ${schoolLabel}</span></span>
         </div>
-        <button class="text-btn" onclick="S.screen='start'; render();">Beenden</button>
+        <button class="text-btn" onclick="stopChallengeTimer(); S.screen='start'; render();">Beenden</button>
     </div>
+
+    ${S.stage === 4 ? `
+        <div class="challenge-badge-bar">
+            <span>⏱️ Zeit: <span id="challengeTimerDisplay">${formatTime(S.challengeElapsedTime)}</span></span>
+            <span>🔥 Direkt richtig: ${S.firstTryCount}/${S.tasks.length}</span>
+        </div>
+    ` : ''}
 
     <div class="task-header">
         <small>SALZ</small>
@@ -2516,6 +2687,7 @@ function renderEnd() {
     let title = "";
     let msg = "";
     let buttons = "";
+    let rewardCardHtml = "";
 
     if (S.stage === 1) {
         title = "Grundprinzip verstanden! 🎉";
@@ -2530,26 +2702,69 @@ function renderEnd() {
         `;
     } else if (S.stage === 3) {
         title = "Die Formelschreibweise sitzt!";
-        msg = "Bereit für den Abschlusstest?";
+        msg = "Bereit für die große Challenge?";
         buttons = `
             <button class="action-btn" style="background: var(--bg); color: var(--ink); border: 1px solid var(--border); margin-bottom: 0.4rem;" onclick="startStage(3)">Level 3 wiederholen</button>
-            <button class="action-btn" onclick="startStage(4)">Weiter zu Level 4 (Check) →</button>
+            <button class="action-btn" onclick="startStage(4)">Weiter zu Level 4 (Challenge) →</button>
         `;
     } else {
-        title = "Challenge gemeistert! 🎉";
-        msg = "Du beherrschst die Verhältnisformeln sicher.";
-        if (S.level === 'basis') {
-            msg += "<br><br><small style='color: var(--primary); font-weight: bold;'>Tipp: Versuche das Ganze jetzt im Schwierigkeitsgrad 'Fortgeschritten' mit Nebengruppen- und Molekül-Ionen!</small>";
+        const totalTasks = S.tasks.length;
+        const accuracyPct = Math.round((S.firstTryCount / totalTasks) * 100);
+
+        let icon = "🏆";
+        let awardTitle = "Formel-Champion!";
+        if (accuracyPct === 100) {
+            icon = "🏆";
+            awardTitle = "Perfekt! Gold-Pokal";
+        } else if (accuracyPct >= 80) {
+            icon = "🥇";
+            awardTitle = "Klasse! Gold-Medaille";
+        } else if (accuracyPct >= 60) {
+            icon = "🥈";
+            awardTitle = "Stark! Silber-Medaille";
+        } else {
+            icon = "🥉";
+            awardTitle = "Bronze-Medaille";
         }
-        buttons = `<button class="action-btn" onclick="S.screen='start'; render();">Hauptmenü</button>`;
+
+        title = "Challenge gemeistert! 🎉";
+        msg = "Du hast alle Verhältnisformeln erfolgreich aufgestellt!";
+
+        rewardCardHtml = `
+            <div class="challenge-reward-card">
+                <div class="reward-badge-icon">${icon}</div>
+                <div class="reward-title">${awardTitle}</div>
+                <div class="reward-stats-grid">
+                    <div class="reward-stat-box">
+                        <div class="reward-stat-val">⏱️ ${formatTime(S.challengeElapsedTime)}</div>
+                        <div class="reward-stat-lbl">Zeit</div>
+                    </div>
+                    <div class="reward-stat-box">
+                        <div class="reward-stat-val">🔥 ${S.firstTryCount} / ${totalTasks}</div>
+                        <div class="reward-stat-lbl">Direkt richtig (${accuracyPct}%)</div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        if (S.level === 'basis') {
+            msg += "<br><small style='color: var(--primary); font-weight: bold;'>Tipp: Versuche die Challenge jetzt im Schwierigkeitsgrad 'Fortgeschritten'!</small>";
+        }
+
+        buttons = `
+            <button class="action-btn" style="background: var(--bg); color: var(--ink); border: 1px solid var(--border); margin-bottom: 0.4rem;" onclick="startStage(4)">Challenge erneut starten 🔄</button>
+            <button class="action-btn" onclick="S.screen='start'; render();">Hauptmenü</button>
+        `;
     }
 
     return `
-    <div class="start-container" style="text-align: center; justify-content: center; gap: 1.2rem;">
+    <div class="start-container" style="text-align: center; justify-content: center; gap: 0.9rem;">
         <div>
             <h1 class="hero-title">${title}</h1>
             <p class="hero-subtitle" style="margin-top: 0.4rem;">${msg}</p>
         </div>
+
+        ${rewardCardHtml}
 
         <div style="width: 100%;">
             ${buttons}
