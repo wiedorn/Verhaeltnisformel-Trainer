@@ -1128,12 +1128,23 @@
             color: #b45309;
         }
 
+        .reward-time-note {
+            font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+            color: #b45309;
+            font-weight: 700;
+            margin-top: -0.3rem;
+            background: #fef3c7;
+            padding: 0.25rem 0.6rem;
+            border-radius: 8px;
+            border: 1px solid #fde68a;
+        }
+
         .reward-stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 0.6rem;
             width: 100%;
-            margin-top: 0.4rem;
+            margin-top: 0.2rem;
         }
 
         .reward-stat-box {
@@ -1855,16 +1866,6 @@ function loadTask() {
     
     S.infoOpen = (S.taskIdx === 0);
     render();
-
-    if (S.stage === 4 && S.taskIdx > 0) {
-        setTimeout(() => {
-            const inp = document.getElementById('hiddenFormulaInput');
-            if (inp) {
-                inp.focus();
-                inp.setSelectionRange(inp.value.length, inp.value.length);
-            }
-        }, 50);
-    }
 }
 
 function incCat() {
@@ -2097,14 +2098,6 @@ function checkSolution() {
         }
     }
     render();
-
-    if (S.stage === 4) {
-        const inp = document.getElementById('hiddenFormulaInput');
-        if (inp) {
-            inp.focus();
-            inp.setSelectionRange(inp.value.length, inp.value.length);
-        }
-    }
 }
 
 function nextTask() {
@@ -2119,6 +2112,77 @@ function nextTask() {
             setTimeout(triggerConfetti, 100);
         }
         render();
+    }
+}
+
+// --- In-Place DOM-Update für nahtlose Tastatur-Fokussierung ---
+function updateTaskInPlace() {
+    const targetSalt = S.tasks[S.taskIdx];
+    if (!targetSalt) return;
+
+    const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
+
+    // 1. Modals ggf. entfernen
+    const backdrop = document.querySelector('.info-backdrop');
+    if (backdrop && !S.infoOpen && !S.easterEggOpen) {
+        backdrop.remove();
+    }
+
+    // 2. Top-Bar Text
+    const topLeftSpan = document.querySelector('.top-left > span');
+    if (topLeftSpan) {
+        topLeftSpan.innerHTML = `Level ${S.stage}: ${getStageName(S.stage)} (${S.taskIdx + 1}/${S.tasks.length})<span class="school-badge"> · ${schoolLabel}</span>`;
+    }
+
+    // 3. Challenge Badge Bar
+    if (S.stage === 4) {
+        const challengeBadge = document.querySelector('.challenge-badge-bar');
+        if (challengeBadge) {
+            challengeBadge.innerHTML = `
+                <span>⏱️ Zeit: <span id="challengeTimerDisplay">${formatTime(S.challengeElapsedTime)}</span></span>
+                <span>🔥 Direkt richtig: ${S.firstTryCount}/${S.tasks.length}</span>
+            `;
+        }
+    }
+
+    // 4. Salz-Name im Header
+    const headerH2 = document.querySelector('.task-header h2');
+    if (headerH2) {
+        headerH2.textContent = targetSalt.name;
+    }
+
+    // 5. Eingabefeld & Display
+    const inp = document.getElementById('hiddenFormulaInput');
+    if (inp && inp.value !== S.typedFormula) {
+        inp.value = S.typedFormula;
+    }
+
+    const display = document.getElementById('formattedDisplay');
+    if (display) {
+        display.innerHTML = formatTypedInput(S.typedFormula);
+    }
+
+    // 6. Action-Button Container & Tooltip
+    const btnContainer = document.querySelector('.action-btn-container');
+    if (btnContainer) {
+        btnContainer.innerHTML = `
+            ${S.fb ? `
+                <div class="feedback-tooltip ${S.fb.type}">
+                    ${S.fb.msg}
+                    <div class="tooltip-arrow"></div>
+                </div>
+            ` : ''}
+            ${!S.done 
+                ? `<button class="action-btn ${S.fb && S.fb.type === 'bad' ? 'shake' : ''}" onclick="checkSolution()">Verhältnisformel prüfen</button>`
+                : `<button class="action-btn success-btn" onclick="nextTask()">Nächstes Salz →</button>`
+            }
+        `;
+    }
+
+    // 7. Fokus dauerhaft auf dem Textfeld halten
+    if (inp && document.activeElement !== inp) {
+        inp.focus();
+        inp.setSelectionRange(inp.value.length, inp.value.length);
     }
 }
 
@@ -2203,9 +2267,27 @@ function render() {
         app.classList.remove('stage-4-mode');
     }
 
-    if (S.screen === 'start') app.innerHTML = renderStart();
-    else if (S.screen === 'task') app.innerHTML = renderTask();
-    else app.innerHTML = renderEnd();
+    if (S.screen === 'start') {
+        app.innerHTML = renderStart();
+    } else if (S.screen === 'end') {
+        app.innerHTML = renderEnd();
+    } else if (S.screen === 'task') {
+        const existingInput = document.getElementById('hiddenFormulaInput');
+        if (existingInput && (S.stage === 3 || S.stage === 4) && !S.infoOpen && !S.easterEggOpen) {
+            updateTaskInPlace();
+        } else {
+            app.innerHTML = renderTask();
+            if (S.stage >= 3) {
+                setTimeout(() => {
+                    const inp = document.getElementById('hiddenFormulaInput');
+                    if (inp) {
+                        inp.focus();
+                        inp.setSelectionRange(inp.value.length, inp.value.length);
+                    }
+                }, 50);
+            }
+        }
+    }
 }
 
 /* 3D-GITTER SVG */
@@ -2533,7 +2615,7 @@ function getInfoText(stage) {
         case 3: 
             return "<p>Nutze die Balken zur Hilfe und tippe die ergebende Verhältnisformel in das Textfeld ein.</p>";
         case 4: 
-            return "<p><b>Willkommen zur Challenge! 🏆</b></p><p>Du bist nun auf dich allein gestellt! Tippe die Verhältnisformeln ohne Hilfsmittel ein. Versuche, so viele Aufgaben wie möglich auf Anhieb fehlerfrei zu lösen. Die Stoppuhr läuft mit – viel Erfolg!</p>";
+            return "<p><b>Willkommen zur Challenge! 🏆</b></p><p>Schnapp dir dein Periodensystem (PSE) und tippe die Verhältnisformeln direkt ein. Versuche, so viele Aufgaben wie möglich auf Anhieb fehlerfrei zu lösen. Die Stoppuhr läuft mit – viel Erfolg!</p>";
     }
 }
 
@@ -2710,21 +2792,62 @@ function renderEnd() {
     } else {
         const totalTasks = S.tasks.length;
         const accuracyPct = Math.round((S.firstTryCount / totalTasks) * 100);
+        const totalSecs = S.challengeElapsedTime;
+
+        // Angepasste Zeitlimits
+        const timeLimitPokal = totalTasks * 15;     // 15s pro Aufg. (z. B. 02:30 Min bei 10 Aufgaben)
+        const timeLimitGold = totalTasks * 20;      // 20s pro Aufg. (z. B. 03:20 Min bei 10 Aufgaben)
+        const timeLimitSilber = totalTasks * 25;    // 25s pro Aufg. (z. B. 04:10 Min bei 10 Aufgaben)
+        const timeLimitZertifikat = totalTasks * 30;// 30s pro Aufg. (z. B. 05:00 Min bei 10 Aufgaben)
 
         let icon = "🏆";
         let awardTitle = "Formel-Champion!";
-        if (accuracyPct === 100) {
-            icon = "🏆";
-            awardTitle = "Perfekt! Gold-Pokal";
-        } else if (accuracyPct >= 80) {
-            icon = "🥇";
-            awardTitle = "Klasse! Gold-Medaille";
-        } else if (accuracyPct >= 60) {
-            icon = "🥈";
-            awardTitle = "Stark! Silber-Medaille";
+        let timeNote = "";
+
+        if (S.level === 'advanced') {
+            if (accuracyPct === 100) {
+                if (totalSecs <= timeLimitPokal) {
+                    icon = "🏆";
+                    awardTitle = "Perfekt! Gold-Pokal";
+                } else {
+                    icon = "🥇";
+                    awardTitle = "Gold-Medaille";
+                    timeNote = `⏱️ Für den Gold-Pokal benötigst du unter ${formatTime(timeLimitPokal)} Min.`;
+                }
+            } else if (accuracyPct >= 80) {
+                if (totalSecs <= timeLimitGold) {
+                    icon = "🥇";
+                    awardTitle = "Klasse! Gold-Medaille";
+                } else {
+                    icon = "🥈";
+                    awardTitle = "Silber-Medaille";
+                    timeNote = `⏱️ Für Gold benötigst du unter ${formatTime(timeLimitGold)} Min.`;
+                }
+            } else if (accuracyPct >= 60) {
+                if (totalSecs <= timeLimitSilber) {
+                    icon = "🥈";
+                    awardTitle = "Stark! Silber-Medaille";
+                } else {
+                    icon = "🥉";
+                    awardTitle = "Bronze-Medaille";
+                    timeNote = `⏱️ Für Silber benötigst du unter ${formatTime(timeLimitSilber)} Min.`;
+                }
+            } else {
+                icon = "🥉";
+                awardTitle = "Bronze-Medaille";
+            }
         } else {
-            icon = "🥉";
-            awardTitle = "Bronze-Medaille";
+            // Basis-Modus
+            if (accuracyPct >= 80 && totalSecs <= timeLimitZertifikat) {
+                icon = "📜";
+                awardTitle = "Basis-Zertifikat";
+            } else {
+                icon = "🔰";
+                awardTitle = "Basis-Einsteiger";
+                if (accuracyPct >= 80) {
+                    timeNote = `⏱️ Für das Zertifikat benötigst du unter ${formatTime(timeLimitZertifikat)} Min.`;
+                }
+            }
         }
 
         title = "Challenge gemeistert! 🎉";
@@ -2734,6 +2857,7 @@ function renderEnd() {
             <div class="challenge-reward-card">
                 <div class="reward-badge-icon">${icon}</div>
                 <div class="reward-title">${awardTitle}</div>
+                ${timeNote ? `<div class="reward-time-note">${timeNote}</div>` : ''}
                 <div class="reward-stats-grid">
                     <div class="reward-stat-box">
                         <div class="reward-stat-val">⏱️ ${formatTime(S.challengeElapsedTime)}</div>
@@ -2748,7 +2872,7 @@ function renderEnd() {
         `;
 
         if (S.level === 'basis') {
-            msg += "<br><small style='color: var(--primary); font-weight: bold;'>Tipp: Versuche die Challenge jetzt im Schwierigkeitsgrad 'Fortgeschritten'!</small>";
+            msg += "<br><small style='color: var(--primary); font-weight: bold;'>💡 Hinweis: Gold- & Silber-Pokale gibt es nur im Schwierigkeitsgrad „Fortgeschritten“! Wechsle im Hauptmenü, um voll abzuräumen.</small>";
         }
 
         buttons = `
