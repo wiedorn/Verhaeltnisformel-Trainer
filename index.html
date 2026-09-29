@@ -1545,6 +1545,7 @@ const S = {
     done: false,
     score: 0,
     pwaAnimated: false,
+    inputHasBeenFocused: false,
     // Level 4 Challenge Status
     challengeStartTime: null,
     challengeElapsedTime: 0,
@@ -1793,6 +1794,7 @@ function startStage(stageNum) {
 
     S.stage = stageNum;
     S.selectedStartStage = stageNum;
+    S.inputHasBeenFocused = false;
     
     const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
@@ -1864,6 +1866,10 @@ function loadTask() {
     S.easterEggOpen = false;
     S.taskAttemptCount = 0;
     
+    if (S.stage === 3) {
+        S.inputHasBeenFocused = false;
+    }
+
     S.infoOpen = (S.taskIdx === 0);
     render();
 }
@@ -2096,6 +2102,12 @@ function checkSolution() {
         } else {
             playSound('wrong');
         }
+
+        // In Level 3: Tastatur nach Abgabe wieder ausblenden
+        if (S.stage === 3) {
+            const inp = document.getElementById('hiddenFormulaInput');
+            if (inp) inp.blur();
+        }
     }
     render();
 }
@@ -2165,6 +2177,7 @@ function updateTaskInPlace() {
     // 6. Action-Button Container & Tooltip
     const btnContainer = document.querySelector('.action-btn-container');
     if (btnContainer) {
+        const preventDef = S.stage === 4 ? 'onpointerdown="event.preventDefault();" onmousedown="event.preventDefault();"' : '';
         btnContainer.innerHTML = `
             ${S.fb ? `
                 <div class="feedback-tooltip ${S.fb.type}">
@@ -2173,14 +2186,14 @@ function updateTaskInPlace() {
                 </div>
             ` : ''}
             ${!S.done 
-                ? `<button class="action-btn ${S.fb && S.fb.type === 'bad' ? 'shake' : ''}" onclick="checkSolution()">Verhältnisformel prüfen</button>`
-                : `<button class="action-btn success-btn" onclick="nextTask()">Nächstes Salz →</button>`
+                ? `<button class="action-btn ${S.fb && S.fb.type === 'bad' ? 'shake' : ''}" ${preventDef} onclick="checkSolution()">Verhältnisformel prüfen</button>`
+                : `<button class="action-btn success-btn" ${preventDef} onclick="nextTask()">Nächstes Salz →</button>`
             }
         `;
     }
 
-    // 7. Fokus dauerhaft auf dem Textfeld halten
-    if (inp && document.activeElement !== inp) {
+    // 7. In Level 4 Fokus beibehalten, falls bereits einmal manuell fokussiert wurde
+    if (S.stage === 4 && S.inputHasBeenFocused && inp && document.activeElement !== inp && !S.infoOpen && !S.easterEggOpen) {
         inp.focus();
         inp.setSelectionRange(inp.value.length, inp.value.length);
     }
@@ -2277,15 +2290,6 @@ function render() {
             updateTaskInPlace();
         } else {
             app.innerHTML = renderTask();
-            if (S.stage >= 3) {
-                setTimeout(() => {
-                    const inp = document.getElementById('hiddenFormulaInput');
-                    if (inp) {
-                        inp.focus();
-                        inp.setSelectionRange(inp.value.length, inp.value.length);
-                    }
-                }, 50);
-            }
         }
     }
 }
@@ -2664,6 +2668,7 @@ function renderTask() {
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
 
     const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
+    const preventDef = S.stage === 4 ? 'onpointerdown="event.preventDefault();" onmousedown="event.preventDefault();"' : '';
 
     return `
     ${renderInfoOverlay()}
@@ -2697,7 +2702,7 @@ function renderTask() {
             <div class="formula">${buildFormulaHTML(cat, an, S.catCount, S.anCount, S.school)}</div>
         </div>
     ` : `
-        <div class="formula-box input-mode" onclick="const inp = document.getElementById('hiddenFormulaInput'); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }">
+        <div class="formula-box input-mode" onclick="S.inputHasBeenFocused = true; const inp = document.getElementById('hiddenFormulaInput'); if (inp) { inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }">
             <span class="formula-label"><span class="label-top">VERHÄLTNIS-</span><span class="label-bottom">FORMEL</span></span>
             <div id="formattedDisplay" class="formatted-display">${formatTypedInput(S.typedFormula)}</div>
             <input type="text" id="hiddenFormulaInput" class="hidden-text-input" value="${S.typedFormula}" 
@@ -2706,7 +2711,7 @@ function renderTask() {
                    onclick="this.setSelectionRange(this.value.length, this.value.length);"
                    onkeyup="this.setSelectionRange(this.value.length, this.value.length);"
                    onselect="this.setSelectionRange(this.value.length, this.value.length);"
-                   onfocus="this.setSelectionRange(this.value.length, this.value.length);"
+                   onfocus="S.inputHasBeenFocused = true; this.setSelectionRange(this.value.length, this.value.length);"
                    autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Verhältnisformel eingeben" />
         </div>
     `}
@@ -2759,8 +2764,8 @@ function renderTask() {
             </div>
         ` : ''}
         ${!S.done 
-            ? `<button class="action-btn ${S.fb && S.fb.type === 'bad' ? 'shake' : ''}" onclick="checkSolution()">Verhältnisformel prüfen</button>`
-            : `<button class="action-btn success-btn" onclick="nextTask()">Nächstes Salz →</button>`
+            ? `<button class="action-btn ${S.fb && S.fb.type === 'bad' ? 'shake' : ''}" ${preventDef} onclick="checkSolution()">Verhältnisformel prüfen</button>`
+            : `<button class="action-btn success-btn" ${preventDef} onclick="nextTask()">Nächstes Salz →</button>`
         }
     </div>`;
 }
