@@ -2163,7 +2163,15 @@ function updateTaskInPlace() {
         headerH2.textContent = targetSalt.name;
     }
 
-    // 5. Eingabefeld & Display
+    // 5. Visualizer Card (Balken) in Level 3 aktualisieren
+    if (S.stage < 4) {
+        const visualizerCard = document.querySelector('.visualizer-card');
+        if (visualizerCard) {
+            visualizerCard.outerHTML = renderChargeVisualizer();
+        }
+    }
+
+    // 6. Eingabefeld & Display
     const inp = document.getElementById('hiddenFormulaInput');
     if (inp && inp.value !== S.typedFormula) {
         inp.value = S.typedFormula;
@@ -2174,7 +2182,15 @@ function updateTaskInPlace() {
         display.innerHTML = formatTypedInput(S.typedFormula);
     }
 
-    // 6. Action-Button Container & Tooltip
+    // 7. Ion Controls (Chips & Entfernen-Buttons) in Level 3 aktualisieren
+    if (S.stage < 4) {
+        const ionControls = document.querySelector('.ion-controls');
+        if (ionControls) {
+            ionControls.outerHTML = renderIonControlsHTML();
+        }
+    }
+
+    // 8. Action-Button Container & Tooltip
     const btnContainer = document.querySelector('.action-btn-container');
     if (btnContainer) {
         const preventDef = S.stage === 4 ? 'onpointerdown="event.preventDefault();" onmousedown="event.preventDefault();"' : '';
@@ -2192,7 +2208,7 @@ function updateTaskInPlace() {
         `;
     }
 
-    // 7. In Level 4 Fokus beibehalten, falls bereits einmal manuell fokussiert wurde
+    // 9. In Level 4 Fokus beibehalten, falls bereits einmal manuell fokussiert wurde
     if (S.stage === 4 && S.inputHasBeenFocused && inp && document.activeElement !== inp && !S.infoOpen && !S.easterEggOpen) {
         inp.focus();
         inp.setSelectionRange(inp.value.length, inp.value.length);
@@ -2265,6 +2281,53 @@ function renderChargeVisualizer() {
                     ${isBalanced ? `
                         <div class="balance-line" style="bottom: ${catTowerH + 3}px;"></div>
                     ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// --- Rendering der Ionen-Chips und Steuerungskarten ---
+function renderIonControlsHTML() {
+    const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
+    const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
+    const { cat, an } = getActiveIons();
+
+    return `
+        <div class="ion-controls">
+            <div class="ion-card cation">
+                <div class="ion-card-header">
+                    <span class="ion-header-label">Kationen</span>
+                    <button type="button" class="remove-ion-btn" onclick="decCat()" ${S.catCount <= 1 ? 'disabled' : ''} aria-label="Kation entfernen" title="Kation entfernen">✕</button>
+                </div>
+                <div class="ion-chip-grid">
+                    ${S.stage > 1 ? catList.map((c, i) => `
+                        <button type="button" class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="selectCation(${i})">
+                            ${fmtIon(c.s, c.c)}
+                        </button>
+                    `).join('') : `
+                        <button type="button" class="ion-chip" aria-selected="true" onclick="incCat()">
+                            ${fmtIon(cat.s, cat.c)}
+                        </button>
+                    `}
+                </div>
+            </div>
+
+            <div class="ion-card anion">
+                <div class="ion-card-header">
+                    <span class="ion-header-label">Anionen</span>
+                    <button type="button" class="remove-ion-btn" onclick="decAn()" ${S.anCount <= 1 ? 'disabled' : ''} aria-label="Anion entfernen" title="Anion entfernen">✕</button>
+                </div>
+                <div class="ion-chip-grid">
+                    ${S.stage > 1 ? anList.map((a, i) => `
+                        <button type="button" class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="selectAnion(${i})">
+                            ${fmtIon(a.s, a.c)}
+                        </button>
+                    `).join('') : `
+                        <button type="button" class="ion-chip" aria-selected="true" onclick="incAn()">
+                            ${fmtIon(an.s, an.c)}
+                        </button>
+                    `}
                 </div>
             </div>
         </div>
@@ -2664,9 +2727,6 @@ function renderTask() {
     const saltName = targetSalt.name;
     const { cat, an } = getActiveIons();
 
-    const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
-    const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
-
     const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
     const preventDef = S.stage === 4 ? 'onpointerdown="event.preventDefault();" onmousedown="event.preventDefault();"' : '';
 
@@ -2716,45 +2776,7 @@ function renderTask() {
         </div>
     `}
 
-    ${S.stage < 4 ? `
-        <div class="ion-controls">
-            <div class="ion-card cation">
-                <div class="ion-card-header">
-                    <span class="ion-header-label">Kationen</span>
-                    <button type="button" class="remove-ion-btn" onclick="decCat()" ${S.catCount <= 1 ? 'disabled' : ''} aria-label="Kation entfernen" title="Kation entfernen">✕</button>
-                </div>
-                <div class="ion-chip-grid">
-                    ${S.stage > 1 ? catList.map((c, i) => `
-                        <button type="button" class="ion-chip" aria-selected="${i === S.selectedCatIdx}" onclick="selectCation(${i})">
-                            ${fmtIon(c.s, c.c)}
-                        </button>
-                    `).join('') : `
-                        <button type="button" class="ion-chip" aria-selected="true" onclick="incCat()">
-                            ${fmtIon(cat.s, cat.c)}
-                        </button>
-                    `}
-                </div>
-            </div>
-
-            <div class="ion-card anion">
-                <div class="ion-card-header">
-                    <span class="ion-header-label">Anionen</span>
-                    <button type="button" class="remove-ion-btn" onclick="decAn()" ${S.anCount <= 1 ? 'disabled' : ''} aria-label="Anion entfernen" title="Anion entfernen">✕</button>
-                </div>
-                <div class="ion-chip-grid">
-                    ${S.stage > 1 ? anList.map((a, i) => `
-                        <button type="button" class="ion-chip" aria-selected="${i === S.selectedAnIdx}" onclick="selectAnion(${i})">
-                            ${fmtIon(a.s, a.c)}
-                        </button>
-                    `).join('') : `
-                        <button type="button" class="ion-chip" aria-selected="true" onclick="incAn()">
-                            ${fmtIon(an.s, an.c)}
-                        </button>
-                    `}
-                </div>
-            </div>
-        </div>
-    ` : ''}
+    ${S.stage < 4 ? renderIonControlsHTML() : ''}
 
     <div class="action-btn-container">
         ${S.fb ? `
