@@ -225,7 +225,7 @@
 
         .middle-spacer {
             flex: 1 1 auto;
-            min-height: clamp(0.8rem, 3.5vh, 4.5rem);
+            min-height: clamp(1.2rem, 5vh, 6rem);
             position: relative;
             z-index: 10;
             pointer-events: none;
@@ -1251,13 +1251,25 @@ document.addEventListener('touchend', function (event) {
     lastTouchEnd = now;
 }, { passive: false });
 
-// Re-render NUR bei tatsächlicher Breitenänderung (z. B. Display-Rotation).
+// Re-render bei Fenstergröße- oder Bildschirmlage-Änderung
 let lastWindowWidth = window.innerWidth;
 window.addEventListener('resize', () => {
-    if (window.innerWidth !== lastWindowWidth) {
+    if (S.screen === 'start') {
+        autoCenterLattice();
+        renderLattice3D();
+    } else if (window.innerWidth !== lastWindowWidth) {
         lastWindowWidth = window.innerWidth;
         render();
     }
+});
+
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        if (S.screen === 'start') {
+            autoCenterLattice();
+            renderLattice3D();
+        }
+    }, 100);
 });
 
 // --- PWA INSTALL LOGIK ---
@@ -1595,12 +1607,13 @@ function createInitialRotationMatrix(rotXDeg, rotYDeg, rotZDeg) {
     return multiplyMatrices(Mz, multiplyMatrices(Mx, My));
 }
 
-// Globaler Zustand für das 3D-Ionengitter (Exakt die gewünschten Parameter)
+// Globaler Zustand für das 3D-Ionengitter
 const latticeState = {
     rotMatrix: createInitialRotationMatrix(-173.9, 15.1, 88.2),
     zoom: 1.69,
-    panX: 5,
-    panY: -520,
+    panX: 0,
+    panY: 0,
+    userHasPanned: false,
     textOffsetX: 43,
     textOffsetY: 29,
     dimX: 1,
@@ -1609,7 +1622,7 @@ const latticeState = {
     radiusAnion: 22.0,  // S²⁻ (184 pm)
     radiusCation: 11.8, // Na⁺ (99 pm)
     showOuterNa: true,
-    showLatticeLines: false, // Per Doppel-Tipp umschaltbar
+    showLatticeLines: false,
     pointers: new Map(),
     isDragging: false,
     isPanning: false,
@@ -1620,11 +1633,42 @@ const latticeState = {
     pinchStartZoom: 1.69,
     pinchStartMidX: 0,
     pinchStartMidY: 0,
-    pinchStartPanX: 5,
-    pinchStartPanY: -520,
+    pinchStartPanX: 0,
+    pinchStartPanY: 0,
     pinchStartMatrix: null,
     lastTapTime: 0
 };
+
+// Automatisches Berechnen der optimalen vertikalen Zentrierung des 3D-Modells
+function autoCenterLattice(force = false) {
+    if (latticeState.userHasPanned && !force) return;
+    
+    const spacer = document.querySelector('.middle-spacer');
+    const container = document.getElementById('stageContainer');
+    if (!spacer || !container) return;
+
+    const spacerRect = spacer.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+
+    if (spacerRect.height === 0 || containerRect.width === 0 || containerRect.height === 0) return;
+
+    // Ermittlung des vertikalen Mittelpunkts im Spacer zwischen Header und Karten
+    const targetX = spacerRect.left + spacerRect.width / 2 - containerRect.left;
+    const targetY = spacerRect.top + spacerRect.height / 2 - containerRect.top;
+
+    const W = containerRect.width;
+    const H = containerRect.height;
+    const S = Math.min(W, H);
+    const k = S / 1000;
+
+    const X0 = (W - S) / 2;
+    const Y0 = (H - S) / 2;
+
+    if (k > 0) {
+        latticeState.panX = (targetX - X0) / k - 500;
+        latticeState.panY = (targetY - Y0) / k - 500;
+    }
+}
 
 function generateNa2SLattice(dimX, dimY, dimZ, includeOuterNa) {
     const nodes = [];
@@ -1870,7 +1914,13 @@ function init3DLattice() {
     if (!container) return;
 
     update3DGradientDefs();
+    autoCenterLattice();
     renderLattice3D();
+
+    requestAnimationFrame(() => {
+        autoCenterLattice();
+        renderLattice3D();
+    });
 
     container.addEventListener('contextmenu', e => e.preventDefault());
 
@@ -1935,6 +1985,7 @@ function init3DLattice() {
             } else if (latticeState.isPanning) {
                 latticeState.panX += deltaX * 1.5;
                 latticeState.panY += deltaY * 1.5;
+                latticeState.userHasPanned = true;
                 renderLattice3D();
             }
 
@@ -1960,6 +2011,7 @@ function init3DLattice() {
             const deltaMidY = currentMidY - latticeState.pinchStartMidY;
             latticeState.panX = latticeState.pinchStartPanX + deltaMidX * 1.5;
             latticeState.panY = latticeState.pinchStartPanY + deltaMidY * 1.5;
+            latticeState.userHasPanned = true;
 
             renderLattice3D();
         }
@@ -2415,7 +2467,7 @@ function checkTypedSolution(userInput, targetSalt) {
     }
 
     if (input.includes('CI')) {
-        return { ok: false, msg: '⚠️️ Das Chlorid-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
+        return { ok: false, msg: '⚠️ Das Chlorid-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
     }
     if (input.includes('AI')) {
         return { ok: false, msg: '⚠️ Das Aluminium-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
