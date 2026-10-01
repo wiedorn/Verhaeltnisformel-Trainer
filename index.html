@@ -67,8 +67,8 @@
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
-            padding: max(0.35rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.35rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
-            gap: clamp(0.15rem, 0.6vh, 0.35rem);
+            padding: max(0.4rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.4rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+            gap: 0;
             position: relative;
             box-sizing: border-box;
             z-index: 2;
@@ -78,7 +78,6 @@
         @media (display-mode: standalone) {
             #app {
                 padding-top: max(3.8rem, calc(env(safe-area-inset-top) + 2.2rem)) !important;
-                gap: clamp(0.15rem, 0.6vh, 0.35rem);
             }
             .pwa-install-card {
                 display: none !important;
@@ -94,16 +93,7 @@
         @media (min-width: 600px) {
             #app {
                 max-width: 720px;
-                padding: max(1rem, env(safe-area-inset-top)) 1.5rem max(1rem, env(safe-area-inset-bottom)) 1.5rem;
-                gap: clamp(0.4rem, 1.4vh, 1.0rem);
-            }
-            .start-container {
-                justify-content: flex-start;
-                gap: 1rem;
-            }
-            .middle-spacer {
-                flex: 1 1 auto;
-                min-height: 80px !important;
+                padding: max(0.8rem, env(safe-area-inset-top)) 1.5rem max(0.8rem, env(safe-area-inset-bottom)) 1.5rem;
             }
             .level-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
@@ -147,9 +137,6 @@
             }
             #app {
                 max-width: 860px;
-                gap: clamp(0.5rem, 1.6vh, 1.2rem);
-                padding-top: max(1.2rem, env(safe-area-inset-top));
-                padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
             }
         }
 
@@ -160,7 +147,6 @@
             }
             #app {
                 max-width: 960px;
-                gap: clamp(0.6rem, 1.8vh, 1.4rem);
             }
         }
 
@@ -177,11 +163,13 @@
             display: flex;
             flex-direction: column;
             min-height: 100%;
+            flex: 1 1 auto;
             justify-content: space-between;
-            padding: 0.1rem 0;
+            padding: 0;
             position: relative;
         }
 
+        /* Interaktiver 3D-Hintergrund */
         .hero-graphic-bg {
             position: fixed;
             top: 0;
@@ -190,12 +178,18 @@
             width: 100vw;
             height: 100vh;
             height: 100dvh;
-            pointer-events: none;
+            pointer-events: auto;
             z-index: 1;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: none;
+            cursor: grab;
+        }
+
+        .hero-graphic-bg:active {
+            cursor: grabbing;
         }
 
         .hero-header-box {
@@ -206,6 +200,7 @@
             box-shadow: var(--shadow);
             position: relative;
             z-index: 10;
+            flex-shrink: 0;
         }
 
         .hero-title {
@@ -230,12 +225,7 @@
 
         .middle-spacer {
             flex: 1 1 auto;
-            min-height: 60px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
-            padding-right: 1.2rem;
-            padding-bottom: 0.4rem;
+            min-height: clamp(0.8rem, 3.5vh, 4.5rem);
             position: relative;
             z-index: 10;
             pointer-events: none;
@@ -247,6 +237,8 @@
             gap: clamp(0.35rem, 0.9vh, 0.65rem);
             position: relative;
             z-index: 10;
+            margin-top: auto;
+            flex-shrink: 0;
         }
 
         .preset-card {
@@ -986,7 +978,6 @@
             animation: tooltipPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* In Level 4 klappt der Tooltip nach unten vom Prüfbutton aus aus */
         .stage-4-mode .action-btn-container .feedback-tooltip {
             bottom: auto;
             top: calc(100% + 10px);
@@ -1240,14 +1231,14 @@ document.addEventListener('gesturechange', function (e) {
 
 document.addEventListener('touchmove', function (e) {
     if (e.target && e.target.tagName === 'INPUT') return;
-    if (e.touches.length > 1) {
+    if (e.touches.length > 1 && !e.target.closest('#stageContainer')) {
         e.preventDefault();
     }
 }, { passive: false });
 
 let lastTouchEnd = 0;
 document.addEventListener('touchend', function (event) {
-    if (event.target && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA')) {
+    if (event.target && (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.closest('#stageContainer'))) {
         return;
     }
     const now = Date.now();
@@ -1553,6 +1544,453 @@ const S = {
     firstTryCount: 0,
     taskAttemptCount: 0
 };
+
+// --- 3D IONENGITTER MATRIX MATH UTILS & ZUSTAND ---
+function multiplyMatrices(A, B) {
+    const C = new Float32Array(16);
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            C[i * 4 + j] =
+                A[i * 4 + 0] * B[0 * 4 + j] +
+                A[i * 4 + 1] * B[1 * 4 + j] +
+                A[i * 4 + 2] * B[2 * 4 + j] +
+                A[i * 4 + 3] * B[3 * 4 + j];
+        }
+    }
+    return C;
+}
+
+function createIdentityMatrix() {
+    const M = new Float32Array(16);
+    M[0] = 1; M[5] = 1; M[10] = 1; M[15] = 1;
+    return M;
+}
+
+function createRotationMatrixAxis(angleRad, axisX, axisY, axisZ) {
+    const M = createIdentityMatrix();
+    const len = Math.hypot(axisX, axisY, axisZ);
+    if (len < 1e-6) return M;
+    
+    const x = axisX / len, y = axisY / len, z = axisZ / len;
+    const c = Math.cos(angleRad);
+    const s = Math.sin(angleRad);
+    const C = 1 - c;
+
+    M[0] = x * x * C + c;     M[1] = x * y * C - z * s; M[2] = x * z * C + y * s;
+    M[4] = y * x * C + z * s; M[5] = y * y * C + c;     M[6] = y * z * C - x * s;
+    M[8] = z * x * C - y * s; M[9] = z * y * C + x * s; M[10] = z * z * C + c;
+
+    return M;
+}
+
+function createInitialRotationMatrix(rotXDeg, rotYDeg, rotZDeg) {
+    const rx = rotXDeg * Math.PI / 180;
+    const ry = rotYDeg * Math.PI / 180;
+    const rz = rotZDeg * Math.PI / 180;
+
+    const Mx = createRotationMatrixAxis(rx, 1, 0, 0);
+    const My = createRotationMatrixAxis(ry, 0, 1, 0);
+    const Mz = createRotationMatrixAxis(rz, 0, 0, 1);
+
+    return multiplyMatrices(Mz, multiplyMatrices(Mx, My));
+}
+
+// Globaler Zustand für das 3D-Ionengitter (Exakt die gewünschten Parameter)
+const latticeState = {
+    rotMatrix: createInitialRotationMatrix(-173.9, 15.1, 88.2),
+    zoom: 1.69,
+    panX: 5,
+    panY: -520,
+    textOffsetX: 43,
+    textOffsetY: 29,
+    dimX: 1,
+    dimY: 1,
+    dimZ: 1,
+    radiusAnion: 22.0,  // S²⁻ (184 pm)
+    radiusCation: 11.8, // Na⁺ (99 pm)
+    showOuterNa: true,
+    showLatticeLines: false, // Per Doppel-Tipp umschaltbar
+    pointers: new Map(),
+    isDragging: false,
+    isPanning: false,
+    lastMouseX: 0,
+    lastMouseY: 0,
+    pinchStartDist: 0,
+    pinchStartAngle: 0,
+    pinchStartZoom: 1.69,
+    pinchStartMidX: 0,
+    pinchStartMidY: 0,
+    pinchStartPanX: 5,
+    pinchStartPanY: -520,
+    pinchStartMatrix: null,
+    lastTapTime: 0
+};
+
+function generateNa2SLattice(dimX, dimY, dimZ, includeOuterNa) {
+    const nodes = [];
+    const keySet = new Set();
+
+    function addIon(x, y, z, isAnion) {
+        const typePrefix = isAnion ? 'A' : 'C';
+        const key = `${typePrefix}_${x.toFixed(3)}_${y.toFixed(3)}_${z.toFixed(3)}`;
+        if (!keySet.has(key)) {
+            keySet.add(key);
+            nodes.push({ x, y, z, isAnion });
+        }
+    }
+
+    // 1. Anionen (S²⁻, blau): kfz-Gitterpunkte
+    for (let ux = 0; ux < dimX; ux++) {
+        for (let uy = 0; uy < dimY; uy++) {
+            for (let uz = 0; uz < dimZ; uz++) {
+                const anionOffsets = [
+                    [0,0,0], [1,0,0], [0,1,0], [0,0,1],
+                    [1,1,0], [1,0,1], [0,1,1], [1,1,1],
+                    [0.5,0.5,0], [0.5,0,0.5], [0,0.5,0.5],
+                    [0.5,0.5,1], [0.5,1,0.5], [1,0.5,0.5]
+                ];
+                anionOffsets.forEach(([dx, dy, dz]) => {
+                    addIon(ux + dx, uy + dy, uz + dz, true);
+                });
+            }
+        }
+    }
+
+    const centerOffsetX = dimX / 2;
+    const centerOffsetY = dimY / 2;
+    const centerOffsetZ = dimZ / 2;
+
+    nodes.forEach(node => {
+        node.x -= centerOffsetX;
+        node.y -= centerOffsetY;
+        node.z -= centerOffsetZ;
+    });
+
+    // 2. Kationen (Na⁺, rot): Tetraederlücken
+    if (!includeOuterNa) {
+        for (let ux = 0; ux < dimX; ux++) {
+            for (let uy = 0; uy < dimY; uy++) {
+                for (let uz = 0; uz < dimZ; uz++) {
+                    const cationOffsets = [
+                        [0.25, 0.25, 0.25], [0.75, 0.25, 0.25],
+                        [0.25, 0.75, 0.25], [0.75, 0.75, 0.25],
+                        [0.25, 0.25, 0.75], [0.75, 0.25, 0.75],
+                        [0.25, 0.75, 0.75], [0.75, 0.75, 0.75]
+                    ];
+                    cationOffsets.forEach(([dx, dy, dz]) => {
+                        const cx = (ux + dx) - centerOffsetX;
+                        const cy = (uy + dy) - centerOffsetY;
+                        const cz = (uz + dz) - centerOffsetZ;
+                        addIon(cx, cy, cz, false);
+                    });
+                }
+            }
+        }
+    } else {
+        const currentAnions = nodes.filter(n => n.isAnion);
+        currentAnions.forEach(a => {
+            for (let dx of [-0.25, 0.25]) {
+                for (let dy of [-0.25, 0.25]) {
+                    for (let dz of [-0.25, 0.25]) {
+                        addIon(a.x + dx, a.y + dy, a.z + dz, false);
+                    }
+                }
+            }
+        });
+    }
+
+    return nodes;
+}
+
+function blendColor(r, g, b, factor) {
+    const bgR = 248, bgG = 250, bgB = 252;
+    const nr = Math.round(bgR + (r - bgR) * factor);
+    const ng = Math.round(bgG + (g - bgG) * factor);
+    const nb = Math.round(bgB + (b - bgB) * factor);
+    return `rgb(${nr}, ${ng}, ${nb})`;
+}
+
+const DEPTH_LEVELS = 20;
+
+function update3DGradientDefs() {
+    const defsEl = document.getElementById('svgDefs');
+    if (!defsEl) return;
+    let defsHtml = '';
+
+    for (let k = 0; k < DEPTH_LEVELS; k++) {
+        const fadeFactor = 0.35 + 0.65 * (k / (DEPTH_LEVELS - 1));
+
+        const cAnHi = blendColor(96, 165, 250, fadeFactor);
+        const cAnMid = blendColor(37, 99, 235, fadeFactor);
+        const cAnDark = blendColor(30, 58, 138, fadeFactor);
+        defsHtml += `
+        <radialGradient id="gradAn_${k}" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="${cAnHi}"/>
+            <stop offset="50%" stop-color="${cAnMid}"/>
+            <stop offset="100%" stop-color="${cAnDark}"/>
+        </radialGradient>`;
+
+        const cCatHi = blendColor(248, 113, 113, fadeFactor);
+        const cCatMid = blendColor(220, 38, 38, fadeFactor);
+        const cCatDark = blendColor(153, 27, 27, fadeFactor);
+        defsHtml += `
+        <radialGradient id="gradCat_${k}" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="${cCatHi}"/>
+            <stop offset="50%" stop-color="${cCatMid}"/>
+            <stop offset="100%" stop-color="${cCatDark}"/>
+        </radialGradient>`;
+    }
+
+    defsEl.innerHTML = defsHtml;
+}
+
+function renderLattice3D() {
+    const svgGroup = document.getElementById('ionGroup');
+    if (!svgGroup) return;
+
+    const useOuterNa = latticeState.showOuterNa || latticeState.showLatticeLines;
+    const rawNodes = generateNa2SLattice(latticeState.dimX, latticeState.dimY, latticeState.dimZ, useOuterNa);
+
+    const centerX = 500 + latticeState.panX;
+    const centerY = 500 + latticeState.panY;
+
+    const watermarkText = document.getElementById('watermarkText');
+    if (watermarkText) {
+        watermarkText.setAttribute('x', centerX + latticeState.textOffsetX);
+        watermarkText.setAttribute('y', centerY + 20 + latticeState.textOffsetY);
+    }
+
+    const maxDim = Math.max(latticeState.dimX, latticeState.dimY, latticeState.dimZ);
+    const baseScale = (280 / maxDim) * latticeState.zoom;
+
+    const M = latticeState.rotMatrix;
+
+    const transformedIons = rawNodes.map((node, idx) => {
+        const rx = node.x * M[0] + node.y * M[1] + node.z * M[2];
+        const ry = node.x * M[4] + node.y * M[5] + node.z * M[6];
+        const rz = node.x * M[8] + node.y * M[9] + node.z * M[10];
+
+        return {
+            type: 'ion',
+            px: centerX + rx * baseScale,
+            py: centerY - ry * baseScale,
+            depth: rz,
+            isAnion: node.isAnion,
+            rawX: node.x,
+            rawY: node.y,
+            rawZ: node.z,
+            id: idx
+        };
+    });
+
+    let minDepth = Infinity, maxDepth = -Infinity;
+    transformedIons.forEach(n => {
+        if (n.depth < minDepth) minDepth = n.depth;
+        if (n.depth > maxDepth) maxDepth = n.depth;
+    });
+    const depthRange = (maxDepth - minDepth) || 1;
+
+    const renderItems = [...transformedIons];
+
+    if (latticeState.showLatticeLines) {
+        const cations = transformedIons.filter(n => !n.isAnion);
+        const anions = transformedIons.filter(n => n.isAnion);
+
+        cations.forEach(c => {
+            anions.forEach(a => {
+                const dx = c.rawX - a.rawX;
+                const dy = c.rawY - a.rawY;
+                const dz = c.rawZ - a.rawZ;
+                const distSq = dx*dx + dy*dy + dz*dz;
+
+                if (distSq > 0.16 && distSq < 0.22) {
+                    renderItems.push({
+                        type: 'line',
+                        px1: c.px,
+                        py1: c.py,
+                        px2: a.px,
+                        py2: a.py,
+                        depth: (c.depth + a.depth) / 2
+                    });
+                }
+            });
+        });
+    }
+
+    renderItems.sort((a, b) => a.depth - b.depth);
+
+    let svgContent = '';
+    renderItems.forEach((item) => {
+        const depthFactor = (item.depth - minDepth) / depthRange;
+        const clampedDepthFactor = Math.min(1, Math.max(0, depthFactor));
+
+        if (item.type === 'line') {
+            const fadeFactor = 0.35 + 0.65 * clampedDepthFactor;
+            const strokeColor = blendColor(148, 163, 184, fadeFactor);
+            const strokeWidth = (1.8 * Math.sqrt(latticeState.zoom) * (0.65 + 0.75 * clampedDepthFactor)).toFixed(1);
+
+            svgContent += `
+            <line x1="${item.px1.toFixed(1)}" y1="${item.py1.toFixed(1)}" 
+                  x2="${item.px2.toFixed(1)}" y2="${item.py2.toFixed(1)}" 
+                  stroke="${strokeColor}" stroke-width="${strokeWidth}" stroke-linecap="round"/>`;
+
+        } else if (item.type === 'ion') {
+            const depthBucket = Math.min(DEPTH_LEVELS - 1, Math.max(0, Math.floor(clampedDepthFactor * DEPTH_LEVELS)));
+            const scaleFactor = Math.sqrt(latticeState.zoom) * (0.65 + 0.75 * clampedDepthFactor);
+
+            if (item.isAnion) {
+                const rAnion = (latticeState.radiusAnion * scaleFactor).toFixed(1);
+                const fontAnion = (latticeState.radiusAnion * 0.7 * scaleFactor).toFixed(1);
+
+                svgContent += `
+                <g>
+                    <circle cx="${item.px.toFixed(1)}" cy="${item.py.toFixed(1)}" r="${rAnion}" fill="url(#gradAn_${depthBucket})"/>
+                    <text x="${item.px.toFixed(1)}" y="${(item.py + parseFloat(fontAnion)*0.32).toFixed(1)}" 
+                          font-size="${fontAnion}" font-weight="bold" fill="#ffffff" text-anchor="middle">2-</text>
+                </g>`;
+            } else {
+                const rCation = (latticeState.radiusCation * scaleFactor).toFixed(1);
+                const fontCation = (latticeState.radiusCation * 0.8 * scaleFactor).toFixed(1);
+
+                svgContent += `
+                <g>
+                    <circle cx="${item.px.toFixed(1)}" cy="${item.py.toFixed(1)}" r="${rCation}" fill="url(#gradCat_${depthBucket})"/>
+                    <text x="${item.px.toFixed(1)}" y="${(item.py + parseFloat(fontCation)*0.32).toFixed(1)}" 
+                          font-size="${fontCation}" font-weight="bold" fill="#ffffff" text-anchor="middle">+</text>
+                </g>`;
+            }
+        }
+    });
+
+    svgGroup.innerHTML = svgContent;
+}
+
+function init3DLattice() {
+    const container = document.getElementById('stageContainer');
+    if (!container) return;
+
+    update3DGradientDefs();
+    renderLattice3D();
+
+    container.addEventListener('contextmenu', e => e.preventDefault());
+
+    container.addEventListener('pointerdown', (e) => {
+        const now = Date.now();
+        if (latticeState.pointers.size === 0 && (now - latticeState.lastTapTime < 300)) {
+            latticeState.showLatticeLines = !latticeState.showLatticeLines;
+            renderLattice3D();
+        }
+        latticeState.lastTapTime = now;
+
+        latticeState.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        try { container.setPointerCapture(e.pointerId); } catch(err) {}
+
+        if (latticeState.pointers.size === 1) {
+            if (e.button === 2 || e.shiftKey) {
+                latticeState.isPanning = true;
+                latticeState.isDragging = false;
+            } else {
+                latticeState.isDragging = true;
+                latticeState.isPanning = false;
+            }
+            latticeState.lastMouseX = e.clientX;
+            latticeState.lastMouseY = e.clientY;
+        } else if (latticeState.pointers.size === 2) {
+            latticeState.isDragging = false;
+            latticeState.isPanning = false;
+            const pts = Array.from(latticeState.pointers.values());
+            latticeState.pinchStartDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+            latticeState.pinchStartAngle = Math.atan2(pts[1].y - pts[0].y, pts[1].x - pts[0].x);
+            latticeState.pinchStartZoom = latticeState.zoom;
+
+            latticeState.pinchStartMidX = (pts[0].x + pts[1].x) / 2;
+            latticeState.pinchStartMidY = (pts[0].y + pts[1].y) / 2;
+            latticeState.pinchStartPanX = latticeState.panX;
+            latticeState.pinchStartPanY = latticeState.panY;
+            latticeState.pinchStartMatrix = new Float32Array(latticeState.rotMatrix);
+        }
+    });
+
+    container.addEventListener('pointermove', (e) => {
+        if (!latticeState.pointers.has(e.pointerId)) return;
+        latticeState.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (latticeState.pointers.size === 1) {
+            const deltaX = e.clientX - latticeState.lastMouseX;
+            const deltaY = e.clientY - latticeState.lastMouseY;
+
+            if (latticeState.isDragging) {
+                const sensitivity = 0.008;
+
+                const rotAngleX = deltaY * sensitivity;
+                const rotAngleY = deltaX * sensitivity;
+
+                const dRotX = createRotationMatrixAxis(rotAngleX, 1, 0, 0);
+                const dRotY = createRotationMatrixAxis(rotAngleY, 0, 1, 0);
+                const dRot = multiplyMatrices(dRotY, dRotX);
+
+                latticeState.rotMatrix = multiplyMatrices(dRot, latticeState.rotMatrix);
+
+                renderLattice3D();
+            } else if (latticeState.isPanning) {
+                latticeState.panX += deltaX * 1.5;
+                latticeState.panY += deltaY * 1.5;
+                renderLattice3D();
+            }
+
+            latticeState.lastMouseX = e.clientX;
+            latticeState.lastMouseY = e.clientY;
+        } else if (latticeState.pointers.size === 2) {
+            const pts = Array.from(latticeState.pointers.values());
+            const currentDist = Math.hypot(pts[1].x - pts[0].x, pts[1].y - pts[0].y);
+            const currentAngle = Math.atan2(pts[1].y - pts[0].y, pts[1].x - pts[0].x);
+            const currentMidX = (pts[0].x + pts[1].x) / 2;
+            const currentMidY = (pts[0].y + pts[1].y) / 2;
+
+            if (latticeState.pinchStartDist > 0) {
+                const factor = currentDist / latticeState.pinchStartDist;
+                latticeState.zoom = Math.max(0.3, Math.min(3.5, latticeState.pinchStartZoom * factor));
+            }
+
+            const twistDelta = -(currentAngle - latticeState.pinchStartAngle);
+            const dRotZ = createRotationMatrixAxis(twistDelta, 0, 0, 1);
+            latticeState.rotMatrix = multiplyMatrices(dRotZ, latticeState.pinchStartMatrix);
+
+            const deltaMidX = currentMidX - latticeState.pinchStartMidX;
+            const deltaMidY = currentMidY - latticeState.pinchStartMidY;
+            latticeState.panX = latticeState.pinchStartPanX + deltaMidX * 1.5;
+            latticeState.panY = latticeState.pinchStartPanY + deltaMidY * 1.5;
+
+            renderLattice3D();
+        }
+    });
+
+    function handlePointerUp(e) {
+        latticeState.pointers.delete(e.pointerId);
+        try { container.releasePointerCapture(e.pointerId); } catch(err) {}
+
+        if (latticeState.pointers.size === 1) {
+            const remaining = Array.from(latticeState.pointers.values())[0];
+            latticeState.lastMouseX = remaining.x;
+            latticeState.lastMouseY = remaining.y;
+            latticeState.isDragging = true;
+            latticeState.isPanning = false;
+        } else if (latticeState.pointers.size === 0) {
+            latticeState.isDragging = false;
+            latticeState.isPanning = false;
+        }
+    }
+
+    container.addEventListener('pointerup', handlePointerUp);
+    container.addEventListener('pointercancel', handlePointerUp);
+
+    container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.08 : -0.08;
+        latticeState.zoom = Math.max(0.3, Math.min(3.5, latticeState.zoom + delta));
+        renderLattice3D();
+    }, { passive: false });
+}
 
 function gcd(a, b) {
     return b === 0 ? a : gcd(b, a % b);
@@ -1976,15 +2414,13 @@ function checkTypedSolution(userInput, targetSalt) {
         return { ok: true, msg: `✓ Richtig! Die Verhältnisformel lautet ${formatTypedInput(rawTarget)}.` };
     }
 
-    // 1. Spezifische Verwechslung von kleinem 'l' mit großem 'I' (CI statt Cl / AI statt Al)
     if (input.includes('CI')) {
-        return { ok: false, msg: '⚠️ Das Chlorid-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
+        return { ok: false, msg: '⚠️️ Das Chlorid-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
     }
     if (input.includes('AI')) {
         return { ok: false, msg: '⚠️ Das Aluminium-Ion schreibt man mit einem kleinen L, nicht mit einem großen i.' };
     }
 
-    // 2. Prüfung auf ungekürzte Vielfache (z. B. Mg2Cl4 statt MgCl2 oder Na2Cl2 statt NaCl)
     for (let k = 2; k <= 6; k++) {
         const scaledTarget = buildRawTargetFormula(targetSalt.cat, targetSalt.an, k * correctCatCount, k * correctAnCount, S.school);
         if (input === scaledTarget) {
@@ -1992,7 +2428,6 @@ function checkTypedSolution(userInput, targetSalt) {
         }
     }
 
-    // 3. Index '1' fälschlicherweise geschrieben
     if (input.includes('1')) {
         const exampleMsg = S.school === 'real' 
             ? '(Na⁺)(Cl⁻) statt (Na⁺)₁(Cl⁻)₁' 
@@ -2003,12 +2438,10 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
-    // 4. Falsche Groß-/Kleinschreibung
     if (input.toLowerCase() === rawTarget.toLowerCase()) {
         return { ok: false, msg: '⚠️ Achte auf die Groß- und Kleinschreibung (z. B. Al statt al).' };
     }
 
-    // 5. Falsche oder fehlende Element-Symbole
     const catBase = targetSalt.cat.s.replace(/_/g, '').toLowerCase();
     const anBase = targetSalt.an.s.replace(/_/g, '').toLowerCase();
     const inputLower = input.toLowerCase();
@@ -2028,7 +2461,6 @@ function checkTypedSolution(userInput, targetSalt) {
         };
     }
 
-    // 6. Fehlende Klammern / Ionenschreibweise
     if (S.school === 'real') {
         if (!input.includes('(') || !input.includes(')') || (!input.includes('+') && !input.includes('-'))) {
             return { 
@@ -2046,14 +2478,12 @@ function checkTypedSolution(userInput, targetSalt) {
         }
     }
 
-    // 7. Stimmen nur die Indizes (Anzahl der Ionen) nicht?
     const inputNoDigits = input.replace(/[0-9]/g, '');
     const targetNoDigits = rawTarget.replace(/[0-9]/g, '');
     if (inputNoDigits.toLowerCase() === targetNoDigits.toLowerCase()) {
         return { ok: false, msg: '⚠️ Die Indizes (Anzahl der Ionen) stimmen noch nicht.' };
     }
 
-    // 8. Allgemeines Fallback
     return { ok: false, msg: '⚠️ Die Formel ist noch nicht korrekt. Überprüfe Symbole, Klammern und Indizes.' };
 }
 
@@ -2103,7 +2533,6 @@ function checkSolution() {
             playSound('wrong');
         }
 
-        // In Level 3: Tastatur nach Abgabe wieder ausblenden
         if (S.stage === 3) {
             const inp = document.getElementById('hiddenFormulaInput');
             if (inp) inp.blur();
@@ -2127,26 +2556,22 @@ function nextTask() {
     }
 }
 
-// --- In-Place DOM-Update für nahtlose Tastatur-Fokussierung ---
 function updateTaskInPlace() {
     const targetSalt = S.tasks[S.taskIdx];
     if (!targetSalt) return;
 
     const schoolLabel = S.school === 'real' ? 'Realschule' : 'Gymnasium';
 
-    // 1. Modals ggf. entfernen
     const backdrop = document.querySelector('.info-backdrop');
     if (backdrop && !S.infoOpen && !S.easterEggOpen) {
         backdrop.remove();
     }
 
-    // 2. Top-Bar Text
     const topLeftSpan = document.querySelector('.top-left > span');
     if (topLeftSpan) {
         topLeftSpan.innerHTML = `Level ${S.stage}: ${getStageName(S.stage)} (${S.taskIdx + 1}/${S.tasks.length})<span class="school-badge"> · ${schoolLabel}</span>`;
     }
 
-    // 3. Challenge Badge Bar
     if (S.stage === 4) {
         const challengeBadge = document.querySelector('.challenge-badge-bar');
         if (challengeBadge) {
@@ -2157,13 +2582,11 @@ function updateTaskInPlace() {
         }
     }
 
-    // 4. Salz-Name im Header
     const headerH2 = document.querySelector('.task-header h2');
     if (headerH2) {
         headerH2.textContent = targetSalt.name;
     }
 
-    // 5. Visualizer Card (Balken) in Level 3 aktualisieren
     if (S.stage < 4) {
         const visualizerCard = document.querySelector('.visualizer-card');
         if (visualizerCard) {
@@ -2171,7 +2594,6 @@ function updateTaskInPlace() {
         }
     }
 
-    // 6. Eingabefeld & Display
     const inp = document.getElementById('hiddenFormulaInput');
     if (inp && inp.value !== S.typedFormula) {
         inp.value = S.typedFormula;
@@ -2182,7 +2604,6 @@ function updateTaskInPlace() {
         display.innerHTML = formatTypedInput(S.typedFormula);
     }
 
-    // 7. Ion Controls (Chips & Entfernen-Buttons) in Level 3 aktualisieren
     if (S.stage < 4) {
         const ionControls = document.querySelector('.ion-controls');
         if (ionControls) {
@@ -2190,7 +2611,6 @@ function updateTaskInPlace() {
         }
     }
 
-    // 8. Action-Button Container & Tooltip
     const btnContainer = document.querySelector('.action-btn-container');
     if (btnContainer) {
         const preventDef = S.stage === 4 ? 'onpointerdown="event.preventDefault();" onmousedown="event.preventDefault();"' : '';
@@ -2208,14 +2628,12 @@ function updateTaskInPlace() {
         `;
     }
 
-    // 9. In Level 4 Fokus beibehalten, falls bereits einmal manuell fokussiert wurde
     if (S.stage === 4 && S.inputHasBeenFocused && inp && document.activeElement !== inp && !S.infoOpen && !S.easterEggOpen) {
         inp.focus();
         inp.setSelectionRange(inp.value.length, inp.value.length);
     }
 }
 
-// --- Visualisierung der Ionenbalken ---
 function renderChargeVisualizer() {
     const { cat, an } = getActiveIons();
     if (!cat || !an) return '';
@@ -2287,7 +2705,6 @@ function renderChargeVisualizer() {
     `;
 }
 
-// --- Rendering der Ionen-Chips und Steuerungskarten ---
 function renderIonControlsHTML() {
     const catList = S.level === 'basis' ? BASIS_CATIONS : EXPERT_CATIONS;
     const anList = S.level === 'basis' ? BASIS_ANIONS : EXPERT_ANIONS;
@@ -2345,6 +2762,7 @@ function render() {
 
     if (S.screen === 'start') {
         app.innerHTML = renderStart();
+        init3DLattice();
     } else if (S.screen === 'end') {
         app.innerHTML = renderEnd();
     } else if (S.screen === 'task') {
@@ -2355,189 +2773,6 @@ function render() {
             app.innerHTML = renderTask();
         }
     }
-}
-
-/* 3D-GITTER SVG */
-function renderLatticeSVG() {
-    const rawNodes = [];
-    const minD = -1.0, maxD = 1.5;
-    const step = 0.5;
-
-    for (let x = minD; x <= maxD; x += step) {
-        for (let y = minD; y <= maxD; y += step) {
-            for (let z = minD; z <= maxD; z += step) {
-                const xIsInt = Number.isInteger(x);
-                const yIsInt = Number.isInteger(y);
-                const zIsInt = Number.isInteger(z);
-
-                let isAnion = false;
-
-                if (xIsInt && yIsInt && zIsInt) {
-                    isAnion = true;
-                } else if (!xIsInt && !yIsInt && zIsInt) {
-                    isAnion = true;
-                } else if (!xIsInt && yIsInt && !zIsInt) {
-                    isAnion = true;
-                } else if (xIsInt && !yIsInt && !zIsInt) {
-                    isAnion = true;
-                }
-
-                if (isAnion) {
-                    rawNodes.push({ x, y, z, isAnion: true });
-                }
-            }
-        }
-    }
-
-    for (let x = Math.floor(minD); x < maxD; x += 1) {
-        for (let y = Math.floor(minD); y < maxD; y += 1) {
-            for (let z = Math.floor(minD); z < maxD; z += 1) {
-                const offsets = [0.25, 0.75];
-                for (let ox of offsets) {
-                    for (let oy of offsets) {
-                        for (let oz of offsets) {
-                            const rx = x + ox, ry = y + oy, rz = z + oz;
-                            if (rx >= minD && rx <= maxD && ry >= minD && ry <= maxD && rz >= minD && rz <= maxD) {
-                                rawNodes.push({ x: rx, y: ry, z: rz, isAnion: false });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    let nodes = [];
-    const seen = new Set();
-    rawNodes.forEach(n => {
-        const key = `${n.x.toFixed(2)}_${n.y.toFixed(2)}_${n.z.toFixed(2)}`;
-        if (!seen.has(key)) {
-            seen.add(key);
-            nodes.push(n);
-        }
-    });
-
-    nodes = nodes.filter(n => n.y < 1.2);
-
-    const radY = 35 * Math.PI / 180;
-    const radX = 22 * Math.PI / 180;
-    const rotAngle = -45 * Math.PI / 180;
-    const cosA = Math.cos(rotAngle);
-    const sinA = Math.sin(rotAngle);
-
-    const scale = 280;
-    const centerX = 445; 
-    const centerY = 240; 
-
-    nodes.forEach(node => {
-        const x1 = node.x * Math.cos(radY) + node.z * Math.sin(radY);
-        const z1 = -node.x * Math.sin(radY) + node.z * Math.cos(radY);
-
-        const y2 = node.y * Math.cos(radX) - z1 * Math.sin(radX);
-        const z2 = node.y * Math.sin(radX) + z1 * Math.cos(radX);
-
-        const rx = - x1 * scale;
-        const ry = - y2 * scale;
-
-        const rotX = rx * cosA - ry * sinA;
-        const rotY = rx * sinA + ry * cosA;
-
-        node.px = centerX + rotX;
-        node.py = centerY + rotY;
-        node.depth = z2;
-    });
-
-    nodes = nodes.filter(n => n.py >= 60 && n.py <= 510);
-
-    const anionDepths = nodes.filter(n => n.isAnion).map(n => n.depth);
-    if (anionDepths.length > 0) {
-        const maxAnionDepth = Math.max(...anionDepths);
-        nodes = nodes.filter(n => !(n.isAnion && n.depth > maxAnionDepth - 0.35));
-    }
-
-    nodes.sort((a, b) => (a.x*a.x + a.y*a.y + a.z*a.z) - (b.x*b.x + b.y*b.y + b.z*b.z));
-    nodes = nodes.slice(0, Math.floor(nodes.length * 0.55));
-
-    let minDepth = Infinity;
-    let maxDepth = -Infinity;
-    nodes.forEach(node => {
-        if (node.depth < minDepth) minDepth = node.depth;
-        if (node.depth > maxDepth) maxDepth = node.depth;
-    });
-
-    nodes.sort((a, b) => a.depth - b.depth);
-
-    const depthRange = (maxDepth - minDepth) || 1;
-
-    let svgContent = '';
-    nodes.forEach((node, idx) => {
-        const depthFactor = (node.depth - minDepth) / depthRange;
-        const opacity = (0.40 + 0.60 * depthFactor).toFixed(2);
-
-        const rCation = (12.0 + 8.0 * depthFactor).toFixed(1);
-        const fontCation = (11.0 + 6.0 * depthFactor).toFixed(1);
-
-        const rAnion = (22.5 + 15.3 * depthFactor).toFixed(1);
-        const fontAnion = (15.3 + 9.0 * depthFactor).toFixed(1);
-
-        const dur = (0.40 + ((idx * 19) % 11) * 0.05).toFixed(2);
-        const delay = (((idx * 29) % 13) * 0.05).toFixed(2);
-        const animName = ['ionWobbleA', 'ionWobbleB', 'ionWobbleC', 'ionWobbleD'][(idx * 7) % 4];
-
-        const animStyle = `animation: ${animName} ${dur}s ease-in-out ${delay}s infinite alternate; transform-box: fill-box; transform-origin: center;`;
-
-        if (node.isAnion) {
-            svgContent += `
-            <g opacity="${opacity}" style="${animStyle}">
-                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rAnion}" fill="url(#heroAnGrad)"/>
-                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontAnion)*0.32).toFixed(1)}" font-size="${fontAnion}" font-weight="bold" fill="#ffffff" text-anchor="middle">2-</text>
-            </g>`;
-        } else {
-            svgContent += `
-            <g opacity="${opacity}" style="${animStyle}">
-                <circle cx="${node.px.toFixed(1)}" cy="${node.py.toFixed(1)}" r="${rCation}" fill="url(#heroCatGrad)"/>
-                <text x="${node.px.toFixed(1)}" y="${(node.py + parseFloat(fontCation)*0.32).toFixed(1)}" font-size="${fontCation}" font-weight="bold" fill="#ffffff" text-anchor="middle">+</text>
-            </g>`;
-        }
-    });
-
-    const isReal = S.school === 'real';
-    const catText = isReal ? '(Na⁺)' : 'Na';
-    const catSub = '2';
-    const anText = isReal ? '(S²⁻)' : 'S';
-
-    const formulaSVG = `
-        <text x="660" y="382" font-size="52" font-weight="800" opacity="0.45" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif">
-            <tspan fill="#dc2626">${catText}</tspan><tspan fill="#dc2626" font-size="34" dy="12">${catSub}</tspan><tspan fill="#2563eb" font-size="52" dy="-12">${anText}</tspan>
-        </text>
-    `;
-
-    return `
-    <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
-      <defs>
-        <radialGradient id="heroCatGrad" cx="35%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#f87171"/>
-          <stop offset="45%" stop-color="#dc2626"/>
-          <stop offset="100%" stop-color="#991b1b"/>
-        </radialGradient>
-        <radialGradient id="heroAnGrad" cx="35%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#60a5fa"/>
-          <stop offset="45%" stop-color="#2563eb"/>
-          <stop offset="100%" stop-color="#1e3a8a"/>
-        </radialGradient>
-      </defs>
-
-      <style>
-        @keyframes ionWobbleA { 0% { transform: translate(0, 0); } 100% { transform: translate(2.5px, -2.8px); } }
-        @keyframes ionWobbleB { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.8px, 2.3px); } }
-        @keyframes ionWobbleC { 0% { transform: translate(0, 0); } 100% { transform: translate(2.3px, 2.6px); } }
-        @keyframes ionWobbleD { 0% { transform: translate(0, 0); } 100% { transform: translate(-2.5px, -2.5px); } }
-      </style>
-
-      ${formulaSVG}
-      ${svgContent}
-    </svg>
-    `;
 }
 
 function renderPwaBanner() {
@@ -2590,10 +2825,24 @@ function renderStart() {
     const hasSelection = S.selectedStartStage !== null;
     const btnLabel = hasSelection ? `Level ${S.selectedStartStage} starten!` : 'Wähle ein Level!';
 
+    const isReal = S.school === 'real';
+    const catText = isReal ? '(Na⁺)' : 'Na';
+    const catSub = '2';
+    const anText = isReal ? '(S²⁻)' : 'S';
+
     return `
     <div class="start-container">
-        <div class="hero-graphic-bg">
-            ${renderLatticeSVG()}
+        <!-- Interaktive 3D-Bühne im Hintergrund -->
+        <div class="hero-graphic-bg" id="stageContainer">
+            <svg id="latticeSvg" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; display: block; overflow: visible;">
+                <defs id="svgDefs"></defs>
+                <g id="watermarkGroup">
+                    <text id="watermarkText" x="500" y="520" font-size="95" font-weight="900" opacity="0.18" text-anchor="middle" font-family="system-ui, sans-serif">
+                        <tspan fill="#dc2626">${catText}</tspan><tspan fill="#dc2626" font-size="62" dy="16">${catSub}</tspan><tspan fill="#2563eb" font-size="95" dy="-16">${anText}</tspan>
+                    </text>
+                </g>
+                <g id="ionGroup"></g>
+            </svg>
         </div>
 
         <div class="hero-header-box">
@@ -2821,11 +3070,10 @@ function renderEnd() {
         const accuracyPct = Math.round((S.firstTryCount / totalTasks) * 100);
         const totalSecs = S.challengeElapsedTime;
 
-        // Angepasste Zeitlimits
-        const timeLimitPokal = totalTasks * 15;     // 15s pro Aufg. (z. B. 02:30 Min bei 10 Aufgaben)
-        const timeLimitGold = totalTasks * 20;      // 20s pro Aufg. (z. B. 03:20 Min bei 10 Aufgaben)
-        const timeLimitSilber = totalTasks * 25;    // 25s pro Aufg. (z. B. 04:10 Min bei 10 Aufgaben)
-        const timeLimitZertifikat = totalTasks * 30;// 30s pro Aufg. (z. B. 05:00 Min bei 10 Aufgaben)
+        const timeLimitPokal = totalTasks * 15;
+        const timeLimitGold = totalTasks * 20;
+        const timeLimitSilber = totalTasks * 25;
+        const timeLimitZertifikat = totalTasks * 30;
 
         let icon = "🏆";
         let awardTitle = "Formel-Champion!";
@@ -2864,7 +3112,6 @@ function renderEnd() {
                 awardTitle = "Bronze-Medaille";
             }
         } else {
-            // Basis-Modus
             if (accuracyPct >= 80 && totalSecs <= timeLimitZertifikat) {
                 icon = "📜";
                 awardTitle = "Basis-Zertifikat";
