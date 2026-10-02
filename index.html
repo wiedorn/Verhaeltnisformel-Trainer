@@ -677,7 +677,6 @@
         .charge-col {
             display: flex;
             flex-direction: column-reverse;
-            gap: 2px;
             width: clamp(65px, 14vw, 120px);
         }
 
@@ -2701,8 +2700,8 @@ function renderChargeVisualizer() {
 
     const maxChargeInCol = Math.max(posTotal, negTotal, 3);
     const containerMaxHeight = isBigTablet ? 260 : (isTablet ? 210 : 135);
-    const unitH = Math.min(Math.floor(containerMaxHeight / maxChargeInCol), isBigTablet ? 38 : (isTablet ? 30 : 22));
     const gap = isTablet ? 3 : 2;
+    const unitH = Math.min(Math.floor(containerMaxHeight / maxChargeInCol), isBigTablet ? 38 : (isTablet ? 30 : 22));
 
     function renderBlocks(count, charge, colorClass, ion) {
         let blocksHtml = '';
@@ -2724,6 +2723,7 @@ function renderChargeVisualizer() {
 
     const isBalanced = (posTotal === negTotal) && posTotal > 0;
     
+    // Mathematisch korrekte Stapelhöhe inklusive Flexbox-Gaps
     const catTowerH = posTotal * unitH + (posTotal - 1) * gap;
     const anTowerH = negTotal * unitH + (negTotal - 1) * gap;
 
@@ -2736,10 +2736,10 @@ function renderChargeVisualizer() {
                         <div class="indicator-line pos" style="height: 100%;"></div>
                     </div>
 
-                    <div class="charge-col cation-col">
+                    <div class="charge-col cation-col" style="gap: ${gap}px;">
                         ${renderBlocks(S.catCount, catCharge, 'cat-block', cat)}
                     </div>
-                    <div class="charge-col anion-col">
+                    <div class="charge-col anion-col" style="gap: ${gap}px;">
                         ${renderBlocks(S.anCount, anCharge, 'an-block', an)}
                     </div>
 
@@ -3148,7 +3148,7 @@ function renderEnd() {
                 } else {
                     icon = "🥈";
                     awardTitle = "Silber-Medaille";
-                    timeNote = `⏱️ Für Gold benötigst du unter ${formatTime(timeLimitGold)} Min.`;
+                    timeNote = `⏱️️ Für Gold benötigst du unter ${formatTime(timeLimitGold)} Min.`;
                 }
             } else if (accuracyPct >= 60) {
                 if (totalSecs <= timeLimitSilber) {
