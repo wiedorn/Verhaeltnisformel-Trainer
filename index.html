@@ -68,7 +68,7 @@
             max-width: 500px;
             margin: 0 auto;
             padding: max(0.4rem, env(safe-area-inset-top)) max(0.5rem, env(safe-area-inset-right)) max(0.4rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
-            gap: 0;
+            gap: clamp(0.35rem, 1vh, 0.75rem);
             position: relative;
             box-sizing: border-box;
             z-index: 2;
@@ -86,7 +86,7 @@
 
         #app.stage-4-mode {
             justify-content: flex-start;
-            gap: 0.8rem;
+            gap: clamp(0.5rem, 1.4vh, 0.95rem);
         }
 
         /* Desktop & Tablet Layout Anpassungen */
@@ -94,6 +94,7 @@
             #app {
                 max-width: 720px;
                 padding: max(0.8rem, env(safe-area-inset-top)) 1.5rem max(0.8rem, env(safe-area-inset-bottom)) 1.5rem;
+                gap: clamp(0.5rem, 1.4vh, 0.95rem);
             }
             .level-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
@@ -609,7 +610,6 @@
             height: clamp(110px, 18.5vh, 300px);
             position: relative;
             flex-shrink: 1;
-            margin-bottom: -0.15rem;
         }
 
         .charge-columns-wrap {
